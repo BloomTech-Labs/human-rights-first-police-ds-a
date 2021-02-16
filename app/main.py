@@ -2,10 +2,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from app import db, ml, viz
+from app import db, ml, viz, messages
 
 description = """
-Edit your app's title and description. See [https://fastapi.tiangolo.com/tutorial/metadata/](https://fastapi.tiangolo.com/tutorial/metadata/)
+Database for Human Rights First dashboard. See [https://fastapi.tiangolo.com/tutorial/metadata/](https://fastapi.tiangolo.com/tutorial/metadata/)
 
 To use these interactive docs:
 - Click on an endpoint below
@@ -16,7 +16,7 @@ To use these interactive docs:
 """
 
 app = FastAPI(
-    title='DS API',
+    title='Labs 31 HRF API',
     description=description,
     docs_url='/',
 )
@@ -24,6 +24,7 @@ app = FastAPI(
 app.include_router(db.router, tags=['Database'])
 app.include_router(ml.router, tags=['Machine Learning'])
 app.include_router(viz.router, tags=['Visualization'])
+app.include_router(messages.router, tags=['Friendly messages'])
 
 app.add_middleware(
     CORSMiddleware,
