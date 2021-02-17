@@ -5,7 +5,7 @@ import uvicorn
 from app import db, ml, viz, messages
 
 description = """
-Database for Human Rights First dashboard. See [https://fastapi.tiangolo.com/tutorial/metadata/](https://fastapi.tiangolo.com/tutorial/metadata/)
+Database for Human Rights First Dashboard
 
 To use these interactive docs:
 - Click on an endpoint below
