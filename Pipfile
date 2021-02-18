@@ -16,6 +16,12 @@ typing-extensions = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 gunicorn = "*"
 psycopg2-binary = "*"
+pandas = "*"
+praw = "*"
+scikit-learn = "*"
+beautifulsoup4 = "*"
+spacy = "*"
+newspaper3k = "*"
 
 [requires]
 python_version = "3"

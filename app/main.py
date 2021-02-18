@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from app import db, ml, viz, messages
+from app import db, messages, twitter, reddit
 
 description = """
 Database for Human Rights First Dashboard
@@ -22,9 +22,9 @@ app = FastAPI(
 )
 
 app.include_router(db.router, tags=['Database'])
-app.include_router(ml.router, tags=['Machine Learning'])
-app.include_router(viz.router, tags=['Visualization'])
 app.include_router(messages.router, tags=['Friendly messages'])
+app.include_router(reddit.router, tags= ['Reddit'])
+app.include_router(twitter.router, tags=['Twitter'])
 
 app.add_middleware(
     CORSMiddleware,
