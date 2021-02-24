@@ -13,8 +13,7 @@ def splitGeolocation(item):
         latitiude and longitude integers
         :return: latitude column, longitude column
         """
-        lat = []
-        lon = []
+        lat, lon = [], []
         if isinstance(item, str) and item != 'None':
             item = item.split(',')
             lat.append(float(item[0]))
@@ -30,12 +29,10 @@ def splitGeolocation(item):
 def check_new_items(db_info,api_info):
     """ count the number of new items on the API """
     new_items = []
-    counter = 0
     for item in api_info['data']:
         if not any(d['case_id'] == item['id'] for d in db_info):
             new_items.append(item)
-            counter += 1
-    return counter,new_items
+    return new_items
 
 def cleanlinks(url_col):
     """ Convert links from json to a str. Creates hyperlink"""
@@ -65,7 +62,6 @@ def SearchForTags(i, incidentTags, df):
                 df.at[i, categories[j]] = 1
                 return
 
-
 def getValues(item):
     current_dt = datetime.datetime.today()
     return (item['date'],current_dt,str(item['links']),str(item['id']),str(item['city']),str(item['state']),item['lat'],item['long'],
@@ -75,8 +71,7 @@ def getValues(item):
 
 def preprocessNewData(new_data_json):
     """
-    Preprocessing function recycling preprocessing functions to mimic the
-    output of the initial dataframe.
+    Preprocessing function to mimic the output of the initial dataframe.
     """
     df = pd.DataFrame(data=new_data_json)
     
@@ -94,8 +89,6 @@ def preprocessNewData(new_data_json):
     # Reset index
     df.reset_index(inplace=True)
 
-    # Replace the Nan values with the string "None" in the description column
-    # May need to create conditions for variations with the new data (consideration)
     df['description'] = df['description'].replace({np.NaN: "None"})
     # Replace the Nan values with the string "None" in the geolocation column
     # Missing geolocations are mapped as empty strings
@@ -118,5 +111,6 @@ def preprocessNewData(new_data_json):
 
     for i, row in enumerate(df['tags']):
         SearchForTags(i, row, df)
+
     return df.to_dict(orient='records')
 
