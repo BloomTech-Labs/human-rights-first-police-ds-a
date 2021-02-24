@@ -26,6 +26,7 @@ async def get_reddit_data():
     results = curs.fetchall()
     curs.close()
     conn.close()
+    print(len(results))
 
     """
     Convert data to usable json format
