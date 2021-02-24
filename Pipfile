@@ -23,6 +23,7 @@ beautifulsoup4 = "*"
 spacy = "*"
 newspaper3k = "*"
 fastapi-utils = "*"
+importlib-metadata = "*"
 
 [requires]
 python_version = "3"
