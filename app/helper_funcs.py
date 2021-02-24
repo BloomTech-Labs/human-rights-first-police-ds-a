@@ -62,6 +62,13 @@ def SearchForTags(i, incidentTags, df):
                 df.at[i, categories[j]] = 1
                 return
 
+def getLatandLon(i, item, df):
+    if item != '':
+        item = item.split(',')
+        df.at[i, 'lat'] = float(item[0])
+        df.at[i, 'long'] = float(item[1])
+
+
 def getValues(item):
     current_dt = datetime.datetime.today()
     return (item['date'],current_dt,str(item['links']),str(item['id']),str(item['city']),str(item['state']),item['lat'],item['long'],
@@ -92,20 +99,21 @@ def preprocessNewData(new_data_json):
     df['description'] = df['description'].replace({np.NaN: "None"})
     # Replace the Nan values with the string "None" in the geolocation column
     # Missing geolocations are mapped as empty strings
-    df['geolocation'] = df['geolocation'].replace({"": np.NaN}).replace({np.NaN: "None"})
+    # df['geolocation'] = df['geolocation'].replace({"": "None"})
+    # df['geolocation'] = df['geolocation'].replace({"": np.NaN}).replace({np.NaN: "None"})
+
+    # Create latitude (lat) and longitude (lon) columns.
+    df['lat'] = pd.Series(np.zeros(df.shape[0], dtype=int))
+    df['long'] = pd.Series(np.zeros(df.shape[0], dtype=int))
+    for i, row in enumerate(df['geolocation']):
+        getLatandLon(i, row, df)
+    
+    df = df.drop(labels=['geolocation', 'index'], axis=1)
+
 
     df['links'] = df['links'].apply(cleanlinks)
 
-    # Create a latitude (lat) and longitude (lon) column.
-    df['lat'] = [splitGeolocation(item)[0][0] for item in df['geolocation']]
-    df['long'] = [splitGeolocation(item)[1][0] for item in df['geolocation']]
-
-    # Drop the geolocation columns
-    df = df.drop(labels=['geolocation', 'index'], axis=1)
-
     df['tags'] = df['tags'].apply(remove_stops)
-
-    df = df.fillna('None')
 
     # Create placeholder columns for categories
     for category in categories:

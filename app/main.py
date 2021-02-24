@@ -59,7 +59,7 @@ async def run_update() -> None:
 
     # if there are new incidents, add them to database
     if new_items:
-        newdata = preprocessNewData(new_items)
+        newdata = preprocessNewData(new_items)[:630]
         
         pg_conn = psycopg2.connect(DB_CONN)
         pg_curs = pg_conn.cursor()

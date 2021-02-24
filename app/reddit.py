@@ -28,17 +28,8 @@ async def get_reddit_data():
     results = curs.fetchall()
     curs.close()
     conn.close()
-    # print(type(results))
-    # print(results)
-    # df = pd.DataFrame(results)
-    # df = df.fillna('None')
-    # print(df.describe())
-    # df.to_json()
+  
     return results
-    # return df.head().to_dict(orient='records')
-    # return json.dumps(results, default=str)
-    # return df.to_json(orient='records')
-    # # return results
 
     # """
     # Convert data to usable json format
