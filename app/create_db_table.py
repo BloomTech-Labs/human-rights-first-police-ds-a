@@ -26,7 +26,7 @@ POLICE_TABLE = """CREATE TABLE IF NOT EXISTS police_force (
     uncategorized INT
 );"""
 
-#Connect to DB and execute query
+#Connect to DB and execute create table query
 db_url = os.getenv('DB_URL')
 conn = psycopg2.connect(db_url)
 curs = conn.cursor()

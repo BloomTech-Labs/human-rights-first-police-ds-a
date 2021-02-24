@@ -22,6 +22,7 @@ scikit-learn = "*"
 beautifulsoup4 = "*"
 spacy = "*"
 newspaper3k = "*"
+fastapi-utils = "*"
 
 [requires]
 python_version = "3"
