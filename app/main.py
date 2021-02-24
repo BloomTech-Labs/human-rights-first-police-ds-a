@@ -74,10 +74,10 @@ async def run_update() -> None:
         pg_conn = psycopg2.connect(DB_CONN)
         pg_curs = pg_conn.cursor()
         iterations = 0
-        for item in newdata[:100]:
+        for item in newdata:
             pg_curs.execute(pb2020_insert_query, getValues(item))
-            # iterations += 1
-            # print(iterations)
+            iterations += 1
+        print(iterations)
         pg_conn.commit()
         pg_curs.close()
         pg_conn.close()
