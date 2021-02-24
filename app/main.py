@@ -37,7 +37,7 @@ app.include_router(reddit.router, tags= ['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
 @app.on_event('startup')
-@repeat_every(seconds=60*60*24)  # runs function below every 24 hours 
+# @repeat_every(seconds=60*60*24)  # runs function below every 24 hours 
 async def run_update() -> None:
 
     # get all incidents stored in database
@@ -54,10 +54,10 @@ async def run_update() -> None:
     r = requests.get(API_CONN)
     data_info = r.json()
         
-    #Checks for new items
+    #Checks for new incidents
     new_items = check_new_items(results,data_info) 
 
-    # if new_items array is not empty, add data to database
+    # if there are new incidents, add them to database
     if new_items:
         newdata = preprocessNewData(new_items)
         

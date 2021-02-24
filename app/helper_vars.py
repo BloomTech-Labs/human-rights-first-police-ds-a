@@ -33,10 +33,7 @@ categories = ['lethal_force', 'less_lethal_methods', 'empty_hand_hard', 'empty_h
 category_tags = [LETHAL_FORCE, LESS_LETHAL_METHODS, EMPTY_HAND_HARD, EMPTY_HAND_SOFT, VERBALIZATION, UNCATEGORIZED]
 
 # QUERIES
-# values = (item['date'],current_dt,str(item['links']),str(item['id']),str(item['city']),str(item['state']),item['lat'],item['long'],
-#      str(item['title']),str(item['description']),str(item['tags']),item['verbalization'],
-#      item['empty_hand_soft'],item['empty_hand_hard'],item['less_lethal_methods'],
-#      item['lethal_force'],item['uncategorized'])
+
 pb2020_insert_query = """
     INSERT INTO police_force 
     (dates,added_on, links, case_id, city, state,lat,long, 

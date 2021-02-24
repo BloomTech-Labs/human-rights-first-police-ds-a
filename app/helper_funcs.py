@@ -105,6 +105,8 @@ def preprocessNewData(new_data_json):
 
     df['tags'] = df['tags'].apply(remove_stops)
 
+    df = df.fillna('None')
+
     # Create placeholder columns for categories
     for category in categories:
         df[category] = pd.Series(np.zeros(df.shape[0], dtype=int))

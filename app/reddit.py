@@ -1,12 +1,14 @@
-""" Reddit Data """
+""" Get Reddit Data """
 from fastapi import APIRouter
 from ast import literal_eval
+import pandas as pd
 import os
 import json
 import ast
 import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
+import json
 
 load_dotenv()
 
@@ -26,14 +28,24 @@ async def get_reddit_data():
     results = curs.fetchall()
     curs.close()
     conn.close()
-    print(len(results))
-
-    """
-    Convert data to usable json format
-    ### Response
-    dateframe: JSON object
-    """
-    for item in results:
-        item['links'] = literal_eval(item['links'])
-        item['tags'] = literal_eval(item['tags'])
+    # print(type(results))
+    # print(results)
+    # df = pd.DataFrame(results)
+    # df = df.fillna('None')
+    # print(df.describe())
+    # df.to_json()
     return results
+    # return df.head().to_dict(orient='records')
+    # return json.dumps(results, default=str)
+    # return df.to_json(orient='records')
+    # # return results
+
+    # """
+    # Convert data to usable json format
+    # ### Response
+    # dateframe: JSON object
+    # """
+    # for item in results:
+    #     item['links'] = literal_eval(item['links'])
+    #     item['tags'] = literal_eval(item['tags'])
+    # return results
