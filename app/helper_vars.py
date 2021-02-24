@@ -1,6 +1,9 @@
 """ Variables and SQL queries for use in main.py """   
 import spacy
 
+# 2020 police brutality github
+API_URL = 'https://raw.githubusercontent.com/2020PB/police-brutality/data_build/all-locations-v2.json'
+
 nlp = spacy.load('en_core_web_sm')
 
 stop_words = ["celebrity", "child", "ederly","lgbtq+","homeless", "journalist",

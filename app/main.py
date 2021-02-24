@@ -10,7 +10,7 @@ import os
 from dotenv import load_dotenv
 from app import db, messages, twitter, reddit
 from .helper_funcs import check_new_items, preprocessNewData, getValues
-from .helper_vars import stop, pb2020_insert_query
+from .helper_vars import stop, pb2020_insert_query, API_URL
 
 load_dotenv() 
 
@@ -37,7 +37,7 @@ app.include_router(reddit.router, tags= ['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
 @app.on_event('startup')
-# @repeat_every(seconds=60*60*24)  # runs function below every 24 hours 
+@repeat_every(seconds=60*60*24)  # runs function every minute# runs function below every 24 hours 
 async def run_update() -> None:
 
     # get all incidents stored in database
@@ -50,8 +50,8 @@ async def run_update() -> None:
     pg_curs.close()
 
     # get all incidents on API
-    API_CONN = os.getenv('API_URL')
-    r = requests.get(API_CONN)
+    # API_CONN = os.getenv('API_URL')
+    r = requests.get(API_URL)
     data_info = r.json()
         
     #Checks for new incidents
@@ -59,7 +59,7 @@ async def run_update() -> None:
 
     # if there are new incidents, add them to database
     if new_items:
-        newdata = preprocessNewData(new_items)[:630]
+        newdata = preprocessNewData(new_items)[:50]
         
         pg_conn = psycopg2.connect(DB_CONN)
         pg_curs = pg_conn.cursor()

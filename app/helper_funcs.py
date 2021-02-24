@@ -5,26 +5,6 @@ import numpy as np
 import datetime
 
 
-def splitGeolocation(item):
-        """
-        Creates two new columns (lat and lon) by separating the dictionaries of
-        geolocations into latitiude and longitude.
-        :col: indexed slice of a column consisting of dictionaries/strings with
-        latitiude and longitude integers
-        :return: latitude column, longitude column
-        """
-        lat, lon = [], []
-        if isinstance(item, str) and item != 'None':
-            item = item.split(',')
-            lat.append(float(item[0]))
-            lon.append(float(item[1]))
-        elif type(item) == dict:
-            lat.append(float(item['lat']))
-            lon.append(float(item['long']))
-        else:
-            lat.append(None)  # Null values
-            lon.append(None)  # Null values
-        return lat, lon
 
 def check_new_items(db_info,api_info):
     """ count the number of new items on the API """
@@ -97,11 +77,7 @@ def preprocessNewData(new_data_json):
     df.reset_index(inplace=True)
 
     df['description'] = df['description'].replace({np.NaN: "None"})
-    # Replace the Nan values with the string "None" in the geolocation column
-    # Missing geolocations are mapped as empty strings
-    # df['geolocation'] = df['geolocation'].replace({"": "None"})
-    # df['geolocation'] = df['geolocation'].replace({"": np.NaN}).replace({np.NaN: "None"})
-
+    
     # Create latitude (lat) and longitude (lon) columns.
     df['lat'] = pd.Series(np.zeros(df.shape[0], dtype=int))
     df['long'] = pd.Series(np.zeros(df.shape[0], dtype=int))
