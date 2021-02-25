@@ -15,15 +15,19 @@ load_dotenv()
 router = APIRouter()
 
 @router.get('/Reddit')
-async def get_reddit_data():
-    """ Returns all reddit data from database"""
+async def get_reddit_data(last_id_added: str = None):
+    """ 
+    Returns reddit data from database. \n
+    If id is entered all the data greater than that id will be returned. \n
+    If no id is entered all the data will be returned.
+    """
     db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    # if date_added == None:
-    Q = """SELECT * FROM police_force;"""
-    # else:
-        # Q = f"""SELECT * FROM police_force WHERE added_on >= '{date_added}';"""
+    if last_id_added == None:
+        Q = """SELECT * FROM police_force;"""
+    else:
+        Q = f"""SELECT * FROM police_force WHERE id > '{last_id_added}';"""
     curs.execute(Q)
     results = curs.fetchall()
     curs.close()

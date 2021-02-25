@@ -1,14 +1,15 @@
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
-import en_core_web_sm
 
+import spacy
 
 class TextMatcher:
     """ Generic NLP Text Matching Model """
 
     class Tokenizer:
         """ Standard SpaCy Tokenizer """
-        nlp = en_core_web_sm.load()
+
+        nlp = spacy.load('en_core_web_sm')
 
         def __call__(self, text: str) -> list:
             return [
