@@ -1,14 +1,10 @@
 """ Get Reddit Data """
+import os
 from fastapi import APIRouter
 from ast import literal_eval
-import pandas as pd
-import os
-import json
-import ast
 import psycopg2
 import psycopg2.extras
 from dotenv import load_dotenv
-import json
 
 load_dotenv()
 
@@ -17,7 +13,7 @@ router = APIRouter()
 @router.get('/Reddit')
 async def get_reddit_data(last_id_added: str = None):
     """ 
-    Returns reddit data from database. \n
+    Returns reddit data. \n
     If id is entered all the data greater than that id will be returned. \n
     If no id is entered all the data will be returned.
     """
