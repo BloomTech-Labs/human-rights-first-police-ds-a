@@ -6,7 +6,7 @@ import os
 import json
 import ast
 import psycopg2
-# import psycopg2.extras
+import psycopg2.extras
 from dotenv import load_dotenv
 import json
 
