@@ -3,7 +3,6 @@ from sklearn.neighbors import NearestNeighbors
 
 import spacy
 
-
 class TextMatcher:
     """ Generic NLP Text Matching Model """
 

@@ -9,8 +9,9 @@ import requests
 import os
 from dotenv import load_dotenv
 from app import db, messages, twitter, reddit
-from app.helper_funcs import check_new_items, preprocessNewData, getValues
-from app.helper_vars import pb2020_insert_query, API_URL
+from app.helper_funcs import check_new_items, preprocessNewData, getValues, loadData, insertData
+from app.helper_vars import pb2020_insert_query, PB2020_API_URL
+from app.reddit import get_reddit_data
 
 load_dotenv() 
 
@@ -41,16 +42,17 @@ app.include_router(twitter.router, tags=['Twitter'])
 async def run_update() -> None:
 
     # get all incidents stored in database
-    DB_CONN = os.getenv('DB_URL')
-    pg_conn = psycopg2.connect(DB_CONN) 
-    pg_curs = pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    Q = """SELECT * FROM police_force;"""
-    pg_curs.execute(Q)
-    results = pg_curs.fetchall()
-    pg_curs.close()
+    # DB_CONN = os.getenv('DB_URL')
+    # pg_conn = psycopg2.connect(DB_CONN) 
+    # pg_curs = pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    # Q = """SELECT * FROM police_force;"""
+    # pg_curs.execute(Q)
+    # results = pg_curs.fetchall()
+    # pg_curs.close()
+    results = loadData()
 
-    # get all incidents on API
-    r = requests.get(API_URL)
+    # get all incidents on pb2020 API
+    r = requests.get(PB2020_API_URL)
     data_info = r.json()
         
     #Checks for new incidents
@@ -60,13 +62,17 @@ async def run_update() -> None:
     if new_items:
         newdata = preprocessNewData(new_items[:50])
         
-        pg_conn = psycopg2.connect(DB_CONN)
-        pg_curs = pg_conn.cursor()
-        for item in newdata:
-            pg_curs.execute(pb2020_insert_query, getValues(item))
-        pg_conn.commit()
-        pg_curs.close()
-        pg_conn.close()
+        # create insert data function
+        insertData(newdata)
+
+        # DB_CONN = os.getenv("DB_URL")
+        # pg_conn = psycopg2.connect(DB_CONN)
+        # pg_curs = pg_conn.cursor()
+        # for item in newdata:
+        #     pg_curs.execute(pb2020_insert_query, getValues(item))
+        # pg_conn.commit()
+        # pg_curs.close()
+        # pg_conn.close()
 
 
 app.add_middleware(

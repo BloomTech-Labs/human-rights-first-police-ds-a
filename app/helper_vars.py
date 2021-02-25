@@ -2,7 +2,7 @@
 import spacy
 
 # 2020 police brutality github
-API_URL = 'https://raw.githubusercontent.com/2020PB/police-brutality/data_build/all-locations-v2.json'
+PB2020_API_URL = 'https://raw.githubusercontent.com/2020PB/police-brutality/data_build/all-locations-v2.json'
 
 
 # QUERIES

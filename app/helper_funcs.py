@@ -3,8 +3,15 @@
 import pandas as pd
 import numpy as np
 import datetime
+import os
+from dotenv import load_dotenv
+import psycopg2
+import psycopg2.extras
 from app.training_data import ranked_reports
 from app.textmatcher import TextMatcher
+
+
+load_dotenv()
 
 model = TextMatcher(ranked_reports)
 
@@ -16,36 +23,15 @@ def check_new_items(db_info,api_info):
             new_items.append(item)
     return new_items
 
-def cleanlinks(url_col):
+def cleanLinks(url_col):
     """ Convert links from json to a str. Creates hyperlink"""
     links_out = []
     for link in url_col:
         links_out.append(link['url'])
     return links_out
 
-# def remove_stops(_list_):
-#     keywords = []
-#     for keyword in _list_:
-#         phrase = []
-#         words = keyword.split()
-#         for word in words:
-#             if word not in stop:
-#                 phrase.append(word)
-#         phrase = ' '.join(phrase)
-#         if len(phrase) > 0:
-#             keywords.append(phrase)
-#     return keywords
-
 def getRankOfForce(text):
     return model(text)
-
-# def SearchForTags(i, incidentTags, df):
-#     """ Look through each category to find tags """
-#     for j in range(len(categories)):
-#         for tag in incidentTags:
-#             if tag in category_tags[j]:
-#                 df.at[i, categories[j]] = 1
-#                 return
 
 def getLatandLon(i, item, df):
     if item != '':
@@ -53,14 +39,38 @@ def getLatandLon(i, item, df):
         df.at[i, 'lat'] = float(item[0])
         df.at[i, 'long'] = float(item[1])
 
-
 def getValues(item):
     current_dt = datetime.datetime.today()
     return (item['date'],current_dt,str(item['links']),str(item['id']),str(item['city']),str(item['state']),item['lat'],item['long'],
      str(item['title']),str(item['description']),str(item['tags']),item['force_rank'])
-    #  item['verbalization'],
-    #  item['empty_hand_soft'],item['empty_hand_hard'],item['less_lethal_methods'],
-    #  item['lethal_force'],item['uncategorized'])
+
+def loadData():
+    """ get all incidents stored in database """
+    DB_CONN = os.getenv('DB_URL')
+    pg_conn = psycopg2.connect(DB_CONN) 
+    pg_curs = pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    Q = """SELECT * FROM police_force;"""
+    pg_curs.execute(Q)
+    results = pg_curs.fetchall()
+    pg_curs.close()
+    return results
+
+def insertData(data):
+    """ insert data into police_force table """
+    DB_CONN = os.getenv("DB_URL")
+    pg_conn = psycopg2.connect(DB_CONN)
+    pg_curs = pg_conn.cursor()
+    pb2020_insert_query = """
+    INSERT INTO police_force 
+    (dates,added_on, links, case_id, city, state,lat,long, 
+    title, description, tags, force_rank)
+    VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
+    for item in data:
+        pg_curs.execute(pb2020_insert_query, getValues(item))
+    pg_conn.commit()
+    pg_curs.close()
+    pg_conn.close()
+    return 
 
 def preprocessNewData(new_data_json):
     """
@@ -92,20 +102,9 @@ def preprocessNewData(new_data_json):
     
     df = df.drop(labels=['geolocation', 'index'], axis=1)
 
-
-    df['links'] = df['links'].apply(cleanlinks)
-
-    # df['tags'] = df['tags'].apply(remove_stops)
+    df['links'] = df['links'].apply(cleanLinks)
 
     df['force_rank'] = df['title'].apply(getRankOfForce)
-
-
-    # Create placeholder columns for categories
-    # for category in categories:
-    #     df[category] = pd.Series(np.zeros(df.shape[0], dtype=int))
-
-    # for i, row in enumerate(df['tags']):
-    #     SearchForTags(i, row, df)
 
     return df.to_dict(orient='records')
 
