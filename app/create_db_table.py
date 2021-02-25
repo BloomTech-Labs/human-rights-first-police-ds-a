@@ -18,12 +18,7 @@ POLICE_TABLE = """CREATE TABLE IF NOT EXISTS police_force (
     title TEXT,
     description TEXT,
     tags TEXT,
-    verbalization INT,
-    empty_hand_soft INT,
-    empty_hand_hard INT,
-    less_lethal_methods INT,
-    lethal_force INT,
-    uncategorized INT
+    force_rank TEXT
 );"""
 
 #Connect to DB and execute create table query
