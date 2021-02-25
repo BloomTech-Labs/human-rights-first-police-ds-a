@@ -1,15 +1,13 @@
 """ Functions used to process reddit data """
-# from .helper_vars import stop, categories, category_tags
 import pandas as pd
 import numpy as np
 import datetime
 import os
 from dotenv import load_dotenv
 import psycopg2
-# import psycopg2.extras
+import psycopg2.extras
 from app.training_data import ranked_reports
 from app.textmatcher import TextMatcher
-
 
 load_dotenv()
 
