@@ -3,17 +3,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 import uvicorn
 import pandas as pd
-import psycopg2
-import psycopg2.extras
 import requests
-import os
-from dotenv import load_dotenv
-from app import db, messages, twitter, reddit
-from app.helper_funcs import check_new_items, preprocessNewData, getValues, loadData, insertData
-from app.helper_vars import pb2020_insert_query, PB2020_API_URL
-from app.reddit import get_reddit_data
+from app import db, twitter, reddit
+from app.helper_funcs import check_new_items, preprocessNewData, loadData, insertData
 
-load_dotenv() 
 
 description = """
 Database for Human Rights First Dashboard
@@ -33,7 +26,6 @@ app = FastAPI(
 )
 
 app.include_router(db.router, tags=['Database'])
-app.include_router(messages.router, tags=['Friendly messages'])
 app.include_router(reddit.router, tags= ['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
@@ -42,16 +34,10 @@ app.include_router(twitter.router, tags=['Twitter'])
 async def run_update() -> None:
 
     # get all incidents stored in database
-    # DB_CONN = os.getenv('DB_URL')
-    # pg_conn = psycopg2.connect(DB_CONN) 
-    # pg_curs = pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    # Q = """SELECT * FROM police_force;"""
-    # pg_curs.execute(Q)
-    # results = pg_curs.fetchall()
-    # pg_curs.close()
     results = loadData()
 
     # get all incidents on pb2020 API
+    PB2020_API_URL = 'https://raw.githubusercontent.com/2020PB/police-brutality/data_build/all-locations-v2.json'
     r = requests.get(PB2020_API_URL)
     data_info = r.json()
         
@@ -62,17 +48,8 @@ async def run_update() -> None:
     if new_items:
         newdata = preprocessNewData(new_items[:50])
         
-        # create insert data function
+        # insert data into police_force table
         insertData(newdata)
-
-        # DB_CONN = os.getenv("DB_URL")
-        # pg_conn = psycopg2.connect(DB_CONN)
-        # pg_curs = pg_conn.cursor()
-        # for item in newdata:
-        #     pg_curs.execute(pb2020_insert_query, getValues(item))
-        # pg_conn.commit()
-        # pg_curs.close()
-        # pg_conn.close()
 
 
 app.add_middleware(

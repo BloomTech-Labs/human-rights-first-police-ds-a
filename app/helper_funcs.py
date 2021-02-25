@@ -6,7 +6,7 @@ import datetime
 import os
 from dotenv import load_dotenv
 import psycopg2
-import psycopg2.extras
+# import psycopg2.extras
 from app.training_data import ranked_reports
 from app.textmatcher import TextMatcher
 
