@@ -8,6 +8,7 @@ class TextMatcher:
 
     class Tokenizer:
         """ Standard SpaCy Tokenizer """
+
         nlp = spacy.load('en_core_web_sm')
 
         def __call__(self, text: str) -> list:
