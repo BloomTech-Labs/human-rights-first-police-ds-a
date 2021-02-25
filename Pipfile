@@ -25,6 +25,8 @@ en_core_web_sm = {file = "https://github.com/explosion/spacy-models/releases/dow
 newspaper3k = "*"
 fastapi-utils = "*"
 importlib-metadata = "*"
+jupyterlab = "*"
+notebook = "*"
 
 [requires]
 python_version = "3"
