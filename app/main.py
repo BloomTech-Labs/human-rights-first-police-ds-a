@@ -33,7 +33,7 @@ app.include_router(twitter.router, tags=['Twitter'])
 @repeat_every(seconds=60*60*24)  # runs function below every 24 hours 
 async def run_update() -> None:
 
-    # get all incidents stored in database
+    # get all reddit incidents stored in database
     results = loadData()
 
     # get all incidents on pb2020 API
@@ -41,10 +41,10 @@ async def run_update() -> None:
     r = requests.get(PB2020_API_URL)
     data_info = r.json()
         
-    #Checks for new incidents
+    #Checks for new reddit incidents
     new_items = check_new_items(results,data_info) 
 
-    # if there are new incidents, add them to database
+    # if there are new reddit incidents, add them to database
     if new_items:
         newdata = preprocessNewData(new_items[:50])
         
