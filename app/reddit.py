@@ -29,8 +29,6 @@ async def get_reddit_data(last_id_added: str = None):
     curs.close()
     conn.close()
   
-    # return results
-
     # """
     # Convert data to usable json format
     # ### Response
