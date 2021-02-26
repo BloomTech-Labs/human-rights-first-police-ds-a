@@ -22,7 +22,7 @@ async def get_reddit_data(last_id_added: str = None):
     if last_id_added == None:
         Q = """SELECT * FROM twitter_potential_incidents;"""
     else:
-        Q = f"""SELECT * FROM twitter_potential_incidents WHERE added_on > '{last_id_added}';"""
+        Q = f"""SELECT * FROM twitter_potential_incidents WHERE id > '{last_id_added}';"""
     curs.execute(Q)
     results = curs.fetchall()
     curs.close()
