@@ -9,8 +9,9 @@ import requests
 import os
 from dotenv import load_dotenv
 from app import db, messages, twitter, reddit
-from .helper_funcs import check_new_items, preprocessNewData, getValues
-from .helper_vars import stop, pb2020_insert_query, API_URL
+from app.helper_funcs import check_new_items, preprocessNewData, getValues
+from app.helper_vars import stop, pb2020_insert_query, API_URL
+from app.scraper import update_twitter_data 
 
 load_dotenv() 
 
@@ -39,6 +40,8 @@ app.include_router(twitter.router, tags=['Twitter'])
 @app.on_event('startup')
 @repeat_every(seconds=60*60*24)  # runs function every minute# runs function below every 24 hours 
 async def run_update() -> None:
+    print("startup cycle1")
+    update_twitter_data()
 
     # get all incidents stored in database
     DB_CONN = os.getenv('DB_URL')
@@ -68,6 +71,10 @@ async def run_update() -> None:
         pg_conn.commit()
         pg_curs.close()
         pg_conn.close()
+
+    
+
+    
 
 
 app.add_middleware(
