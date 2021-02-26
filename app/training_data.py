@@ -34,6 +34,7 @@ ranked_reports = {
         "pushed and shoved with shields",
         "grabs, holds and joint locks",
         "punch and kick", "thrown to the ground", "hit",
+
     ],
     "Rank 3 - Blunt Force": [
         "policeman, policewoman, law enforcement",
@@ -41,6 +42,7 @@ ranked_reports = {
         "rubber bullets",
         "riot rounds",
         "batons", "blood", "hit",
+
     ],
     "Rank 4 - Chemical & Electric": [
         "policeman, policewoman, law enforcement",
@@ -51,6 +53,7 @@ ranked_reports = {
         "chemical sprays",
         "Conducted energy devices, CED or tazor",
         "blood",
+
     ],
     "Rank 5 - Lethal Force": [
         "policeman, policewoman, law enforcement",
@@ -60,5 +63,6 @@ ranked_reports = {
         "deadly force",
         "fatal",
         "dies", 'kill',
+
     ],
 }
