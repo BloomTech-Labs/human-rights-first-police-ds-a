@@ -1,4 +1,4 @@
-""" Initialize table for Postgres database """
+""" Initialize tables for Postgres database """
 import psycopg2
 import os
 from dotenv import load_dotenv

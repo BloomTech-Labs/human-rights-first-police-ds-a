@@ -4,6 +4,12 @@ from fastapi_utils.tasks import repeat_every
 import uvicorn
 import pandas as pd
 import requests
+import os
+from dotenv import load_dotenv
+from app import db, messages, twitter, reddit
+from app.helper_funcs import check_new_items, preprocessNewData, getValues
+from app.helper_vars import stop, pb2020_insert_query, API_URL
+from app.scraper import update_twitter_data 
 from app import db, twitter, reddit
 from app.helper_funcs import check_new_items, preprocessNewData, loadData, insertData
 
@@ -32,6 +38,7 @@ app.include_router(twitter.router, tags=['Twitter'])
 @app.on_event('startup')
 @repeat_every(seconds=60*60*24)  # runs function below every 24 hours 
 async def run_update() -> None:
+    update_twitter_data()
 
     # get all reddit incidents stored in database
     results = loadData()
@@ -50,6 +57,10 @@ async def run_update() -> None:
         
         # insert data into police_force table
         insertData(newdata)
+
+    
+
+    
 
 
 app.add_middleware(

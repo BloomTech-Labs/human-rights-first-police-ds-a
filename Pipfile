@@ -26,6 +26,8 @@ newspaper3k = "*"
 fastapi-utils = "*"
 importlib-metadata = "*"
 notebook = "*"
+dataset = "*"
+tweepy = "*"
 
 [requires]
 python_version = "3"
