@@ -38,7 +38,6 @@ app.include_router(twitter.router, tags=['Twitter'])
 @app.on_event('startup')
 @repeat_every(seconds=60*60*24)  # runs function below every 24 hours 
 async def run_update() -> None:
-    print("startup cycle1")
     update_twitter_data()
 
     # get all reddit incidents stored in database

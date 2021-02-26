@@ -31,8 +31,6 @@ ranked_reports = ["Rank 1 - Police Presence", "Rank 2 - Empty-hand", "Rank 3 - B
                 "Rank 4 - Chemical & Electric", "Rank 5 - Lethal Force"]
 
 def update_twitter_data():
-    print("database updating....")
-
     conn = psycopg2.connect(getenv("DB_URL"))
     curs = conn.cursor()
     curs.execute(statement)
