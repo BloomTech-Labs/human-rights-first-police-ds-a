@@ -38,8 +38,9 @@ def update_twitter_data():
     maxid = curs.fetchall()[0][0]
     curs.close()
     conn.close()
-
+    print('before for loop in update_twitter_data')
     for status in tweepy.Cursor(api.search, q="police", lang='en', result_type='popular', since_id=maxid).items():
+        print('status', status)
         category = model(status.text)
         conditions = (not 'RT @' in status.text) and \
                     any(word in status.text for word in filter_words) \
