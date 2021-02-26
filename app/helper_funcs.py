@@ -85,7 +85,9 @@ def preprocessNewData(new_data_json):
     
     # Update the "date" column to timestamps and sort
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
+    
     df['date'] = df.date.astype(object).where(df.date.notnull(), None)
+
     df = df.sort_values(by='date')
 
     # Reset index

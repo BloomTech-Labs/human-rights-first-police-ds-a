@@ -36,7 +36,7 @@ app.include_router(reddit.router, tags= ['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
 @app.on_event('startup')
-@repeat_every(seconds=20)  # runs function below every 24 hours 
+@repeat_every(seconds=60*60*12)  # runs function below every 24 hours 
 async def run_update() -> None:
     update_twitter_data()
 
