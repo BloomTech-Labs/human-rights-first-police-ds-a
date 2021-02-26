@@ -4,9 +4,10 @@ import tweepy
 from sqlalchemy.exc import ProgrammingError
 from os import getenv
 from dotenv import load_dotenv
+import psycopg2
 
-from textmatcher import TextMatcher
-from training_data import ranked_reports
+from app.textmatcher import TextMatcher
+from app.training_data import ranked_reports
 
 load_dotenv()
 
@@ -20,11 +21,27 @@ CONSUMER_SECRET = getenv("CONSUMER_SECRET")
 ACCESS_KEY = getenv("ACCESS_KEY")
 ACCESS_SECRET = getenv("ACCESS_SECRET")
 
-class StreamListener(tweepy.StreamListener):
-    def on_status(self, status):
-        filter_words = ["police", "officer", "cop"]
-        ranked_reports = ["Rank 2 - Empty-hand", "Rank 3 - Blunt Force", 
-                        "Rank 4 - Chemical & Electric", "Rank 5 - Lethal Force"]
+auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+api = tweepy.API(auth)
+
+statement = 'SELECT id_str FROM twitter_potential_incidents ORDER BY id_str DESC LIMIT 1'
+filter_words = ["police", "officer", "cop"]
+ranked_reports = ["Rank 1 - Police Presence", "Rank 2 - Empty-hand", "Rank 3 - Blunt Force", 
+                "Rank 4 - Chemical & Electric", "Rank 5 - Lethal Force"]
+
+def update_twitter_data():
+    print("database updating....")
+
+    conn = psycopg2.connect(getenv("DB_URL"))
+    curs = conn.cursor()
+    curs.execute(statement)
+    conn.commit()
+    maxid = curs.fetchall()[0][0]
+    curs.close()
+    conn.close()
+
+    for status in tweepy.Cursor(api.search, q="police", lang='en', result_type='popular', since_id=maxid).items():
         category = model(status.text)
         conditions = (not 'RT @' in status.text) and \
                     any(word in status.text for word in filter_words) \
@@ -72,13 +89,4 @@ class StreamListener(tweepy.StreamListener):
             #return False in on_data disconnects the stream
             return False
 
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
-api = tweepy.API(auth)
-
-stream_listener = StreamListener()
-stream = tweepy.Stream(auth=api.auth, listener=stream_listener)
-stream.filter(track=["police", "cop", "officer"])
-
-if __name__ == '__main__':
-    pass
+    
