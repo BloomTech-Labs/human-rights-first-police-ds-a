@@ -68,6 +68,7 @@ def insertData(data):
     pg_conn.commit()
     pg_curs.close()
     pg_conn.close()
+    print("police force updated")
     return 
 
 def preprocessNewData(new_data_json):
