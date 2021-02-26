@@ -53,7 +53,7 @@ async def run_update() -> None:
 
     # if there are new reddit incidents, add them to database
     if new_items:
-        newdata = preprocessNewData(new_items[:10])
+        newdata = preprocessNewData(new_items[:350])
         
         # insert data into police_force table
         insertData(newdata)
