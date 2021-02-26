@@ -27,6 +27,7 @@ fastapi-utils = "*"
 importlib-metadata = "*"
 jupyterlab = "*"
 notebook = "*"
+dataset = "*"
 
 [requires]
 python_version = "3"
