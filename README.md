@@ -12,7 +12,7 @@ This project has been worked on by many lab teams over the past 9 months. The sp
 | [<img src="https://avatars.githubusercontent.com/u/58824684?s=400&u=c5bb9e015949f55456817b746bec9c0eeccd8128&v=4" width = "200" />](https://github.com/n8mcdunna) | [<img src="https://avatars.githubusercontent.com/u/43398469?s=400&u=5bf2613945277963cc0fa324fac0aec60b5664ef&v=4" width = "200" />](https://github.com/micahks/) |
 | Data Scientist | Data Scientist | 
 |[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/n8mcdunna) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/micahks/) |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/n8mcdunna/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/micah-swain/) | [ <img                      
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/n8mcdunna/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/mkswain/) | [ <img                      
 
 <br>          
 
