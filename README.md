@@ -35,7 +35,7 @@ This project has been worked on by many lab teams over the past 9 months. The sp
 
 # Deployed Product
 [Front End Dashboard](https://a.humanrightsfirst.dev/) |
-[Data Science API](http://hrf-labs31.eba-pa4ytqk2.us-east-1.elasticbeanstalk.com/#/) |
+[Data Science API](http://hrf-labs31.eba-pa4ytqk2.us-east-1.elasticbeanstalk.com/#/)
 
 
 # DS Architecture
