@@ -48,7 +48,7 @@ This project has been worked on by many lab teams over the past 9 months. The sp
 
 In order for the app to function correctly, the user must set up their own environment variables. There should be a .env file containing the following:
 
-	1. Twitter API Connection - through tweepy - using HRF developer account.
+	1. Twitter API Connection - through tweepy - use HRF twitter developer account.
 		a. CONSUMER_KEY
 		b. CONSUMER_SECRET
 		c. ACCESS_KEY
