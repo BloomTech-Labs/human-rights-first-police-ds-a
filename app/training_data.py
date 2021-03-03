@@ -14,6 +14,11 @@ Rank IV Chemical & Electric - Officers use less-lethal technologies to gain cont
 Rank V Lethal Force — Officers use lethal weapons to gain control of a situation.
 """
 
+"""
+Training data can be updated and added to. As you add more 
+common words and phrases the model is missing the model can be imporoved.
+"""
+
 
 ranked_reports = {
     "Rank 1 - Police Presence": [
