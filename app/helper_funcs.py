@@ -14,7 +14,7 @@ load_dotenv()
 model = TextMatcher(ranked_reports)
 
 def check_new_items(db_info,api_info):
-    """ find the number of new items on the API """
+    """ Find the number of new items on the API """
     new_items = []
     for item in api_info['data']:
         if not any(d['case_id'] == item['id'] for d in db_info):
@@ -43,7 +43,7 @@ def getValues(item):
      str(item['title']),str(item['description']),str(item['tags']),item['force_rank'])
 
 def loadData():
-    """ get all incidents stored in database """
+    """ Get all incidents stored in database """
     DB_CONN = os.getenv('DB_URL')
     pg_conn = psycopg2.connect(DB_CONN) 
     pg_curs = pg_conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -54,7 +54,7 @@ def loadData():
     return results
 
 def insertData(data):
-    """ insert data into police_force table """
+    """ Insert data into police_force table """
     DB_CONN = os.getenv("DB_URL")
     pg_conn = psycopg2.connect(DB_CONN)
     pg_curs = pg_conn.cursor()
@@ -68,7 +68,6 @@ def insertData(data):
     pg_conn.commit()
     pg_curs.close()
     pg_conn.close()
-    print("police force updated")
     return 
 
 def preprocessNewData(new_data_json):
@@ -83,21 +82,22 @@ def preprocessNewData(new_data_json):
     # Reorder column headers
     df = df[['date', 'links', 'id', 'city', 'state', 'geolocation', 'title', 'tags', 'description']]
     
-    # Update the "date" column to timestamps and sort
+    # Update the "date" column to timestamps
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
     
     df['date'] = df.date.astype(object).where(df.date.notnull(), None)
 
     df = df.sort_values(by='date')
 
-    # Reset index
     df.reset_index(inplace=True)
 
     df['description'] = df['description'].replace({np.NaN: "None"})
     
-    # Create latitude (lat) and longitude (lon) columns.
+    # Create placeholders for latitude (lat) and longitude (lon) columns.
     df['lat'] = pd.Series(np.zeros(df.shape[0], dtype=float))
     df['long'] = pd.Series(np.zeros(df.shape[0], dtype=float))
+
+    # Populate lat and lon columns
     for i, row in enumerate(df['geolocation']):
         getLatandLon(i, row, df)
     

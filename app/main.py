@@ -6,11 +6,9 @@ import pandas as pd
 import requests
 import os
 from dotenv import load_dotenv
-from app import db, messages, twitter, reddit
-from app.helper_funcs import check_new_items, preprocessNewData, getValues
-# from app.helper_vars import stop, pb2020_insert_query, API_URL
-from app.scraper import update_twitter_data 
 from app import db, twitter, reddit
+from app.helper_funcs import check_new_items, preprocessNewData, getValues
+from app.scraper import update_twitter_data 
 from app.helper_funcs import check_new_items, preprocessNewData, loadData, insertData
 
 
@@ -48,19 +46,15 @@ async def run_update() -> None:
     r = requests.get(PB2020_API_URL)
     data_info = r.json()
         
-    #Checks for new reddit incidents
+    #Checks for new incidents from PB2020
     new_items = check_new_items(results,data_info) 
 
-    # if there are new reddit incidents, add them to database
+    # if there are new PB2020 incidents, add them to database
     if new_items:
         newdata = preprocessNewData(new_items[:350])
         
         # insert data into police_force table
         insertData(newdata)
-
-    
-
-    
 
 
 app.add_middleware(
