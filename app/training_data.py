@@ -1,68 +1,84 @@
 """
 ## The Use-of-Force Continuum - https://nij.ojp.gov/topics/articles/use-force-continuum
 
-Rank I Officer Presence — No force is used. Considered the best way to resolve a situation.
-The mere presence of a law enforcement officer works to deter crime or diffuse a situation.
-Officers' attitudes are professional and nonthreatening.
+Rank I Officer Presence — Police are present, but no force detected.
 
-Rank II Verbalization — Force is not-physical.
-Officers issue calm, nonthreatening commands, such as "Let me see your identification and registration."
-Officers may increase their volume and shorten commands in an attempt to gain compliance. Short commands might include "Stop," or "Don't move."
+Rank II Empty-Hand — Officers use bodily force to gain control of a situation.
+Officers  may use grabs, holds, joint locks, punches and kicks to restrain an individual.
 
-Rank III Empty-Hand Control — Officers use bodily force to gain control of a situation.
-Soft technique. Officers use grabs, holds and joint locks to restrain an individual.
-Hard technique. Officers use punches and kicks to restrain an individual.
-
-Rank IV Less-Lethal Methods — Officers use less-lethal technologies to gain control of a situation.
-Blunt impact. Officers may use a baton or projectile to immobilize a combative person.
+Rank III Blunt Force Methods — Officers use less-lethal technologies to gain control of a situation. Baton or projectile may be used to immobilize a combative person for example.
 Chemical. Officers may use chemical sprays or projectiles embedded with chemicals to restrain an individual (e.g., pepper spray).
-Conducted Energy Devices (CEDs). Officers may use CEDs to immobilize an individual. CEDs discharge a high-voltage, low-amperage jolt of electricity at a distance.
 
-Rank V Lethal Force — Officers use lethal weapons to gain control of a situation. Should only be used if a suspect poses a serious threat to the officer or another individual.
-Officers use deadly weapons such as firearms to stop an individual's actions.
+Rank IV Chemical & Electric - Officers use less-lethal technologies to gain control of a situation, such as chemical sprays, projectiles embedded with chemicals, or tasers to restrain an individual.
+
+Rank V Lethal Force — Officers use lethal weapons to gain control of a situation.
 """
 
 
 ranked_reports = {
     "Rank 1 - Police Presence": [
-        "policeman, policewoman, law enforcement",
-        "police officer, cop, five-o, fuzz, DHS",
+        "policeman", "policewoman", "law enforcement",
+        "police officer, cop, five-o, fuzz, DHS", 
+        "protester", "FPS", "officer", "NYPD", "LAPD",
+        "Federal Protective Services",
     ],
     "Rank 2 - Empty-hand": [
-        "policeman, policewoman, law enforcement",
-        "police officer, cop, five-o, fuzz, DHS",
-        "pushed and shoved with shields",
-        "grabs, holds and joint locks",
+        "policeman", "policewoman", "law enforcement",
+        "police officer", "cop", "five-o", "fuzz, DHS",
+        "pushed and shoved with shields", "officer",
+        "grabs, holds and joint locks", "NYPD", "LAPD",
         "punch and kick", "thrown to the ground", "hit",
+        "charge a protester", "tackle to the ground", 
+        "kneel on", "arrest", "protester",
+        "FPS", "Federal Protective Services", "zip-ties",
+        "police chase and attack", "kicking him", 
+        "threw him to the ground", "handcuff him", 
+        "kneeling on a protester", "pinning down", 
+        "tackle", "shoved to the ground", "violent",
+        "officer shove", "slamming", "violent arrests",
+        "slams to the ground", "throws him to the ground",
 
     ],
     "Rank 3 - Blunt Force": [
-        "policeman, policewoman, law enforcement",
-        "police officer, cop, five-o, fuzz, DHS",
-        "rubber bullets",
-        "riot rounds",
-        "batons", "blood", "hit",
+        "policeman", "policewoman", "law enforcement",
+        "police officer", "cop", "five-o", "fuzz", "DHS",
+        "rubber bullets", "officer",
+        "riot rounds", "NYPD", "LAPD",
+        "batons", "blood", "hit", "arrest",
+        "protester", "FPS", 
+        "Federal Protective Services", 
+        "strike with baton", "violent",
+
 
     ],
     "Rank 4 - Chemical & Electric": [
-        "policeman, policewoman, law enforcement",
-        "police officer, cop, five-o, fuzz, DHS",
-        "tear gas",
-        "pepper spray",
-        "flashbangs, stun grenade",
-        "chemical sprays",
+        "policeman", "policewoman", "law enforcement",
+        "police officer", "cop", "five-o", "fuzz", "DHS",
+        "tear gas", "officer",
+        "pepper spray", "NYPD", "LAPD",
+        "flashbangs", "stun grenade",
+        "chemical sprays", "maces", "maced"
         "Conducted energy devices, CED or tazor",
-        "blood",
+        "blood", "arrest", "protester", "FPS", 
+        "Federal Protective Services", "pepper balls",
+        "using munitions on prosters", "struck by a round",
+        "fire pepper balls and tear gas", 
+        "struck in chest by projectile", "violent", 
+        "munition", "firing a riot gun", "paintball gun",
+        "shots are fired", "fire explosives", 
+        "fire impact munitions",
+
 
     ],
     "Rank 5 - Lethal Force": [
-        "policeman, policewoman, law enforcement",
-        "police officer, cop, five-o, fuzz, DHS",
-        "shoot and kill",
-        "open fire",
-        "deadly force",
-        "fatal",
-        "dies", 'kill',
+        "policeman", "policewoman", "law enforcement",
+        "police officer", "cop", "five-o", "fuzz", "DHS",
+        "shoot and kill", "protester",
+        "open fire", "FPS", "officer",
+        "Federal Protective Services",
+        "deadly force", "fatal",
+        "dies", 'kill', "arrest", "violent", 
+        "shot and killed", "NYPD", "LAPD",
 
     ],
 }
