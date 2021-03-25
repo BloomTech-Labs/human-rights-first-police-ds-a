@@ -113,7 +113,7 @@ def tweet_dupes(tweet, reddit_db):
     tweet_url = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str
     
     for url in reddit_db['links']:
-        if url = tweet_url:
+        if url == tweet_url:
             return False
     
     return True

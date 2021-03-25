@@ -10,6 +10,7 @@ from app import db, twitter, reddit, create_db_tables
 from app.helper_funcs import check_new_items, preprocessNewData, getValues
 from app.scraper import update_twitter_data 
 from app.helper_funcs import check_new_items, preprocessNewData, loadData, insertData
+from app.create_db_tables import initialize_police_table
 
 
 description = """
