@@ -109,3 +109,27 @@ def preprocessNewData(new_data_json):
 
     return df.to_dict(orient='records')
 
+def tweet_dupes(tweet, reddit_db):
+    tweet_url = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str
+    
+    for url in reddit_db['links']:
+        if url = tweet_url:
+            return False
+        
+def reddit_dupes():
+    DB_CONN = os.getenv("DB_URL")
+    pg_conn = psycopg2.connect(DB_CONN)
+    pg_curs = pg_conn.cursor()
+    
+    for url in reddit_db['links']:
+        if "twitter.com/" and "/status/" in url:
+            sliced_id = url.split('/')[:-1]
+            reddit_delete_query = """
+            DELETE FROM twitter_potential_incidents
+            WHERE id_str = """ +  sliced_id
+            pg_curs.execute(reddit_delete_query)
+            
+    pg_conn.commit()
+    pg_curs.close()
+    pg_conn.close()
+        

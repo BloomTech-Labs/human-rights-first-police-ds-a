@@ -43,7 +43,7 @@ filter_words = ["police", "officer", "cop"]
 ranked_reports = ["Rank 1 - Police Presence", "Rank 2 - Empty-hand", "Rank 3 - Blunt Force", 
                 "Rank 4 - Chemical & Electric", "Rank 5 - Lethal Force"]
 
-def update_twitter_data():
+def update_twitter_data(reddit_db):
     """
     Function does not take any variables, functions only purpose to be called when needed.
     This function will pull tweets from twitter that a report police use of force, filter using
@@ -63,9 +63,11 @@ def update_twitter_data():
         #This assigns a category to the tweet
         category = model(status.text)
         # filters out retweets, tweets that don't include the filter words, and Rank 0 categories
+        # tweet_dupes function checks to see if tweet already exists in reddit posts
         conditions = (not 'RT @' in status.text) and \
                     any(word in status.text for word in filter_words) \
-                    and (category in ranked_reports)
+                    and (category in ranked_reports) \
+                    and tweet_dupes(status, reddit_db)
         # imports tweets into the DB
         if conditions:
             description = status.user.description

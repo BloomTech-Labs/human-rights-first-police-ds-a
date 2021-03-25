@@ -10,7 +10,7 @@ load_dotenv()
 router =APIRouter()
 
 @router.get('/Twitter')
-async def get_reddit_data(last_id_added: str = None):
+async def get_twitter_data(last_id_added: str = None):
     """ 
     Returns twitter data. \n
     If id is entered all the data greater than that id will be returned. \n

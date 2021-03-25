@@ -6,7 +6,7 @@ import pandas as pd
 import requests
 import os
 from dotenv import load_dotenv
-from app import db, twitter, reddit
+from app import db, twitter, reddit, create_db_tables
 from app.helper_funcs import check_new_items, preprocessNewData, getValues
 from app.scraper import update_twitter_data 
 from app.helper_funcs import check_new_items, preprocessNewData, loadData, insertData
@@ -33,12 +33,11 @@ app.include_router(db.router, tags=['Database'])
 app.include_router(reddit.router, tags= ['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
+initialize_police_table()
+
 @app.on_event('startup')
 @repeat_every(seconds=60*60*12)  # runs function below every 24 hours 
 async def run_update() -> None:
-    #updates possible incidents from twitter
-    update_twitter_data()
-
     # get all reddit incidents stored in database
     results = loadData()
     
@@ -56,6 +55,12 @@ async def run_update() -> None:
         
         # insert data into police_force table
         insertData(newdata)
+        
+    #get all reddit incidents, updated
+    new_results = loadData()
+    
+    #updates possible incidents from twitter
+    update_twitter_data(new_results)
 
 
 app.add_middleware(

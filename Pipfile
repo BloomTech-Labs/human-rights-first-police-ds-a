@@ -28,6 +28,7 @@ importlib-metadata = "*"
 notebook = "*"
 dataset = "*"
 tweepy = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3"
