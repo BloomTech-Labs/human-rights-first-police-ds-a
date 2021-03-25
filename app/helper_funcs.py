@@ -115,6 +115,8 @@ def tweet_dupes(tweet, reddit_db):
     for url in reddit_db['links']:
         if url = tweet_url:
             return False
+    
+    return True
         
 def reddit_dupes():
     DB_CONN = os.getenv("DB_URL")
