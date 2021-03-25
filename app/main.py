@@ -15,6 +15,7 @@ from app.create_db_tables import initialize_police_table
 
 description = """
 Database for Human Rights First Dashboard
+This is the DS_API_URL for the BE
 
 To use these interactive docs:
 - Click on an endpoint below
@@ -25,7 +26,7 @@ To use these interactive docs:
 """
 
 app = FastAPI(
-    title='Labs 31 HRF API',
+    title='Labs 32 HRF API',
     description=description,
     docs_url='/',
 )

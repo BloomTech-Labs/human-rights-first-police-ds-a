@@ -84,13 +84,9 @@ def preprocessNewData(new_data_json):
     
     # Update the "date" column to timestamps
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m-%d')
-    
     df['date'] = df.date.astype(object).where(df.date.notnull(), None)
-
     df = df.sort_values(by='date')
-
     df.reset_index(inplace=True)
-
     df['description'] = df['description'].replace({np.NaN: "None"})
     
     # Create placeholders for latitude (lat) and longitude (lon) columns.
@@ -102,11 +98,8 @@ def preprocessNewData(new_data_json):
         getLatandLon(i, row, df)
     
     df = df.drop(labels=['geolocation', 'index'], axis=1)
-
     df['links'] = df['links'].apply(cleanLinks)
-
     df['force_rank'] = df['title'].apply(getRankOfForce)
-
     return df.to_dict(orient='records')
 
 def tweet_dupes(tweet, reddit_db):
