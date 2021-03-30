@@ -15,6 +15,7 @@ import psycopg2
 
 from app.textmatcher import TextMatcher
 from app.training_data import ranked_reports
+from app.helper_funcs import tweet_dupes
 #import BD url from .env file
 load_dotenv()
 #make database connection
@@ -52,9 +53,9 @@ def update_twitter_data(reddit_db):
     # quick database query to see what the id of the last imported tweet was.
     conn = psycopg2.connect(getenv("DB_URL"))
     curs = conn.cursor()
-    curs.execute(statement)
+    #curs.execute(statement)
     conn.commit()
-    maxid = curs.fetchall()[0][0]
+    maxid = 0
     curs.close()
     conn.close()
 
@@ -102,7 +103,14 @@ def update_twitter_data(reddit_db):
                     created=created,
                     source = source,
                     language = language,
-                    category = category
+                    category = category,
+                    
+                    # dummy values to prevent errors when trying to add tweets from the database to the interactive map on the web page
+                    city = None,
+                    state = None,
+                    latitude = None,
+                    longitude = None,
+                    title = text.split()[:8]
                     ))
             except ProgrammingError as err:
                 print(err)

@@ -60,7 +60,7 @@ def insertData(data):
     pg_curs = pg_conn.cursor()
     pb2020_insert_query = """
     INSERT INTO police_force 
-    (dates,added_on, links, case_id, city, state,lat,long, 
+    (date,added_on, links, case_id, city, state,lat,long, 
     title, description, tags, force_rank)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     for item in data:
@@ -105,7 +105,7 @@ def preprocessNewData(new_data_json):
 def tweet_dupes(tweet, reddit_db):
     tweet_url = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str
     
-    for url in reddit_db['links']:
+    for url in reddit_db[3]:
         if url == tweet_url:
             return False
     
