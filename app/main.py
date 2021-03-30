@@ -23,6 +23,8 @@ To use these interactive docs:
 - Edit the Request body or any parameters
 - Click the **Execute** button
 - Scroll down to see the Server response Code & Details
+
+- This is an up to date version of the API, 3/30/21
 """
 
 app = FastAPI(
