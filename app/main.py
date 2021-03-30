@@ -38,7 +38,7 @@ app.include_router(twitter.router, tags=['Twitter'])
 initialize_police_table()
 
 @app.on_event('startup')
-#@repeat_every(seconds=60*60*12)  # runs function below every 24 hours 
+@repeat_every(seconds=60*60*12)  # runs function below every 24 hours 
 async def run_update() -> None:
     # get all reddit incidents stored in database
     results = loadData()

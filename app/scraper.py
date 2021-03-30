@@ -53,9 +53,9 @@ def update_twitter_data(reddit_db):
     # quick database query to see what the id of the last imported tweet was.
     conn = psycopg2.connect(getenv("DB_URL"))
     curs = conn.cursor()
-    #curs.execute(statement)
+    curs.execute(statement)
     conn.commit()
-    maxid = 0
+    maxid = curs.fetchall()[0][0]
     curs.close()
     conn.close()
 
