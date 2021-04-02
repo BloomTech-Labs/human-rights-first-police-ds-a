@@ -2,17 +2,17 @@
 
 The Human Rights First Organization is a US-based nonprofit, nonpartisan organization concerned with international human rights. At its forefront are American ideals and universal values. For nearly 40 years HRF has challenged the status quo by highlighting the global struggle for human rights and stepping in to demand reform accountability and justice. The goal of this project is to create a full functioning web application capable of visually demonstrating valid and current incidences of police use of force within the United States. The information will help users, such as journalists and passersby, to formulate their perspectives on current matters. The exemplary user interface immediately captures attention with the clusters of incidence shown by geotagging. 
 
-This project has been worked on by many lab teams over the past 9 months. One task of labs31 was to clean up the existing data pipeline from reddit. The next task was to create another data pipeline from twitter, and then use ML to filter the tweets. These filtered incidents will be displayed on a dashboard to an admin at HRF. The admin will approve or reject the tweets based on whether the tweet truly represents an instance of police brutality.  Approved tweets will be displayed on the website with the existing reddit data.
+This project has been worked on by many lab teams over the past 9 months. One task of labs32 was to clean up the existing data pipeline from twitter. The admin will approve or reject the tweets based on whether the tweet truly represents an instance of police brutality.  Approved tweets will be displayed on the website with the existing reddit data.
 
 
 # Contributors
 
-| [Nathan McDonough](https://github.com/n8mcdunna/) | [Micah Swain](https://github.com/micahks/)
+| [Max Moore](https://github.com/max-moore) | [Josh Carlisle](https://github.com/Jroc561)
 | :---: | :---: |
-| [<img src="https://avatars.githubusercontent.com/u/58824684?s=400&u=c5bb9e015949f55456817b746bec9c0eeccd8128&v=4" width = "200" />](https://github.com/n8mcdunna) | [<img src="https://avatars.githubusercontent.com/u/43398469?s=400&u=5bf2613945277963cc0fa324fac0aec60b5664ef&v=4" width = "200" />](https://github.com/micahks/) |
+| [<img src="https://avatars.githubusercontent.com/u/67919012?v=4" width = "200" />](https://github.com/max-moore) | [<img src="https://avatars.githubusercontent.com/u/10569695?v=4" width = "200" />](https://github.com/Jroc561) |
 | Data Scientist | Data Scientist | 
-|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/n8mcdunna) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/micahks/) |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/n8mcdunna/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/mkswain/) | [ <img                      
+|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/max-moore) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Jroc561) |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/max-the-postpunk/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/josh-carlisle/) | [ <img                      
 
 <br>          
 
@@ -35,7 +35,7 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 
 # Deployed Product
 [Front End Dashboard](https://a.humanrightsfirst.dev/) |
-[Data Science API](http://hrf-labs31.eba-pa4ytqk2.us-east-1.elasticbeanstalk.com/#/)
+[Data Science API](http://hrf-blue-witness.us-east-1.elasticbeanstalk.com/)
 
 
 # DS Architecture
@@ -73,3 +73,7 @@ $ pipenv shell
 5. run the API locally on your machine
 ```terminal
 $ gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker
+```
+Or
+```terminal
+uvicorn app.main:app --reload
