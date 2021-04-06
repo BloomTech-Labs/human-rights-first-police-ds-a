@@ -1,29 +1,24 @@
 """
 TextMatcher Class: Trains a model based on keywords from training_data.py.
 """
-
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.neighbors import NearestNeighbors
-
 import spacy
+
 
 class TextMatcher:
     """ Generic NLP Text Matching Model 
     Example:
+    Model is instantiated using...
+    `model = TextMatcher(training_data)`
 
-    Model is instatiated using
+    Then the model can make predictions using...
+    `prediction = model(text)`
 
-    model = TextMatcher(training_data)
-
-    then the model can make predictions using
-
-    model(text)
-
-    this will return a police brutality rank 1-5.
+    This will return a police brutality rank 1-5.
 
     *** TRAINING DATA NEEDS BE FORMATTED IN THE SAME FORMAT AS training_data.py
     """
-
     class Tokenizer:
         """ Standard SpaCy Tokenizer """
 

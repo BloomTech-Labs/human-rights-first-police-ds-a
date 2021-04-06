@@ -54,7 +54,7 @@ In order for the app to function correctly, the user must set up their own envir
 		c. ACCESS_KEY
 		d. ACCESS_SECRET
 	2. Postgres database connection 
-		a. DB_URL                             |
+		a. DB_URL
 
 ### Installation Instructions and running API locally
 

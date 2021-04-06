@@ -3,32 +3,22 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-awsebcli = "*"
-jupyter = "*"
-pytest = "*"
-pytest-pylint = "*"
-
 [packages]
 fastapi = "*"
 sqlalchemy = "*"
-typing-extensions = "*"
 uvicorn = {extras = ["standard"], version = "*"}
 gunicorn = "*"
 psycopg2-binary = "*"
 pandas = "*"
-praw = "*"
+numpy = "*"
 scikit-learn = "*"
 beautifulsoup4 = "*"
 spacy = "*"
 en_core_web_sm = {file = "https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.3.1/en_core_web_sm-2.3.1.tar.gz"}
-newspaper3k = "*"
 fastapi-utils = "*"
-importlib-metadata = "*"
-notebook = "*"
 dataset = "*"
 tweepy = "*"
-jupyterlab = "*"
+urllib3 = "==1.25.4"
 
 [requires]
 python_version = "3"
