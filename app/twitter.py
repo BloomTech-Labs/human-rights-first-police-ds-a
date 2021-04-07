@@ -1,5 +1,6 @@
-""" Twiter Data """
+""" Twitter Data """
 import os
+
 from fastapi import APIRouter
 from dotenv import load_dotenv
 import psycopg2
@@ -7,7 +8,8 @@ import psycopg2.extras
 
 load_dotenv()
 
-router =APIRouter()
+router = APIRouter()
+
 
 @router.get('/Twitter')
 async def get_twitter_data(last_id_added: str = None):
@@ -19,13 +21,12 @@ async def get_twitter_data(last_id_added: str = None):
     db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    if last_id_added == None:
-        Q = """SELECT * FROM twitter_potential_incidents;"""
+    if last_id_added:
+        query = f"SELECT * FROM twitter_potential_incidents WHERE id > '{last_id_added}';"
     else:
-        Q = f"""SELECT * FROM twitter_potential_incidents WHERE id > '{last_id_added}';"""
-    curs.execute(Q)
+        query = "SELECT * FROM twitter_potential_incidents;"
+    curs.execute(query)
     results = curs.fetchall()
     curs.close()
     conn.close()
-  
     return results
