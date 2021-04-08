@@ -21,9 +21,10 @@ async def get_twitter_data(last_id_added: str = None):
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     if last_id_added == None:
         Q = """SELECT * FROM twitter_potential_incidents;"""
+        curs.execute(Q)
     else:
-        Q = f"""SELECT * FROM twitter_potential_incidents WHERE id > '{last_id_added}';"""
-    curs.execute(Q)
+        Q = f"""SELECT * FROM twitter_potential_incidents WHERE id > ?;"""
+        curs.execute(Q, last_id_added)
     results = curs.fetchall()
     curs.close()
     conn.close()

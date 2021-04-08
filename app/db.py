@@ -2,9 +2,9 @@
 
 import os
 
+import sqlalchemy
 from dotenv import load_dotenv
 from fastapi import APIRouter, Depends
-import sqlalchemy
 
 router = APIRouter()
 

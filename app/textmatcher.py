@@ -37,8 +37,11 @@ class TextMatcher:
 
     def __init__(self, train_data: dict, ngram_range=(1, 3), max_features=8000):
         """ Model training on live data at init """
-        self.lookup = {k: ' '.join(v) for k, v in train_data.items()}
+        self.lookup = {force_rank: ' '.join(keywords) 
+                       for force_rank, keywords 
+                       in train_data.items()}
         self.name_index = list(self.lookup.keys())
+
         self.tfidf = TfidfVectorizer(
             ngram_range=ngram_range,
             tokenizer=self.Tokenizer(),

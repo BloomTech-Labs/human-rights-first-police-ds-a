@@ -13,19 +13,18 @@ load_dotenv()
 
 model = TextMatcher(ranked_reports)
 
-def check_new_items(db_info,api_info):
+def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
     new_items = []
+    existing_ids = {d['case_id']: True for d in db_info}
     for item in api_info['data']:
-        if not any(d['case_id'] == item['id'] for d in db_info):
+        if item['id'] not in existing_ids:
             new_items.append(item)
     return new_items
 
 def cleanLinks(url_col):
     """ Convert links from json to a str. Creates hyperlink"""
-    links_out = []
-    for link in url_col:
-        links_out.append(link['url'])
+    links_out = [link['url'] for link in url_col]
     return links_out
 
 def getRankOfForce(text):
@@ -68,7 +67,6 @@ def insertData(data):
     pg_conn.commit()
     pg_curs.close()
     pg_conn.close()
-    return 
 
 def preprocessNewData(new_data_json):
     """
