@@ -1,3 +1,5 @@
+# Native SQL queries for table creation.
+
 POLICE_FORCE = """
 CREATE TABLE police_force (
     id SERIAL PRIMARY KEY NOT NULL,
