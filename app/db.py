@@ -1,5 +1,4 @@
-"""Database functions"""
-
+""" Database functions """
 import os
 
 import sqlalchemy
