@@ -19,18 +19,21 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 <br>
 <br>
 
-![fastapi](https://img.shields.io/badge/fastapi-0.60.1-blue)
 ![pandas](https://img.shields.io/badge/pandas-1.1.0-blueviolet)
-![plotly](https://img.shields.io/badge/plotly-4.9.0-brightgreen)
+![numpy](https://img.shields.io/badge/numpy-1.19.5-yellow)
+![scikit-learn](https://img.shields.io/badge/scikit--learn-0.23.2-green)
+![torch](https://img.shields.io/badge/torch-1.8.1-red)
+![transformers](https://img.shields.io/badge/transformers-4.5.1-brightgreen)
+![spacy](https://img.shields.io/badge/spacy-2.3.2-lightgrey)
+![plotly](https://img.shields.io/badge/plotly-4.9.0-orange)
 ![uvicorn](https://img.shields.io/badge/uvicorn-0.11.8-ff69b4)
 ![python-dotenv](https://img.shields.io/badge/python--dotenv-0.14.0-green)
 ![beautifulsoup4](https://img.shields.io/badge/beautifulsoup4-4.9.1-orange)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-0.23.2-yellow)
-![spacy](https://img.shields.io/badge/spacy-2.3.2-lightgrey)
-![fastapi-utils](https://img.shields.io/badge/fastapi--utils-0.2.1-informational)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-11.3.20-yellowgreen)
-![dataset](https://img.shields.io/badge/tweepy-3.10.0-9cf)
-![SQLAlchemy](https://img.shields.io/badge/dataset-1.4.5-grey)
+![tweepy](https://img.shields.io/badge/tweepy-3.10.0-9cf)
+![dataset](https://img.shields.io/badge/dataset-1.4.5-grey)
+![fastapi](https://img.shields.io/badge/fastapi-0.60.1-blue)
+![fastapi-utils](https://img.shields.io/badge/fastapi--utils-0.2.1-informational)
 
 
 # Deployed Product
