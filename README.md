@@ -7,12 +7,12 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 
 # Contributors
 
-| [Max Moore](https://github.com/max-moore) | [Josh Carlisle](https://github.com/Jroc561)
-| :---: | :---: |
-| [<img src="https://avatars.githubusercontent.com/u/67919012?v=4" width = "200" />](https://github.com/max-moore) | [<img src="https://avatars.githubusercontent.com/u/10569695?v=4" width = "200" />](https://github.com/Jroc561) |
-| Data Scientist | Data Scientist | 
-|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/max-moore) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Jroc561) |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/max-the-postpunk/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/josh-carlisle/) | [ <img                      
+| [Max Moore](https://github.com/max-moore) | [Josh Carlisle](https://github.com/Jroc561) | [Austin Francis](https://github.com/austincfrancis) | [Ashley Brooks](https://github.com/AshleyBrooks213)
+| :---: | :---: | :---: | :---: |
+| [<img src="https://avatars.githubusercontent.com/u/67919012?v=4" width = "200" />](https://github.com/max-moore) | [<img src="https://avatars.githubusercontent.com/u/10569695?v=4" width = "200" />](https://github.com/Jroc561) | [<img src="https://avatars.githubusercontent.com/u/74625534?s=400&u=f5582ea6a302c55a08f9859a68bffc8875365866&v=4" width = "200" />](https://github.com/austincfrancis) | [<img src="https://avatars.githubusercontent.com/u/72030800?s=400&u=d53e54457aa25f725901d4a310327309cacc6009&v=4" width = "200" />](https://github.com/AshleyBrooks213) |
+| Data Scientist | Data Scientist | Data Scientist | Data Scientist |
+|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/max-moore) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Jroc561) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/austincfrancis) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/AshleyBrooks213) |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/max-the-postpunk/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/josh-carlisle/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/austincfrancis/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ashley-brooks91/) |
 
 <br>          
 
