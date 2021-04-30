@@ -17,7 +17,6 @@ from app.textmatcher import TextMatcher
 from app.training_data import ranked_reports
 from app.helper_funcs import tweet_dupes
 
-
 # import BD url from .env file
 load_dotenv()
 # make database connection
@@ -58,13 +57,9 @@ def update_twitter_data(reddit_db):
     the TextMatcher class, and populate the database.
     """
     # quick database query to see what the id of the last imported tweet was.
-    conn = psycopg2.connect(os.getenv("DB_URL"))
-    curs = conn.cursor()
     curs.execute(statement)
     conn.commit()
     maxid = curs.fetchall()[0][0]
-    curs.close()
-    conn.close()
 
     # loop through through the imported tweets.
     for status in tweepy.Cursor(api.search, q="police", lang='en',

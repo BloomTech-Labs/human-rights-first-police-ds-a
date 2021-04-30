@@ -78,11 +78,6 @@ def insertData(data):
     pg_conn.commit()
     pg_curs.close()
     pg_conn.close()
-<<<<<<< HEAD
-=======
-    return
-
->>>>>>> main
 
 def preprocessNewData(new_data_json):
     """
