@@ -145,3 +145,7 @@ cython_debug/
 !.elasticbeanstalk/*.cfg.yml
 !.elasticbeanstalk/*.global.yml
 /scratch.py
+
+
+# labs34_ds scratch files.
+test_notebook.ipynb
