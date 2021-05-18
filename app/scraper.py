@@ -67,8 +67,11 @@ def update_twitter_data(reddit_db):
     conn.close()
 
     # loop through through the imported tweets.
-    for status in tweepy.Cursor(api.search, q="police", lang='en',
-                                result_type='popular', since_id=maxid).items():
+    for status in tweepy.Cursor(api.search, q="police", 
+                                geocode= '39.8283,98.5795,2253km', 
+                                lang='en',
+                                result_type='popular', 
+                                since_id=maxid).items():
         # This assigns a category to the tweet
         category = model(status.text)
         # filters out retweets, tweets that don't include the filter words, and Rank 0 categories
