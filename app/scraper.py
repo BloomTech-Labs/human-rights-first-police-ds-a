@@ -68,7 +68,7 @@ def update_twitter_data(reddit_db):
 
     # loop through through the imported tweets.
     for status in tweepy.Cursor(api.search, q="police", 
-                                geocode= '39.8283,98.5795,2253km', 
+                                geocode= '39.8283,98.5795,5km', 
                                 lang='en',
                                 result_type='popular', 
                                 since_id=maxid).items():
