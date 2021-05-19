@@ -79,6 +79,7 @@ def update_twitter_data(reddit_db):
         conditions = ('RT @' not in status.text) and \
                      any(word in status.text for word in filter_words) \
                      and (category in ranked_reports) \
+                     and (status.place.country=='US') \
                      and tweet_dupes(status, reddit_db)
         # imports tweets into the DB
         if conditions:
