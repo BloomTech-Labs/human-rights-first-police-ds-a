@@ -7,15 +7,20 @@ import numpy as np
 from dotenv import load_dotenv
 import psycopg2
 import psycopg2.extras
+import requests
 
 from app.training_data import ranked_reports
-from app.textmatcher import TextMatcher
 
 
 load_dotenv()
 
-model = TextMatcher(ranked_reports)
 
+
+def getRankOfForce(text):
+    url = "http://hrf-bluewitness-labs34-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
+    return requests.get(url + text).text
+
+model = getRankOfForce(ranked_reports)
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
