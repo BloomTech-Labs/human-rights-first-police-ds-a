@@ -26,17 +26,9 @@ load_dotenv()
 db = dataset.connect(os.getenv("DB_URL"))
 
 # instantiate TextMatcher class to make category predictions on tweets
-
-
-# import twitter api credential from .env file
-CONSUMER_KEY = os.getenv("CONSUMER_KEY")
-CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
-ACCESS_KEY = os.getenv("ACCESS_KEY")
-ACCESS_SECRET = os.getenv("ACCESS_SECRET")
-
 # make twitter API connection and instantiate connection class using tweepy
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
+auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
 api = tweepy.API(auth)
 
 # quick DB query statement to run in the function
@@ -73,9 +65,9 @@ def update_twitter_data(reddit_db):
 
     # loop through through the imported tweets.
     for status in tweepy.Cursor(api.search, q="police", 
-                                geocode= '39.8283,98.5795,2200km', 
+                                geocode= '39.8283,-98.5795,2200km', 
                                 lang='en',
-                                result_type='popular', 
+                                result_type='mixed', 
                                 since_id=maxid).items():
         # This assigns a category to the tweet
         category = getRankOfForce(status.text)
@@ -133,7 +125,3 @@ def update_twitter_data(reddit_db):
             except ProgrammingError as err:
                 print(err)
 
-    def on_error(self, status_code):
-        if status_code == 420:
-            # return False if tweepy connection fails
-            return False
