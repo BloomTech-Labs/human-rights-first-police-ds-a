@@ -13,7 +13,9 @@ from sqlalchemy.exc import ProgrammingError
 from dotenv import load_dotenv
 import psycopg2
 
-from app.textmatcher import TextMatcher
+# from app.textmatcher import TextMatcher
+# commented out because textmatcher is in a separate aws instance
+
 from app.training_data import ranked_reports
 from app.helper_funcs import tweet_dupes
 
@@ -24,17 +26,9 @@ load_dotenv()
 db = dataset.connect(os.getenv("DB_URL"))
 
 # instantiate TextMatcher class to make category predictions on tweets
-model = TextMatcher(ranked_reports)
-
-# import twitter api credential from .env file
-CONSUMER_KEY = os.getenv("CONSUMER_KEY")
-CONSUMER_SECRET = os.getenv("CONSUMER_SECRET")
-ACCESS_KEY = os.getenv("ACCESS_KEY")
-ACCESS_SECRET = os.getenv("ACCESS_SECRET")
-
 # make twitter API connection and instantiate connection class using tweepy
-auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
+auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
+auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
 api = tweepy.API(auth)
 
 # quick DB query statement to run in the function
@@ -50,6 +44,9 @@ ranked_reports = [
     "Rank 5 - Lethal Force",
 ]
 
+def getRankOfForce(text):
+    url = "http://hrf-bluewitness-labs34-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
+    return requests.get(url + text).text
 
 def update_twitter_data(reddit_db):
     """
@@ -71,15 +68,17 @@ def update_twitter_data(reddit_db):
     for status in tweepy.Cursor(api.search, q="police", 
                                 geocode= '39.82879981718452, -98.57865447009438, 6245km', 
                                 lang='en',
-                                result_type='popular', 
+                                result_type='mixed', 
                                 since_id=maxid).items():
         # This assigns a category to the tweet
-        category = model(status.text)
+        category = getRankOfForce(status.text)
         # filters out retweets, tweets that don't include the filter words, and Rank 0 categories
         # tweet_dupes function checks to see if tweet already exists in reddit posts
+        # Filters tweets where tagged location has the country code 'US'
         conditions = ('RT @' not in status.text) and \
                      any(word in status.text for word in filter_words) \
                      and (category in ranked_reports) \
+                     and (status.place.country=='US') \
                      and tweet_dupes(status, reddit_db)
         # imports tweets into the DB
         if conditions:
@@ -127,7 +126,3 @@ def update_twitter_data(reddit_db):
             except ProgrammingError as err:
                 print(err)
 
-    def on_error(self, status_code):
-        if status_code == 420:
-            # return False if tweepy connection fails
-            return False
