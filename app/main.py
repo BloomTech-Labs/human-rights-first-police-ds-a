@@ -32,7 +32,9 @@ app.include_router(db.router, tags=['Database'])
 app.include_router(reddit.router, tags=['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
-initialize_police_table()
+
+# # Uncomment if new tables need to be generated
+# initialize_police_table()
 
 
 @app.on_event('startup')
