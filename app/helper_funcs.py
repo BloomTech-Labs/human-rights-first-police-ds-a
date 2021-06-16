@@ -20,7 +20,7 @@ def getRankOfForce(text):
     url = "http://hrf-bluewitness-labs34-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
     return requests.get(url + text).text
 
-model = getRankOfForce(ranked_reports)
+#model = getRankOfForce(ranked_reports)
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """

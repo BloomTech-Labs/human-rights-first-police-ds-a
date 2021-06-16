@@ -1,5 +1,6 @@
 from app.twitter_bot import twitter_reply
 
+#Dummy class for a ticket to minitor replies, is not currently being used
 class TweetReachOut:
 
     def __init__(self, tweet, open=True,  responded=True):
