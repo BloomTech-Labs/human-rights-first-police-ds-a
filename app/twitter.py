@@ -30,3 +30,5 @@ async def get_twitter_data(last_id_added: str = None):
     curs.close()
     conn.close()
     return results
+
+tables = ['knex_migrations', 'knex_migrations_lock', 'incidents', 'twitter_incidents', 'profiles', 'police_force']
