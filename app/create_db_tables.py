@@ -23,7 +23,7 @@ def initialize_police_table():
         force_rank TEXT
     );"""
 
-    police_table = """CREATE TABLE IF NOT EXISTS twitter_potential_incidents (
+    pi_table = """CREATE TABLE IF NOT EXISTS potential_incidents (
           tweet_id PRIMARY KEY NOT NULL,
           date_created TIMESTAMP,
           user_name TEXT,
@@ -42,7 +42,7 @@ def initialize_police_table():
           responses TEXT
       );"""
 
-    police_table = """CREATE TABLE IF NOT EXISTS police_force_updated (
+    pfu_table = """CREATE TABLE IF NOT EXISTS police_force_updated (
           id SERIAL PRIMARY KEY NOT NULL,
           dates TIMESTAMP,
           links TEXT,
@@ -61,7 +61,7 @@ def initialize_police_table():
 
 
 
-    police_table = """CREATE TABLE IF NOT EXISTS in_process (
+    ip_table = """CREATE TABLE IF NOT EXISTS in_process (
           id SERIAL PRIMARY KEY NOT NULL,
           original_tweet_id TEXT,
           original_username TEXT,
@@ -70,13 +70,13 @@ def initialize_police_table():
           reply_tweet_id TEXT
       );"""
 
-    police_table = """CREATE TABLE IF NOT EXISTS training (
+    training_table = """CREATE TABLE IF NOT EXISTS training (
           id SERIAL PRIMARY KEY NOT NULL,
           tweets TEXT,
           labels TEXT
       );"""
 
-    police_table = """CREATE TABLE IF NOT EXISTS tweets (
+    tweets_table = """CREATE TABLE IF NOT EXISTS tweets (
           id SERIAL PRIMARY KEY NOT NULL,
           user_description TEXT,
           user_location TEXT,
@@ -94,7 +94,7 @@ def initialize_police_table():
     db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
     conn = psycopg2.connect(db_url)
     curs = conn.cursor()
-    curs.execute(police_table)
+    curs.execute(pi_table)
     conn.commit()
     curs.close()
     conn.close()
