@@ -24,7 +24,7 @@ def initialize_police_table():
         confidence FLOAT
     )""",
 
-    """CREATE TABLE IF NOT EXISTS in_process (
+    """CREATE TABLE IF NOT EXISTS twitter_potential_incidents (
         id SERIAL PRIMARY KEY NOT NULL,
         original_tweet_id TEXT,
         original_username TEXT,
