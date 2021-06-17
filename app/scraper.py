@@ -125,4 +125,3 @@ def update_twitter_data(reddit_db):
                 ))
             except ProgrammingError as err:
                 print(err)
-
