@@ -49,9 +49,10 @@ def direct_message(username):
 
 
 def update_mentions():
-    # get_mentions() returns a list of tweet objects that "@twitterbot" in their status as a reply.
-    # The loop starts with most recent tweet and moves towards old tweets that do not need to be updated.
-    # The loops stops when it gets to tweets it has seen before.
+    # get_mentions() returns a list of tweet objects
+    # get_mentions() has a parameter of the last tweet id for mentions that has been processed
+    # This is important to keep track of which mentions the bot has already seen
+    # The list start with the most current tweet and ends with the oldest tweet it finds, they are in descending order
     db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -64,7 +65,8 @@ def update_mentions():
         sent_tweet = received_reply(x, curs)
 
         #need to use sent_tweet to update DataBase - needs to be done
-
+        # it is important to keep track of the last id seen, this is the most current tweet id which is the start of the list
+        # This if statement takes the first value of the list the updates the last id seen
         if last_id == []:
             last_id.append(x.id_str)
     last_id = last_id.pop()
@@ -94,6 +96,5 @@ def send_bot_tweet(tweet, text):
     sent_tweet = api.update_status(status=f"@{username} {text}", in_reply_to_status_id=reply_id, tweet_mode='extended')
     return sent_tweet
 
-#update_mentions()
 
 # table column names [id, original_tweet_id, original_username, original_tweet_text, location, reply_tweet_id]
