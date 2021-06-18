@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import psycopg2
 import psycopg2.extras
 import requests
-
+import re
 from app.training_data import ranked_reports
 
 
@@ -17,10 +17,13 @@ load_dotenv()
 
 
 def getRankOfForce(text):
-    url = "http://hrf-bluewitness-labs34-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
-    return requests.get(url + text).text
+    url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
+    text = text.replace(' ', '%20')
+    text = text.replace('\n', '%20')
+    text = re.sub(r'http\S+', '', text)
+    return requests.get(url + text)
 
-model = getRankOfForce(ranked_reports)
+# model = getRankOfForce(ranked_reports)
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
@@ -39,8 +42,8 @@ def cleanLinks(url_col):
     return links_out
 
 
-def getRankOfForce(text):
-    return model(text)
+# def getRankOfForce(text):
+#     return model(text)
 
 
 def getLatandLon(i, item, df):
