@@ -10,7 +10,7 @@ load_dotenv()
 
 
 
-def initialize_police_table(table):
+def initialize_police_table():
 
 
 
