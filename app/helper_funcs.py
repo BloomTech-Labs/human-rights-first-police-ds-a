@@ -20,8 +20,28 @@ def getRankOfForce(text):
     url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
     text = text.replace(' ', '%20')
     text = text.replace('\n', '%20')
+    text
     text = re.sub(r'http\S+', '', text)
     return requests.get(url + text)
+
+
+
+def clean_data(text):
+    """
+    Accepts a single text document and performs several regex substitutions in order to clean the document.
+    Parameters
+    ----------
+    text: string or object
+    Returns
+    -------
+    text: string or object
+    """
+    special_chars_regex = '[:?,\>$|!\'"]'
+    white_spaces_regex = '[ ]{2,}'
+    text = re.sub('[^a-zA-Z ]', "", text)
+    text = re.sub(special_chars_regex, " ", text)
+    text = re.sub(white_spaces_regex, " ", text)
+    return text.lower()
 
 
 
