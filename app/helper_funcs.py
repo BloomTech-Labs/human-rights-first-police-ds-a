@@ -9,7 +9,7 @@ import psycopg2
 import psycopg2.extras
 import requests
 import re
-from app.training_data import ranked_reports
+
 
 
 load_dotenv()
@@ -23,7 +23,7 @@ def getRankOfForce(text):
     text = re.sub(r'http\S+', '', text)
     return requests.get(url + text)
 
-# model = getRankOfForce(ranked_reports)
+
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
@@ -41,9 +41,6 @@ def cleanLinks(url_col):
         links_out.append(link['url'])
     return links_out
 
-
-# def getRankOfForce(text):
-#     return model(text)
 
 
 def getLatandLon(i, item, df):
