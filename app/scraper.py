@@ -52,8 +52,7 @@ def update_twitter_data():
     curs.close()
     conn.close()
 
-    # Lebanon, Kansas, geographical center of US: 39.82879981718452, -98.57865447009438 - 6245km
-    # loop through through the imported tweets.
+   
     db = dataset.connect(os.getenv("DB_URL"))
     table = db["potential_incidents"]
     conn = psycopg2.connect(os.getenv("DB_URL"))
