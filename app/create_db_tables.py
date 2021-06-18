@@ -1,4 +1,7 @@
-""" Initialize tables for Postgres database """
+""" This file holds the schemas to create new tables on database, if necessary.
+To create a table change the table value in function on line 89 and run file.
+This code should not have to be run unless new (empty) tables have to be generated.
+"""
 import os
 
 import psycopg2
