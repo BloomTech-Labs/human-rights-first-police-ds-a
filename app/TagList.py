@@ -1,7 +1,7 @@
 
 pb_tags = ["abuse of power", "arrest", "baton", "bean bag", "beat", "bike",
-           "boat", "body cam", "bystander", "celebrity", "child", "choke",
-           "conceal", "death", "dog", "drive", "elderly", "explosive",
+           "BLM", "black lives matter", "boat", "body cam", "bystander", "celebrity",
+           "child", "choke", "conceal", "death", "dog", "drive", "elderly", "explosive",
            "foam bullet", "gas", "grab", "gun", "headlock", "hide badge",
            "homeless", "horse", "incitement", "inhumane treatment", "journalist",
            "kick", "knee", "knee on neck", "legal observer", "less lethal",
