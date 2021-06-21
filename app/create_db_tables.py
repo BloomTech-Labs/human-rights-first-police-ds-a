@@ -1,21 +1,27 @@
-""" Initialize tables for Postgres database """
+""" This file holds the schemas to create new tables on database, if necessary.
+To create a table change the table value in function on line 89 and run file.
+This code should not have to be run unless new (empty) tables have to be generated.
+"""
 import os
 
 import psycopg2
 from dotenv import load_dotenv
 load_dotenv()
 
+
+
 def initialize_police_table():
 
 
+
+
     pi_table = """CREATE TABLE IF NOT EXISTS potential_incidents (
-          tweet_id PRIMARY KEY NOT NULL,
+          tweet_id TEXT PRIMARY KEY NOT NULL,
           date_created TIMESTAMP,
           user_name TEXT,
           user_description TEXT,
           user_location TEXT,
           twitter_text TEXT,
-          date_created TIMESTAMP, 
           source TEXT,
           category TEXT,
           city TEXT,
@@ -24,7 +30,9 @@ def initialize_police_table():
           lon FLOAT,
           title TEXT,
           twitterbot_tweet_id TEXT,
-          responses TEXT
+          responses TEXT,
+          confidence FLOAT 
+
       );"""
 
     pfu_table = """CREATE TABLE IF NOT EXISTS police_force_updated (
@@ -76,12 +84,17 @@ def initialize_police_table():
           language TEXT
       );"""
 
-    db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
+
+    db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor()
+    #### Change this variable to the table you want initialized ###########
     curs.execute(pi_table)
+    #### ##### ###### #### ##### ###### #### ##### ###### #### ##### ######
+
     conn.commit()
     curs.close()
     conn.close()
 
 
+initialize_police_table()

@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 import psycopg2
 import psycopg2.extras
 import requests
+import re
 
-from app.training_data import ranked_reports
 
 
 load_dotenv()
@@ -17,10 +17,33 @@ load_dotenv()
 
 
 def getRankOfForce(text):
-    url = "http://hrf-bluewitness-labs34-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
-    return requests.get(url + text).text
+    url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
+    text = text.replace(' ', '%20')
+    text = text.replace('\n', '%20')
+    text
+    text = re.sub(r'http\S+', '', text)
+    return requests.get(url + text)
 
-model = getRankOfForce(ranked_reports)
+
+
+def clean_data(text):
+    """
+    Accepts a single text document and performs several regex substitutions in order to clean the document.
+    Parameters
+    ----------
+    text: string or object
+    Returns
+    -------
+    text: string or object
+    """
+    special_chars_regex = '[:?,\>$|!\'"]'
+    white_spaces_regex = '[ ]{2,}'
+    text = re.sub('[^a-zA-Z ]', "", text)
+    text = re.sub(special_chars_regex, " ", text)
+    text = re.sub(white_spaces_regex, " ", text)
+    return text.lower()
+
+
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
@@ -38,9 +61,6 @@ def cleanLinks(url_col):
         links_out.append(link['url'])
     return links_out
 
-
-def getRankOfForce(text):
-    return model(text)
 
 
 def getLatandLon(i, item, df):
