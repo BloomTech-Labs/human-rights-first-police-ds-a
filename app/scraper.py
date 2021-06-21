@@ -42,14 +42,13 @@ def update_twitter_data():
     # quick database query to see what the id of the last imported tweet was.
     conn = psycopg2.connect(os.getenv("DB_URL"))
     curs = conn.cursor()
-    curs.execute("""SELECT tweet_id FROM potential_incidents ORDER BY tweet_id DESC LIMIT 1""")
-    conn.commit()
+    curs.execute("""SELECT tweet_id FROM incidents ORDER BY tweet_id DESC LIMIT 1""")
     maxid = str(curs.fetchall()[0][0])
     curs.close()
     conn.close()
 
     db = dataset.connect(os.getenv("DB_URL"))
-    table = db["potential_incidents"]
+    table = db["incidents"]
     conn = psycopg2.connect(os.getenv("DB_URL"))
     curs = conn.cursor()
     conn.commit()
@@ -64,6 +63,10 @@ def update_twitter_data():
         conditions = ('RT @' not in status.full_text) and \
                      status.id_str not in dupe_check \
                      and (status.lang == 'en')
+
+        rank_dict = {"1": "Rank 1 - Police Presence", "2": "Rank 2 - Empty-hand",
+                     "3": "Rank 3 - Blunt Force", "4": "Rank 4 - Chemical & Electric",
+                     "5": "Rank 5 - Lethal Force"}
 
         if conditions:
 
@@ -82,16 +85,13 @@ def update_twitter_data():
                 tweet_id = status.id_str
                 date_created = status.created_at
                 user_name = status.user.screen_name
-                user_location = status.user.location
                 twitter_text = status.full_text
-                source = status.user.url
-                category = rank_int
+                force_rank = rank_dict[str(rank_int)]
+                tags = TagMaker(status.full_text, pb_tags).tags()
                 city = None
                 state = None
                 lat = None
-                long = None
-                title = None
-                tags = TagMaker(status.full_text, pb_tags).tags()
+                lon = None
                 twitterbot_tweet_id = None
                 responses = None
                 confidence = rank_confidence
@@ -101,19 +101,17 @@ def update_twitter_data():
                         tweet_id=tweet_id,
                         date_created=date_created,
                         user_name=user_name,
-                        user_location=user_location,
                         twitter_text=twitter_text,
-                        source=source,
-                        category=category,
+                        force_rank=force_rank,
+                        confidence=confidence,
+                        tags=tags,
                         city=city,
                         state=state,
                         lat=lat,
-                        long=long,
-                        title=title,
-                        tags=tags,
+                        lon=lon,
                         twitterbot_tweet_id=twitterbot_tweet_id,
-                        responses=responses,
-                        confidence=confidence))
+                        responses=responses
+                        ))
 
                     print('success', status.id_str)
                 except ProgrammingError as err:

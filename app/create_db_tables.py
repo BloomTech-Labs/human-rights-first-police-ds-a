@@ -32,16 +32,14 @@ def initialize_police_table():
               date_created TIMESTAMP,
               user_name TEXT,
               user_description TEXT,
-              twitter_text TEXT, 
-              title TEXT,
-              source TEXT,
-              category TEXT,
+              twitter_text TEXT,
+              force_rank TEXT,
               confidence FLOAT,
+              tags TEXT,
               city TEXT,
               state TEXT,
               lat FLOAT,
               lon FLOAT,
-              tags TEXT,
               twitterbot_tweet_id TEXT,
               responses TEXT
           );"""
@@ -53,5 +51,4 @@ def initialize_police_table():
     conn.commit()
     curs.close()
     conn.close()
-
 
