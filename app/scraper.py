@@ -85,7 +85,7 @@ def update_twitter_data():
                 user_location = status.user.location
                 twitter_text = status.full_text
                 source = status.user.url
-                category = category
+                category = rank_int
                 city = None
                 state = None
                 lat = None
