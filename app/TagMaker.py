@@ -64,7 +64,7 @@ class TagMaker:
 
         return tag_dict
 
-    def tags(self):
+    def tags(self, tag_dict=None):
         """
         This function takes a string text, tokenizes the
         words, and checks the stems of these words for matches
@@ -73,8 +73,11 @@ class TagMaker:
         :return: List of tags that are found in both the
         text and the tag dictionary
         """
+
+        if tag_dict is None:
+            tag_dict = self.tag_dict()
+
         ps = PorterStemmer()
-        tag_dict = self.tag_dict()
         tags = []
         words = word_tokenize(self.text)
 
