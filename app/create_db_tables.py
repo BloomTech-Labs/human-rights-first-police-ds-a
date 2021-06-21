@@ -8,7 +8,6 @@ import psycopg2
 from dotenv import load_dotenv
 
 
-
 def initialize_police_table():
     load_dotenv()
     police_table = """CREATE TABLE IF NOT EXISTS police_force (
@@ -23,7 +22,7 @@ def initialize_police_table():
             title TEXT,
             description TEXT,
             tags TEXT,
-            force_rank INTEGER,
+            force_rank TEXT,
             confidence FLOAT
         );"""
 
