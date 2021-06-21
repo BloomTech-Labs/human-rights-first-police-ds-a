@@ -1,5 +1,5 @@
 """ This file holds the schemas to create new tables on database, if necessary.
-To create a table change the table value in function on line 52 and run file.
+To create a table change the table value in function on line 51 and run file.
 This code should not have to be run unless new (empty) tables have to be generated.
 """
 import os
