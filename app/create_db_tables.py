@@ -6,95 +6,47 @@ from dotenv import load_dotenv
 
 
 def initialize_police_table():
-    load_dotenv()
+    #load_dotenv()
     police_table = """CREATE TABLE IF NOT EXISTS police_force (
         id SERIAL PRIMARY KEY NOT NULL,
         dates TIMESTAMP,
-        added_on TIMESTAMP,
         links TEXT,
         case_id TEXT,
         city TEXT,
         state TEXT,
         lat FLOAT,
-        long FLOAT,
+        lon FLOAT,
         title TEXT,
         description TEXT,
         tags TEXT,
-        force_rank TEXT
+        force_rank TEXT,
+        confidence FLOAT
     );"""
 
-    pi_table = """CREATE TABLE IF NOT EXISTS potential_incidents (
-          tweet_id PRIMARY KEY NOT NULL,
+    pi_table = """CREATE TABLE IF NOT EXISTS incidents (
+          tweet_id TEXT PRIMARY KEY NOT NULL,
           date_created TIMESTAMP,
           user_name TEXT,
           user_description TEXT,
-          user_location TEXT,
-          twitter_text TEXT,
-          date_created TIMESTAMP, 
+          twitter_text TEXT, 
+          title TEXT,
           source TEXT,
           category TEXT,
+          confidence FLOAT,
           city TEXT,
           state TEXT,
           lat FLOAT,
           lon FLOAT,
-          title TEXT,
+          tags TEXT,
           twitterbot_tweet_id TEXT,
           responses TEXT
       );"""
 
-    pfu_table = """CREATE TABLE IF NOT EXISTS police_force_updated (
-          id SERIAL PRIMARY KEY NOT NULL,
-          dates TIMESTAMP,
-          links TEXT,
-          case_id TEXT,
-          city TEXT,
-          state TEXT,
-          lat FLOAT,
-          lon FLOAT,
-          title TEXT,
-          description TEXT,
-          tags TEXT,
-          force_rank TEXT
-          confidence FLOAT
-      );"""
-
-
-
-
-    ip_table = """CREATE TABLE IF NOT EXISTS in_process (
-          id SERIAL PRIMARY KEY NOT NULL,
-          original_tweet_id TEXT,
-          original_username TEXT,
-          original_tweet_text TEXT,
-          location FLOAT,
-          reply_tweet_id TEXT
-      );"""
-
-    training_table = """CREATE TABLE IF NOT EXISTS training (
-          id SERIAL PRIMARY KEY NOT NULL,
-          tweets TEXT,
-          labels TEXT
-      );"""
-
-    tweets_table = """CREATE TABLE IF NOT EXISTS tweets (
-          id SERIAL PRIMARY KEY NOT NULL,
-          user_description TEXT,
-          user_location TEXT,
-          coordinates NULL,
-          text TEXT,
-          geo NULL,
-          user_name TEXT,
-          user_created TIMESTAMP,
-          id_str FLOAT,
-          created TIMESTAMP,
-          source TEXT,
-          language TEXT
-      );"""
-
-    db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
+    db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor()
     curs.execute(pi_table)
     conn.commit()
     curs.close()
     conn.close()
+
