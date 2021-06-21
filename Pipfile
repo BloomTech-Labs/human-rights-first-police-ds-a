@@ -19,6 +19,7 @@ fastapi-utils = "*"
 dataset = "*"
 tweepy = "*"
 urllib3 = "==1.25.4"
+nltk = "*"
 
 [requires]
 python_version = "3"
