@@ -97,7 +97,7 @@ def insertData(data):
     pg_curs = pg_conn.cursor()
     pb2020_insert_query = """
     INSERT INTO police_force 
-    (date,added_on, links, case_id, city, state,lat,long, 
+    (date,added_on, links, case_id, city, state,lat,lon, 
     title, description, tags, force_rank)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     for item in data:
