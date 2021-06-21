@@ -85,14 +85,13 @@ def update_twitter_data():
 
             if rank_int > 1:
 
-                rank = category
                 tweet_id = status.id_str
                 date_created = status.created_at
                 user_name = status.user.screen_name
                 user_location = status.user.location
                 twitter_text = status.full_text
                 source = status.user.url
-                category = category
+                category = rank_int
                 city = None
                 state = None
                 lat = None
