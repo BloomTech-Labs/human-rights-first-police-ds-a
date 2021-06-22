@@ -42,7 +42,7 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 
 
 # How to access DB from browser
-![CredentialsMap]()
+![CredentialsMap](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/Credentials_map.png?raw=true)
 
 # DS Architecture
 ![Architecture](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/DS%20Flowchart.png?raw=true)
