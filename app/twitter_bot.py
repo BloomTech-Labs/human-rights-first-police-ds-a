@@ -53,7 +53,7 @@ def update_mentions():
     # get_mentions() has a parameter of the last tweet id for mentions that has been processed
     # This is important to keep track of which mentions the bot has already seen
     # The list start with the most current tweet and ends with the oldest tweet it finds, they are in descending order
-    db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
+    db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     query = "SELECT user_name FROM potential_incidents WHERE tweet_id = 'update id';"
@@ -91,7 +91,7 @@ def send_bot_tweet(tweet, text):
     username = tweet.user.screen_name
     reply_id = tweet.id_str
     sent_tweet = api.update_status(status=f"@{username} {text}", in_reply_to_status_id=reply_id, tweet_mode='extended')
-    db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
+    db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     query = f"UPDATE potential_incidents set twitterbot_tweet_id = '{sent_tweet.id_str}' WHERE tweet_id = '{reply_id}';"
@@ -116,4 +116,3 @@ def list_to_string(lst):
     for x in lst:
         new_str += x + ":.:.:"
     return new_str
-
