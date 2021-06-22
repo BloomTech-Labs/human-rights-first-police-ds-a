@@ -16,8 +16,6 @@ def initialize_police_table():
             case_id TEXT,
             city TEXT,
             state TEXT,
-            lat FLOAT,
-            lon FLOAT,
             title TEXT,
             description TEXT,
             tags TEXT,
@@ -36,8 +34,6 @@ def initialize_police_table():
               tags TEXT,
               city TEXT,
               state TEXT,
-              lat FLOAT,
-              lon FLOAT,
               twitterbot_tweet_id TEXT,
               responses TEXT
           );"""
