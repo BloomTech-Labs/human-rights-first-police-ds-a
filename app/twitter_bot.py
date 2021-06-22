@@ -13,6 +13,7 @@ ACCESS_SECRET = os.getenv("ACCESS_SECRET2")
 auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
 auth.set_access_token(ACCESS_KEY, ACCESS_SECRET)
 
+
 api = tweepy.API(auth)
 try:
     api.verify_credentials()
@@ -56,9 +57,10 @@ def update_mentions():
     db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    query = "SELECT user_name FROM potential_incidents WHERE tweet_id = 'update id';"
+    query = "SELECT user_name FROM dummy_table WHERE tweet_id = 'update id';"
     curs.execute(query)
-    last_reply_id = curs.fetchall()
+    last_reply_id = curs.fetchone()
+    last_reply_id = last_reply_id['user_name']
     last_id = []
     for x in get_mentions(last_reply_id):
         received_reply(x, curs)
@@ -66,7 +68,7 @@ def update_mentions():
             last_id.append(x.id_str)
     last_id = last_id.pop()
 
-    query = f"UPDATE potential_incidents set tweet_id = '{last_id}' WHERE tweet_id = 'update id';"
+    query = f"UPDATE dummy_table set user_name = '{last_id}' WHERE tweet_id = 'update id';"
     curs.execute(query)
     conn.commit()
     curs.close()
@@ -77,12 +79,14 @@ def update_mentions():
 def received_reply(tweet, curs):
     reply_id = tweet.in_reply_to_status_id_str
     response_text = tweet.full_text
-    query = f"SELECT responses FROM potential_incidents WHERE reply_tweet_id = '{reply_id}';"
+    query = f"SELECT responses FROM dummy_table WHERE twitterbot_tweet_id = '{reply_id}';"
     curs.execute(query)
-    responses = curs.fetchall()
+    responses = curs.fetchone()['responses']
+    if responses == None:
+        responses = ""
     list_of_tweets = string_to_list(responses, response_text)
     new_str = list_to_string(list_of_tweets)
-    query = f"UPDATE potential_incidents set responses = '{new_str}' WHERE reply_tweet_id = '{reply_id}';"
+    query = f"UPDATE dummy_table set responses = '{new_str}' WHERE twitterbot_tweet_id = '{reply_id}';"
     curs.execute(query)
     return
 
@@ -94,7 +98,7 @@ def send_bot_tweet(tweet, text):
     db_url = os.getenv('DB_URL')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    query = f"UPDATE potential_incidents set twitterbot_tweet_id = '{sent_tweet.id_str}' WHERE tweet_id = '{reply_id}';"
+    query = f"UPDATE dummy_table set twitterbot_tweet_id = '{sent_tweet.id_str}' WHERE tweet_id = '{reply_id}';"
     curs.execute(query)
     conn.commit()
     conn.close()
@@ -115,4 +119,4 @@ def list_to_string(lst):
     new_str = ""
     for x in lst:
         new_str += x + ":.:.:"
-    return new_str
+    return new_str[:-5]
