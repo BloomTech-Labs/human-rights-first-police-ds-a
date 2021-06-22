@@ -56,27 +56,19 @@ def update_mentions():
     db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-    query = "SELECT original_tweet_id FROM in_process WHERE id = 1;"
+    query = "SELECT user_name FROM potential_incidents WHERE tweet_id = 'update id';"
     curs.execute(query)
-    results = curs.fetchall().split(" ")
-    last_reply_id = results[-1]
+    last_reply_id = curs.fetchall()
     last_id = []
     for x in get_mentions(last_reply_id):
-        sent_tweet = received_reply(x, curs)
-
-        #need to use sent_tweet to update DataBase - needs to be done
-        # it is important to keep track of the last id seen, this is the most current tweet id which is the start of the list
-        # This if statement takes the first value of the list the updates the last id seen
+        received_reply(x, curs)
         if last_id == []:
             last_id.append(x.id_str)
     last_id = last_id.pop()
-    results.pop()
-    results.append(last_id)
-    new_str = ""
-    for x in results:
-        new_str += str(x)
-    query = f"UPDATE in_process set original_tweet_id = {new_str} WHERE id = 1"
+
+    query = f"UPDATE potential_incidents set tweet_id = '{last_id}' WHERE tweet_id = 'update id';"
     curs.execute(query)
+    conn.commit()
     curs.close()
     conn.close()
     return None
@@ -85,7 +77,12 @@ def update_mentions():
 def received_reply(tweet, curs):
     reply_id = tweet.in_reply_to_status_id_str
     response_text = tweet.full_text
-    query = f"UPDATE in_process set location = {response_text} WHERE reply_tweet_id = {reply_id}"
+    query = f"SELECT responses FROM potential_incidents WHERE reply_tweet_id = '{reply_id}';"
+    curs.execute(query)
+    responses = curs.fetchall()
+    list_of_tweets = string_to_list(responses, response_text)
+    new_str = list_to_string(list_of_tweets)
+    query = f"UPDATE potential_incidents set responses = '{new_str}' WHERE reply_tweet_id = '{reply_id}';"
     curs.execute(query)
     return
 
@@ -94,7 +91,29 @@ def send_bot_tweet(tweet, text):
     username = tweet.user.screen_name
     reply_id = tweet.id_str
     sent_tweet = api.update_status(status=f"@{username} {text}", in_reply_to_status_id=reply_id, tweet_mode='extended')
+    db_url = 'postgresql://djxbobov:66rP3cmBEgw6EHiw45PJds9X-ji8nNZc@queenie.db.elephantsql.com:5432/djxbobov'
+    conn = psycopg2.connect(db_url)
+    curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+    query = f"UPDATE potential_incidents set twitterbot_tweet_id = '{sent_tweet.id_str}' WHERE tweet_id = '{reply_id}';"
+    curs.execute(query)
+    conn.commit()
+    conn.close()
+    curs.close()
     return sent_tweet
 
 
-# table column names [id, original_tweet_id, original_username, original_tweet_text, location, reply_tweet_id]
+def string_to_list(str, append=""):
+    str_list = str.split(":.:.:")
+    if str_list[-1] == "":
+        str_list.pop()
+    if append != "":
+        str_list.append(append)
+    return str_list
+
+
+def list_to_string(lst):
+    new_str = ""
+    for x in lst:
+        new_str += x + ":.:.:"
+    return new_str
+
