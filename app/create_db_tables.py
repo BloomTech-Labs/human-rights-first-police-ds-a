@@ -20,7 +20,7 @@ def initialize_police_table():
             description TEXT,
             tags TEXT,
             force_rank TEXT,
-            confidence FLOAT
+            confidence TEXT
         );"""
 
     pi_table = """CREATE TABLE IF NOT EXISTS incidents (
@@ -30,7 +30,7 @@ def initialize_police_table():
               user_description TEXT,
               twitter_text TEXT,
               force_rank TEXT,
-              confidence FLOAT,
+              confidence TEXT,
               tags TEXT,
               city TEXT,
               state TEXT,
