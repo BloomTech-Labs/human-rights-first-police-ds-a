@@ -19,6 +19,12 @@ fastapi-utils = "*"
 dataset = "*"
 tweepy = "*"
 urllib3 = "==1.25.4"
+jupyterlab = "*"
+torch = "*"
+transformers = "*"
+jupyter = "*"
+pymongo = "*"
+requests = "*"
 
 [requires]
 python_version = "3"
