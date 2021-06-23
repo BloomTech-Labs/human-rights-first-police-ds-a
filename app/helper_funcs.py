@@ -1,7 +1,6 @@
 """ Functions used to process reddit data """
 import os
 import datetime
-
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
@@ -10,25 +9,29 @@ import psycopg2.extras
 import requests
 import re
 
-
-
 load_dotenv()
 
 
+def get_rank_of_force(text):
+    """
+    This function cleans text, runs it through the Bert model and returns
+    the rank of force and confidence.
+    Args:
+        text: Text that will be processed by the model.
 
-def getRankOfForce(text):
+    Returns: Rank of force calculated by the model and confidence.
+        Format: {Rank #: ##.##%}
+
+    """
     url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
-    text = text.replace(' ', '%20')
-    text = text.replace('\n', '%20')
-    text
-    text = re.sub(r'http\S+', '', text)
+    text = clean_data(text)
     return requests.get(url + text)
-
 
 
 def clean_data(text):
     """
-    Accepts a single text document and performs several regex substitutions in order to clean the document.
+    Accepts a single text document and performs several regex
+    substitutions in order to clean the document.
     Parameters
     ----------
     text: string or object
@@ -41,9 +44,14 @@ def clean_data(text):
     text = re.sub('[^a-zA-Z ]', "", text)
     text = re.sub(special_chars_regex, " ", text)
     text = re.sub(white_spaces_regex, " ", text)
+    text = text.replace(' ', '%20')
+    text = text.replace('\n', '%20')
+    text = re.sub(r'http\S+', '', text)
     return text.lower()
 
 
+#### These functions are used by main.py which is deprecated for now but is kept
+#### as reference or in case it is necessary to implement in the future
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
@@ -54,7 +62,7 @@ def check_new_items(db_info, api_info):
     return new_items
 
 
-def cleanLinks(url_col):
+def clean_links(url_col):
     """ Convert links from json to a str. Creates hyperlink"""
     links_out = []
     for link in url_col:
@@ -62,23 +70,14 @@ def cleanLinks(url_col):
     return links_out
 
 
-
-def getLatandLon(i, item, df):
-    if item != '':
-        item = item.split(',')
-        df.at[i, 'lat'] = float(item[0])
-        df.at[i, 'long'] = float(item[1])
-
-
-def getValues(item):
+def get_values(item):
     current_dt = datetime.datetime.today()
     return (item['date'], current_dt, str(item['links']), str(item['id']),
-            str(item['city']), str(item['state']), item['lat'], item['long'],
-            str(item['title']), str(item['description']), str(item['tags']),
-            item['force_rank'])
+            str(item['city']), str(item['state']), str(item['title']),
+            str(item['description']), str(item['tags']), item['force_rank'])
 
 
-def loadData():
+def load_data():
     """ Get all incidents stored in database """
     DB_CONN = os.getenv('DB_URL')
     pg_conn = psycopg2.connect(DB_CONN)
@@ -90,25 +89,25 @@ def loadData():
     return results
 
 
-def insertData(data):
+def insert_data(data):
     """ Insert data into police_force table """
     DB_CONN = os.getenv("DB_URL")
     pg_conn = psycopg2.connect(DB_CONN)
     pg_curs = pg_conn.cursor()
     pb2020_insert_query = """
     INSERT INTO police_force 
-    (date,added_on, links, case_id, city, state,lat,lon, 
+    (date,added_on, links, case_id, city, state,
     title, description, tags, force_rank)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     for item in data:
-        pg_curs.execute(pb2020_insert_query, getValues(item))
+        pg_curs.execute(pb2020_insert_query, get_values(item))
     pg_conn.commit()
     pg_curs.close()
     pg_conn.close()
     return
 
 
-def preprocessNewData(new_data_json):
+def preprocess_new_data(new_data_json):
     """
     Preprocessing function to mimic the output of the initial dataframe.
     """
@@ -130,17 +129,9 @@ def preprocessNewData(new_data_json):
     df.reset_index(inplace=True)
     df['description'] = df['description'].replace({np.NaN: "None"})
 
-    # Create placeholders for latitude (lat) and longitude (lon) columns.
-    df['lat'] = pd.Series(np.zeros(df.shape[0], dtype=float))
-    df['long'] = pd.Series(np.zeros(df.shape[0], dtype=float))
-
-    # Populate lat and lon columns
-    for i, row in enumerate(df['geolocation']):
-        getLatandLon(i, row, df)
-
     df = df.drop(labels=['geolocation', 'index'], axis=1)
-    df['links'] = df['links'].apply(cleanLinks)
-    df['force_rank'] = df['title'].apply(getRankOfForce)
+    df['links'] = df['links'].apply(clean_links)
+    df['force_rank'] = df['title'].apply(get_rank_of_force)
     return df.to_dict(orient='records')
 
 
