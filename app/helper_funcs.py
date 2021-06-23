@@ -61,20 +61,11 @@ def clean_links(url_col):
     return links_out
 
 
-
-def getLatandLon(i, item, df):
-    if item != '':
-        item = item.split(',')
-        df.at[i, 'lat'] = float(item[0])
-        df.at[i, 'long'] = float(item[1])
-
-
 def get_values(item):
     current_dt = datetime.datetime.today()
     return (item['date'], current_dt, str(item['links']), str(item['id']),
-            str(item['city']), str(item['state']), item['lat'], item['long'],
-            str(item['title']), str(item['description']), str(item['tags']),
-            item['force_rank'])
+            str(item['city']), str(item['state']), str(item['title']),
+            str(item['description']), str(item['tags']), item['force_rank'])
 
 
 def load_data():
@@ -96,7 +87,7 @@ def insert_data(data):
     pg_curs = pg_conn.cursor()
     pb2020_insert_query = """
     INSERT INTO police_force 
-    (date,added_on, links, case_id, city, state,lat,lon, 
+    (date,added_on, links, case_id, city, state,
     title, description, tags, force_rank)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     for item in data:
@@ -129,13 +120,6 @@ def preprocess_new_data(new_data_json):
     df.reset_index(inplace=True)
     df['description'] = df['description'].replace({np.NaN: "None"})
 
-    # Create placeholders for latitude (lat) and longitude (lon) columns.
-    df['lat'] = pd.Series(np.zeros(df.shape[0], dtype=float))
-    df['long'] = pd.Series(np.zeros(df.shape[0], dtype=float))
-
-    # Populate lat and lon columns
-    for i, row in enumerate(df['geolocation']):
-        getLatandLon(i, row, df)
 
     df = df.drop(labels=['geolocation', 'index'], axis=1)
     df['links'] = df['links'].apply(clean_links)
