@@ -1,5 +1,7 @@
-import requests
+### This file is not being used for now but is kept as reference
+### or in case it is necessary to implement in the future
 
+import requests
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware

@@ -9,10 +9,7 @@ import psycopg2.extras
 import requests
 import re
 
-
-
 load_dotenv()
-
 
 
 def get_rank_of_force(text):
@@ -29,7 +26,6 @@ def get_rank_of_force(text):
     url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
     text = clean_data(text)
     return requests.get(url + text)
-
 
 
 def clean_data(text):
@@ -54,6 +50,8 @@ def clean_data(text):
     return text.lower()
 
 
+#### These functions are used by main.py which is deprecated for now but is kept
+#### as reference or in case it is necessary to implement in the future
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
@@ -130,7 +128,6 @@ def preprocess_new_data(new_data_json):
     df = df.sort_values(by='date')
     df.reset_index(inplace=True)
     df['description'] = df['description'].replace({np.NaN: "None"})
-
 
     df = df.drop(labels=['geolocation', 'index'], axis=1)
     df['links'] = df['links'].apply(clean_links)
