@@ -20,11 +20,6 @@ dataset = "*"
 tweepy = "*"
 urllib3 = "==1.25.4"
 nltk = "*"
-jupyterlab = "*"
-torch = "*"
-transformers = "*"
-jupyter = "*"
-pymongo = "*"
 requests = "*"
 
 
