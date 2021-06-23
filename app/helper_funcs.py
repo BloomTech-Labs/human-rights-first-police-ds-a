@@ -27,10 +27,7 @@ def get_rank_of_force(text):
 
     """
     url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
-    text = text.replace(' ', '%20')
-    text = text.replace('\n', '%20')
-    text
-    text = re.sub(r'http\S+', '', text)
+    text = clean_data(text)
     return requests.get(url + text)
 
 
@@ -51,6 +48,9 @@ def clean_data(text):
     text = re.sub('[^a-zA-Z ]', "", text)
     text = re.sub(special_chars_regex, " ", text)
     text = re.sub(white_spaces_regex, " ", text)
+    text = text.replace(' ', '%20')
+    text = text.replace('\n', '%20')
+    text = re.sub(r'http\S+', '', text)
     return text.lower()
 
 
