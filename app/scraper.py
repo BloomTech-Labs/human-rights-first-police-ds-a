@@ -12,7 +12,7 @@ import tweepy
 from sqlalchemy.exc import ProgrammingError
 from dotenv import load_dotenv
 import psycopg2
-from app.helper_funcs import getRankOfForce, clean_data
+from app.helper_funcs import get_rank_of_force, clean_data
 from app.TagMaker import TagMaker
 from app.TagList import pb_tags
 
@@ -70,8 +70,7 @@ def update_twitter_data():
 
         if conditions:
 
-            category = getRankOfForce(
-                clean_data(status.full_text)).text  # This runs the text of the Tweet through the model
+            category = get_rank_of_force(status.full_text).text  # This runs the text of the Tweet through the model
             dupe_check.append(status.id_str)  # Keeps track
 
             if category != '{"detail":"Not Found"}':
