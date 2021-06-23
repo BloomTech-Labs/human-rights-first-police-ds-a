@@ -12,7 +12,7 @@ import tweepy
 from sqlalchemy.exc import ProgrammingError
 from dotenv import load_dotenv
 import psycopg2
-from app.helper_funcs import get_rank_of_force, clean_data
+from app.helper_funcs import getRankOfForce, clean_data
 from app.TagMaker import TagMaker
 from app.TagList import pb_tags
 
@@ -48,7 +48,7 @@ def update_twitter_data():
     conn.close()
 
     db = dataset.connect(os.getenv("DB_URL"))
-    table = db["test_incidents"]
+    table = db["incidents"]
     conn = psycopg2.connect(os.getenv("DB_URL"))
     curs = conn.cursor()
     conn.commit()
@@ -70,8 +70,9 @@ def update_twitter_data():
 
         if conditions:
 
-            category = get_rank_of_force(status.full_text).text  # This runs the text of the Tweet through the model
-            dupe_check.append(status.id_str)  # Keeps track to avoid duplicates
+            category = getRankOfForce(
+                clean_data(status.full_text)).text  # This runs the text of the Tweet through the model
+            dupe_check.append(status.id_str)  # Keeps track
 
             if category != '{"detail":"Not Found"}':
                 rank_int = int(category.split(': ')[0][-1])  # Gets rank integer for processing
@@ -113,3 +114,5 @@ def update_twitter_data():
                     print(err)
     curs.close()
     conn.close()
+
+update_twitter_data()
