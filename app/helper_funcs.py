@@ -1,7 +1,6 @@
 """ Functions used to process reddit data """
 import os
 import datetime
-
 import pandas as pd
 import numpy as np
 from dotenv import load_dotenv
@@ -16,7 +15,7 @@ load_dotenv()
 
 
 
-def getRankOfForce(text):
+def get_rank_of_force(text):
     url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
     text = text.replace(' ', '%20')
     text = text.replace('\n', '%20')
@@ -54,7 +53,7 @@ def check_new_items(db_info, api_info):
     return new_items
 
 
-def cleanLinks(url_col):
+def clean_links(url_col):
     """ Convert links from json to a str. Creates hyperlink"""
     links_out = []
     for link in url_col:
@@ -70,7 +69,7 @@ def getLatandLon(i, item, df):
         df.at[i, 'long'] = float(item[1])
 
 
-def getValues(item):
+def get_values(item):
     current_dt = datetime.datetime.today()
     return (item['date'], current_dt, str(item['links']), str(item['id']),
             str(item['city']), str(item['state']), item['lat'], item['long'],
@@ -78,7 +77,7 @@ def getValues(item):
             item['force_rank'])
 
 
-def loadData():
+def load_data():
     """ Get all incidents stored in database """
     DB_CONN = os.getenv('DB_URL')
     pg_conn = psycopg2.connect(DB_CONN)
@@ -90,7 +89,7 @@ def loadData():
     return results
 
 
-def insertData(data):
+def insert_data(data):
     """ Insert data into police_force table """
     DB_CONN = os.getenv("DB_URL")
     pg_conn = psycopg2.connect(DB_CONN)
@@ -101,14 +100,14 @@ def insertData(data):
     title, description, tags, force_rank)
     VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s);"""
     for item in data:
-        pg_curs.execute(pb2020_insert_query, getValues(item))
+        pg_curs.execute(pb2020_insert_query, get_values(item))
     pg_conn.commit()
     pg_curs.close()
     pg_conn.close()
     return
 
 
-def preprocessNewData(new_data_json):
+def preprocess_new_data(new_data_json):
     """
     Preprocessing function to mimic the output of the initial dataframe.
     """
@@ -139,8 +138,8 @@ def preprocessNewData(new_data_json):
         getLatandLon(i, row, df)
 
     df = df.drop(labels=['geolocation', 'index'], axis=1)
-    df['links'] = df['links'].apply(cleanLinks)
-    df['force_rank'] = df['title'].apply(getRankOfForce)
+    df['links'] = df['links'].apply(clean_links)
+    df['force_rank'] = df['title'].apply(get_rank_of_force)
     return df.to_dict(orient='records')
 
 
