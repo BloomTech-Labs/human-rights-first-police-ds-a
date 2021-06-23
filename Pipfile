@@ -20,6 +20,8 @@ dataset = "*"
 tweepy = "*"
 urllib3 = "==1.25.4"
 nltk = "*"
+requests = "*"
+
 
 [requires]
 python_version = "3"
