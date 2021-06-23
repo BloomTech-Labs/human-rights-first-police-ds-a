@@ -115,4 +115,3 @@ def update_twitter_data():
     curs.close()
     conn.close()
 
-update_twitter_data()
