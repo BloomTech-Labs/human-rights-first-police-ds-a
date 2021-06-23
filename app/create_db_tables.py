@@ -28,20 +28,21 @@ def initialize_police_table():
         );"""
 
     pi_table = """CREATE TABLE IF NOT EXISTS incidents (
-              tweet_id TEXT PRIMARY KEY NOT NULL,
-              date_created TIMESTAMP,
-              user_name TEXT,
-              user_description TEXT,
-              twitter_text TEXT,
-              force_rank TEXT,
-              confidence FLOAT,
-              tags TEXT,
-              city TEXT,
-              state TEXT,
-              lat FLOAT,
-              lon FLOAT,
-              twitterbot_tweet_id TEXT,
-              responses TEXT
+    id SERIAL PRIMARY KEY NOT NULL,
+    tweet_id TEXT,
+    date_created TIMESTAMP,
+    user_name TEXT,
+    user_description TEXT,
+    twitter_text TEXT,
+    force_rank TEXT,
+    confidence FLOAT,
+    tags TEXT,
+    city TEXT,
+    state TEXT,
+    lat FLOAT,
+    lon FLOAT,
+    twitterbot_tweet_id TEXT,
+    responses TEXT
           );"""
     
     db_url = os.getenv('DB_URL')

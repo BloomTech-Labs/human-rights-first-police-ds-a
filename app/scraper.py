@@ -90,8 +90,6 @@ def update_twitter_data():
                 tags = TagMaker(status.full_text, pb_tags).tags()
                 city = None
                 state = None
-                lat = None
-                lon = None
                 twitterbot_tweet_id = None
                 responses = None
                 confidence = rank_confidence
@@ -107,8 +105,6 @@ def update_twitter_data():
                         tags=tags,
                         city=city,
                         state=state,
-                        lat=lat,
-                        lon=lon,
                         twitterbot_tweet_id=twitterbot_tweet_id,
                         responses=responses
                         ))
@@ -119,3 +115,4 @@ def update_twitter_data():
     curs.close()
     conn.close()
 
+update_twitter_data()
