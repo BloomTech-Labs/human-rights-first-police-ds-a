@@ -16,6 +16,16 @@ load_dotenv()
 
 
 def get_rank_of_force(text):
+    """
+    This function cleans text, runs it through the Bert model and returns
+    the rank of force and confidence.
+    Args:
+        text: Text that will be processed by the model.
+
+    Returns: Rank of force calculated by the model and confidence.
+        Format: {Rank #: ##.##%}
+
+    """
     url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
     text = text.replace(' ', '%20')
     text = text.replace('\n', '%20')
@@ -27,7 +37,8 @@ def get_rank_of_force(text):
 
 def clean_data(text):
     """
-    Accepts a single text document and performs several regex substitutions in order to clean the document.
+    Accepts a single text document and performs several regex
+    substitutions in order to clean the document.
     Parameters
     ----------
     text: string or object
