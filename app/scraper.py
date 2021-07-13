@@ -19,7 +19,7 @@ from app.TagList import pb_tags
 # import BD url from .env file
 load_dotenv()
 # make database connection
-db = dataset.connect(os.getenv("DB_URL"))
+db = dataset.connect(os.getenv("DB_URI"))
 
 # make twitter API connection and instantiate connection class using tweepy
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
@@ -40,16 +40,16 @@ def update_twitter_data():
     """
 
     # quick database query to see what the id of the last imported tweet was.
-    conn = psycopg2.connect(os.getenv("DB_URL"))
+    conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
-    curs.execute("""SELECT tweet_id FROM incidents ORDER BY tweet_id DESC LIMIT 1""")
+    curs.execute("""SELECT tweet_id FROM twitter_incidents_new ORDER BY tweet_id DESC LIMIT 1""")
     maxid = str(curs.fetchall()[0][0])
     curs.close()
     conn.close()
 
-    db = dataset.connect(os.getenv("DB_URL"))
-    table = db["incidents"]
-    conn = psycopg2.connect(os.getenv("DB_URL"))
+    db = dataset.connect(os.getenv("DB_URI"))
+    table = db["twitter_incidents_new"]
+    conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
     conn.commit()
     for status in tweepy.Cursor(api.search, q='police',
@@ -86,12 +86,13 @@ def update_twitter_data():
                 user_name = status.user.screen_name
                 twitter_text = status.full_text
                 force_rank = rank_dict[str(rank_int)]
+                confidence = rank_confidence
                 tags = TagMaker(status.full_text, pb_tags).tags()
                 city = None
                 state = None
                 twitterbot_tweet_id = None
                 responses = None
-                confidence = rank_confidence
+                
 
                 try:
                     table.insert(dict(
