@@ -82,11 +82,11 @@ def update_twitter_data():
 
             if category != '{"detail":"Not Found"}':
                 category_splitted = category.split(': ')
-                #print('category splitted', category_splitted) # DELETE DELETE DELETE DELETE
+                print('category splitted', category_splitted) # DELETE DELETE DELETE DELETE
                 rank_confidence = category_splitted[1].split(', ')[1].replace('%', '')
-                #print('rank_confidence: ', rank_confidence) # DELETE DELETE DELETE DELETE
+                print('rank_confidence: ', rank_confidence) # DELETE DELETE DELETE DELETE
                 rank_int = int(category_splitted[1].split(', ')[0])  # Gets rank integer for processing
-                # print('rank_int: ', rank_int) # DELETE DELETE DELETE DELETE
+                print('rank_int: ', rank_int) # DELETE DELETE DELETE DELETE
                 # print('rank_int: ', type(rank_int))
 
                 '''OLD CODE'''

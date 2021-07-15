@@ -28,6 +28,7 @@ def get_rank_of_force(text):
     # url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
     model = FrankenBert('app\saved_model')
     text = clean_data(text)
+    print('clean text before model: ', text) # DELETE DELTE DELETE
     # return requests.get(url + text)
     return model.predict(text)
 
@@ -47,7 +48,7 @@ def clean_data(text):
     text = re.sub('[^a-zA-Z ]', "", text)
     text = re.sub(special_chars_regex, " ", text)
     text = re.sub(white_spaces_regex, " ", text)
-    text = text.replace(' ', '%20')
+    #text = text.replace(' ', '%20')
     text = text.replace('\n', '%20')
     text = re.sub(r'http\S+', '', text)
     return text.lower()
