@@ -6,8 +6,10 @@ import numpy as np
 from dotenv import load_dotenv
 import psycopg2
 import psycopg2.extras
-import requests
+# import requests POSSIBLY DELETE SINCE NO LONGER USED
 import re
+from app.frankenbert import FrankenBert
+
 
 load_dotenv()
 
@@ -23,10 +25,11 @@ def get_rank_of_force(text):
         Format: {Rank #: ##.##%}
 
     """
-    url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
+    # url = "http://hrf-blue-witness-labs35-dev.us-east-1.elasticbeanstalk.com/frankenbert/"
+    model = FrankenBert('app\saved_model')
     text = clean_data(text)
-    return requests.get(url + text)
-
+    # return requests.get(url + text)
+    return model.predict(text)
 
 def clean_data(text):
     """

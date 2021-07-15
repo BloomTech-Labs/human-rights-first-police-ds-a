@@ -15,11 +15,13 @@ import psycopg2
 from app.helper_funcs import get_rank_of_force, clean_data
 from app.TagMaker import TagMaker
 from app.TagList import pb_tags
+from app.frankenbert import FrankenBert
+
 
 # import BD url from .env file
 load_dotenv()
 # make database connection
-db = dataset.connect(os.getenv("DB_URI"))
+db = dataset.connect(os.getenv("DB_URL"))
 
 # make twitter API connection and instantiate connection class using tweepy
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
@@ -40,16 +42,16 @@ def update_twitter_data():
     """
 
     # quick database query to see what the id of the last imported tweet was.
-    conn = psycopg2.connect(os.getenv("DB_URI"))
+    conn = psycopg2.connect(os.getenv("DB_URL"))
     curs = conn.cursor()
-    curs.execute("""SELECT tweet_id FROM twitter_incidents_new ORDER BY tweet_id DESC LIMIT 1""")
+    curs.execute("""SELECT tweet_id FROM incidents ORDER BY tweet_id DESC LIMIT 1""")
     maxid = str(curs.fetchall()[0][0])
     curs.close()
     conn.close()
 
-    db = dataset.connect(os.getenv("DB_URI"))
+    db = dataset.connect(os.getenv("DB_URL"))
     table = db["twitter_incidents_new"]
-    conn = psycopg2.connect(os.getenv("DB_URI"))
+    conn = psycopg2.connect(os.getenv("DB_URL"))
     curs = conn.cursor()
     conn.commit()
     for status in tweepy.Cursor(api.search, q='police',
@@ -70,17 +72,37 @@ def update_twitter_data():
 
         if conditions:
 
-            category = get_rank_of_force(status.full_text).text  # This runs the text of the Tweet through the model
+            print('status.full_text: ', status.full_text) #DELETE DELETE DELETE DELETE DELETE
+            # category = get_rank_of_force(status.full_text).text  # original model pulled from api requiring .text
+            category = get_rank_of_force(status.full_text)  # This runs the text of the Tweet through the model
+            #print('category: ', category) # DELETE DELETE DELETE DELETE
+            #print('category type: ', type(category)) # DELETE DELETE DELETE DELETE
+
             dupe_check.append(status.id_str)  # Keeps track
 
             if category != '{"detail":"Not Found"}':
-                rank_int = int(category.split(': ')[0][-1])  # Gets rank integer for processing
-                rank_confidence = category.split(': ')[1].replace('%', '').replace('"', '')
+                category_splitted = category.split(': ')
+                #print('category splitted', category_splitted) # DELETE DELETE DELETE DELETE
+                rank_confidence = category_splitted[1].split(', ')[1].replace('%', '')
+                #print('rank_confidence: ', rank_confidence) # DELETE DELETE DELETE DELETE
+                rank_int = int(category_splitted[1].split(', ')[0])  # Gets rank integer for processing
+                # print('rank_int: ', rank_int) # DELETE DELETE DELETE DELETE
+                # print('rank_int: ', type(rank_int))
+
+                '''OLD CODE'''
+                #rank_confidence = category.split(': ')[1].replace('%', '').replace('"', '')
+                #print('rank_confidence: ', rank_confidence) # DELETE DELETE DELETE DELETE
+                #rank_int = int(category.split(': ')[0][-1])  # Gets rank integer for processing
+                print('rank_int: ', rank_int) # DELETE DELETE DELETE DELETE
+                
             else:
+                print('else statement passed') # DELETE DELETE DELETE DELETE DELETE
                 rank_int = 0
 
+            
             if rank_int > 1:
 
+                print('if statement passed') # DELETE DELETE DELETE DELETE DELETE
                 tweet_id = status.id_str
                 date_created = status.created_at
                 user_name = status.user.screen_name
