@@ -12,6 +12,11 @@ from app.scraper import update_twitter_data
 from app.helper_funcs import check_new_items, preprocess_new_data, load_data, insert_data
 from app.create_db_tables import initialize_police_table
 
+import logging
+# create log to track when scraper is called
+logging.basicConfig(filename='scraper.log', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', encoding='utf-8', level=logging.INFO)
+    
+
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -57,8 +62,14 @@ async def run_update() -> None:
         insert_data(new_data)
     #get all reddit incidents, updated
     new_results = load_data()
+    # Add to scraper.log when scraper is called
+    logging.info('is when the scraper was called')
     #updates possible incidents from twitter
     update_twitter_data()
+    # Add to scraper log when scraper has finished
+    logging.info('is when the scraper finished')
+
+    
 
 
 app.add_middleware(
