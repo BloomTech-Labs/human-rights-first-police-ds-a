@@ -40,9 +40,9 @@ app.include_router(reddit.router, tags=['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
 
-# Uncomment if new tables need to be generated
-initialize_police_table()
-print('CREATED NEW TABLE')
+# # Uncomment if new tables need to be generated
+# initialize_police_table()
+# print('CREATED NEW TABLE')
 
 
 @app.on_event('startup')

@@ -18,7 +18,7 @@ async def get_twitter_data(last_id_added: str = None):
     If id is entered all the data greater than that id will be returned. \n
     If no id is entered all the data will be returned.
     """
-    db_url = os.getenv('HER_URL')
+    db_url = os.getenv('DB_URI')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     if last_id_added:
