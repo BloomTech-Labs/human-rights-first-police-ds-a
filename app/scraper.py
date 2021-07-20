@@ -44,24 +44,19 @@ def update_twitter_data():
     # quick database query to see what the id of the last imported tweet was.
     conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
-    print('step 1')
     curs.execute("""SELECT tweet_id FROM twitter_incidents_36 ORDER BY tweet_id DESC LIMIT 1""")
-    print('step 2')
-    #maxid = str(max(0, curs.fetchall()[0][0])) # maxid = str(curs.fetchall()[0][0])
-    print('step3')
-    #print('maxid: ', maxid)
+    maxid = str(curs.fetchall()[0][0])
     curs.close()
     conn.close()
 
     db = dataset.connect(os.getenv("DB_URI"))
-    table = db["twitter_incidents_new"]
-    print('connected to table')
+    table = db["twitter_incidents_36"]
     conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
     conn.commit()
     for tweet in tweepy.Cursor(api.search, q='police',
-                                since_id=1417199914694680577, tweet_mode='extended').items(): # change since_id to 'max_id' once the table is created and populated
-        print('we got here')
+                                since_id=maxid, tweet_mode='extended').items(): # change since_id to 'max_id' once the table is created and populated
+
         # Create a list to avoid processing duplicates
         dupe_check = []
 
@@ -78,7 +73,7 @@ def update_twitter_data():
         if conditions:
 
             category = get_rank_of_force(tweet.full_text)  # This runs the text of the Tweet through the model
-            print('tweet full.text: ', tweet.full_text) # DELETE WHEN DONE DEBUGGING
+            print('tweet full.text: ', tweet.full_text) # displays tweet on console
 
             dupe_check.append(tweet.id_str)  # Keeps track
 
@@ -86,9 +81,8 @@ def update_twitter_data():
                 category_splitted = category.split(': ')
                 rank_confidence = category_splitted[1].split(', ')[1].replace('%', '')
                 rank_int = int(category_splitted[1].split(', ')[0])  # Gets rank integer for processing
-                print('rank_confidence: ', rank_confidence)
-                print('type rank_confidence: ', type(rank_confidence))
-                print('rank int: ', rank_int)
+                print('rank_confidence: ', rank_confidence) # displays rank confidence on console
+                print('rank int: ', rank_int) # displays rank int on consolse
 
             else:
                 rank_int = 0
