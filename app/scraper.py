@@ -44,20 +44,24 @@ def update_twitter_data():
     # quick database query to see what the id of the last imported tweet was.
     conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
-    curs.execute("""SELECT tweet_id FROM twitter_test ORDER BY tweet_id DESC LIMIT 1""")
-    maxid = str(curs.fetchall()[0][0]) # maxid = str(max(0, curs.fetchall()[0][0]))
+    print('step 1')
+    curs.execute("""SELECT tweet_id FROM twitter_incidents_36 ORDER BY tweet_id DESC LIMIT 1""")
+    print('step 2')
+    #maxid = str(max(0, curs.fetchall()[0][0])) # maxid = str(curs.fetchall()[0][0])
+    print('step3')
+    #print('maxid: ', maxid)
     curs.close()
     conn.close()
 
     db = dataset.connect(os.getenv("DB_URI"))
-    table = db["twitter_test"]
+    table = db["twitter_incidents_new"]
     print('connected to table')
     conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
     conn.commit()
     for tweet in tweepy.Cursor(api.search, q='police',
-                                since_id=maxid, tweet_mode='extended').items(): # change since_id to 'max_id' once the table is created and populated
-
+                                since_id=1417199914694680577, tweet_mode='extended').items(): # change since_id to 'max_id' once the table is created and populated
+        print('we got here')
         # Create a list to avoid processing duplicates
         dupe_check = []
 
@@ -99,8 +103,6 @@ def update_twitter_data():
                 tags = TagMaker(tweet.full_text, pb_tags).tags()
                 city = None
                 state = None
-                twitterbot_tweet_id = None
-                responses = None
                 status = 'pending'
                 
 
@@ -115,8 +117,6 @@ def update_twitter_data():
                         tags=tags,
                         city=city,
                         state=state,
-                        twitterbot_tweet_id=twitterbot_tweet_id,
-                        responses=responses,
                         status=status
                         ))
 
