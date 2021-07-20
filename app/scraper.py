@@ -55,7 +55,7 @@ def update_twitter_data():
     curs = conn.cursor()
     conn.commit()
     for tweet in tweepy.Cursor(api.search, q='police',
-                                since_id=maxid, tweet_mode='extended').items(): # change since_id to 'max_id' once the table is created and populated
+                                since_id=maxid, tweet_mode='extended').items(): # change since_id to a known recent twitter id for a new table
 
         # Create a list to avoid processing duplicates
         dupe_check = []
