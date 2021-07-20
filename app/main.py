@@ -30,7 +30,7 @@ To use these interactive docs:
 """
 
 app = FastAPI(
-    title='Labs 33 HRF BW DS API',
+    title='Labs 36 HRF BW DS API',
     description=description,
     docs_url='/',
 )
@@ -40,8 +40,9 @@ app.include_router(reddit.router, tags=['Reddit'])
 app.include_router(twitter.router, tags=['Twitter'])
 
 
-# # Uncomment if new tables need to be generated
-# initialize_police_table()
+# Uncomment if new tables need to be generated
+initialize_police_table()
+print('CREATED NEW TABLE')
 
 
 @app.on_event('startup')
@@ -62,7 +63,7 @@ async def run_update() -> None:
         insert_data(new_data)
     #get all reddit incidents, updated
     new_results = load_data()
-    # Add to scraper.log when scraper is called
+    #Add to scraper.log when scraper is called
     logging.info('is when the scraper was called')
     #updates possible incidents from twitter
     update_twitter_data()

@@ -21,7 +21,7 @@ from app.frankenbert import FrankenBert
 # import BD url from .env file
 load_dotenv()
 # make database connection
-db = dataset.connect(os.getenv("DB_URL"))
+db = dataset.connect(os.getenv("HER_URL"))
 
 # make twitter API connection and instantiate connection class using tweepy
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
@@ -42,23 +42,24 @@ def update_twitter_data():
     """
 
     # quick database query to see what the id of the last imported tweet was.
-    conn = psycopg2.connect(os.getenv("DB_URL"))
-    curs = conn.cursor()
-    curs.execute("""SELECT tweet_id FROM incidents ORDER BY tweet_id DESC LIMIT 1""")
-    maxid = str(curs.fetchall()[0][0])
-    curs.close()
-    conn.close()
+    # conn = psycopg2.connect(os.getenv("HER_URL"))
+    # curs = conn.cursor()
+    # curs.execute("""SELECT tweet_id FROM twitter_incidents ORDER BY tweet_id DESC LIMIT 1""")
+    # maxid = str(max(0, curs.fetchall()[0][0]))
+    # curs.close()
+    # conn.close()
 
-    db = dataset.connect(os.getenv("DB_URL"))
-    table = db["incidents"]
-    conn = psycopg2.connect(os.getenv("DB_URL"))
+    db = dataset.connect(os.getenv("HER_URL"))
+    table = db["twitter_incidents"]
+    conn = psycopg2.connect(os.getenv("HER_URL"))
     curs = conn.cursor()
     conn.commit()
     for status in tweepy.Cursor(api.search, q='police',
-                                since_id=maxid, tweet_mode='extended').items():
+                                since_id=0, tweet_mode='extended').items(): # change since_id to 'max_id' once the table is created and populated
 
         # Create a list to avoid processing duplicates
         dupe_check = []
+        print('status full.text: ', status.full_text) # DELETE WHEN DONE DEBUGGING
 
         # filters out retweets / # tweet_dupes function checks to see if tweet already processed \
         # Filters tweets not in english
@@ -73,44 +74,54 @@ def update_twitter_data():
         if conditions:
 
             category = get_rank_of_force(status.full_text)  # This runs the text of the Tweet through the model
-
+            
             dupe_check.append(status.id_str)  # Keeps track
 
             if category != '{"detail":"Not Found"}':
                 category_splitted = category.split(': ')
                 rank_confidence = category_splitted[1].split(', ')[1].replace('%', '')
                 rank_int = int(category_splitted[1].split(', ')[0])  # Gets rank integer for processing
+                print('rank_confidence: ', rank_confidence)
+                print('rank int: ', rank_int)
+
             else:
                 rank_int = 0
             
             if rank_int > 1:
-
-                tweet_id = status.id_str
                 date_created = status.created_at
+                tweet_id = status.id_str
                 user_name = status.user.screen_name
-                twitter_text = status.full_text
-                force_rank = rank_dict[str(rank_int)]
-                confidence = rank_confidence
-                tags = TagMaker(status.full_text, pb_tags).tags()
+                description = status.full_text
                 city = None
                 state = None
-                twitterbot_tweet_id = None
-                responses = None
+                lat = None
+                long = None
+                title = None  
+                force_rank = rank_dict[str(rank_int)]
+                status = 'pending'
+                print('pb_tags: ', pb_tags)
+                confidence = rank_confidence
+                print('confidence: ', confidence)
+                tags = TagMaker(status.full_text, pb_tags).tags()                
+                print('tags')
                 
 
                 try:
                     table.insert(dict(
-                        tweet_id=tweet_id,
+                        print('start table insert'),
                         date_created=date_created,
+                        tweet_id=tweet_id,
                         user_name=user_name,
-                        twitter_text=twitter_text,
-                        force_rank=force_rank,
-                        confidence=confidence,
-                        tags=tags,
+                        description=description,
                         city=city,
                         state=state,
-                        twitterbot_tweet_id=twitterbot_tweet_id,
-                        responses=responses
+                        lat=lat,
+                        long=long,
+                        title=title,
+                        force_rank=force_rank,
+                        status = status,
+                        confidence=confidence,
+                        # tags=tags
                         ))
 
                     print('success', status.id_str)
