@@ -18,13 +18,13 @@ async def get_twitter_data(last_id_added: str = None):
     If id is entered all the data greater than that id will be returned. \n
     If no id is entered all the data will be returned.
     """
-    db_url = os.getenv('DB_URL')
+    db_url = os.getenv('DB_URI')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
     if last_id_added:
-        query = f"SELECT * FROM twitter_potential_incidents WHERE id > '{last_id_added}';"
+        query = f"SELECT * FROM twitter_incidents_36 WHERE id > '{last_id_added}';"
     else:
-        query = "SELECT * FROM twitter_potential_incidents;"
+        query = "SELECT * FROM twitter_incidents_36;"
     curs.execute(query)
     results = curs.fetchall()
     curs.close()

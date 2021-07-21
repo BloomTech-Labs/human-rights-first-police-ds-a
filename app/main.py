@@ -12,6 +12,11 @@ from app.scraper import update_twitter_data
 from app.helper_funcs import check_new_items, preprocess_new_data, load_data, insert_data
 from app.create_db_tables import initialize_police_table
 
+import logging
+# create log to track when scraper is called
+logging.basicConfig(filename='scraper.log', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p', encoding='utf-8', level=logging.INFO)
+    
+
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -25,7 +30,7 @@ To use these interactive docs:
 """
 
 app = FastAPI(
-    title='Labs 33 HRF BW DS API',
+    title='Labs 36 HRF BW DS API',
     description=description,
     docs_url='/',
 )
@@ -37,10 +42,11 @@ app.include_router(twitter.router, tags=['Twitter'])
 
 # # Uncomment if new tables need to be generated
 # initialize_police_table()
+# print('CREATED NEW TABLE')
 
 
 @app.on_event('startup')
-@repeat_every(seconds=60*60*12)  # runs function below every 24 hours 
+@repeat_every(seconds=60*60*24)  # set to run function below every 24 hours 60*60*24
 async def run_update() -> None:
     # get all reddit incidents stored in database
     results = load_data()
@@ -57,8 +63,14 @@ async def run_update() -> None:
         insert_data(new_data)
     #get all reddit incidents, updated
     new_results = load_data()
+    #Add to scraper.log when scraper is called
+    logging.info('is when the scraper was called')
     #updates possible incidents from twitter
-    update_twitter_data(new_results)
+    update_twitter_data()
+    # Add to scraper log when scraper has finished
+    logging.info('is when the scraper finished')
+
+    
 
 
 app.add_middleware(
