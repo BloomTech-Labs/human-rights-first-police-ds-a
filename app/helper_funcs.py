@@ -26,7 +26,6 @@ def get_rank_of_force(text):
     """
     model = FrankenBert('app\saved_model')
     text = clean_data(text)
-    print('cleaned text that is inputted to model: ', text)
     return model.predict(text)
 
 

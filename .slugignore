@@ -1,0 +1,21 @@
+# ignore notebooks
+*.ipynb
+/notebooks
+
+
+# ignore BERT directory
+/BERT
+
+# ignore image and text filters
+*.png 
+*.md
+
+# ignore Pipfile
+Pipfile
+
+# ignore unneeded .py files
+textmatcher.py
+app/tests
+app/twitter_bot.py
+app/tweet_reachout.py
+app/training_data.py

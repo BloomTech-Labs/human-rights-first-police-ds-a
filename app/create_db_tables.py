@@ -24,9 +24,9 @@ def initialize_police_table():
     # confidence TEXT
     #     );"""
 
-    pi_table = """CREATE TABLE IF NOT EXISTS twitter_incidents (
+    pi_table = """CREATE TABLE IF NOT EXISTS final_test (
     incident_id SERIAL PRIMARY KEY NOT NULL,
-    date_created TIMESTAMP,
+    incident_date TIMESTAMP,
     tweet_id TEXT,
     user_name TEXT,
     description VARCHAR(10000),
@@ -38,10 +38,11 @@ def initialize_police_table():
     force_rank TEXT,
     status TEXT,
     confidence FLOAT,
-    tags TEXT
+    tags TEXT,
+    src TEXT ARRAY
           );"""
     
-    db_url = os.getenv('HER_URL')
+    db_url = os.getenv('DB_URI')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor()
     curs.execute(pi_table)
