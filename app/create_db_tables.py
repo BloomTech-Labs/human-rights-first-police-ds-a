@@ -41,7 +41,7 @@ def initialize_police_table():
     tags TEXT
           );"""
     
-    db_url = os.getenv('HER_URL')
+    db_url = os.getenv('DB_URI')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor()
     curs.execute(pi_table)
