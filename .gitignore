@@ -149,3 +149,7 @@ cython_debug/
 
 # labs34_ds scratch files.
 test_notebook.ipynb
+
+# saved bert model
+app/saved_model/
+saved_model/
