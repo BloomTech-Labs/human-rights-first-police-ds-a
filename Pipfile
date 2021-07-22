@@ -21,7 +21,7 @@ tweepy = "*"
 urllib3 = "==1.25.4"
 nltk = "*"
 requests = "*"
-
+torch = "*"
 
 [requires]
 python_version = "3"

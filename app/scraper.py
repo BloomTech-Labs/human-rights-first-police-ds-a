@@ -95,6 +95,8 @@ def update_twitter_data():
                 force_rank = rank_dict[str(rank_int)]
                 confidence = rank_confidence
                 tags = TagMaker(tweet.full_text, pb_tags).tags()
+                print("tags: ", tags) # DELETE DELETE DELETE
+                print("tags data type: ", type(tags)) # DELETE DELETE DELETE
                 city = None
                 state = None
                 status = 'pending'
