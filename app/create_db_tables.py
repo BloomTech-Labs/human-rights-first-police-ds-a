@@ -24,7 +24,7 @@ def initialize_police_table():
     # confidence TEXT
     #     );"""
 
-    pi_table = """CREATE TABLE IF NOT EXISTS twitter_incidents (
+    pi_table = """CREATE TABLE IF NOT EXISTS final_test (
     incident_id SERIAL PRIMARY KEY NOT NULL,
     incident_date TIMESTAMP NOT NULL,
     tweet_id TEXT,

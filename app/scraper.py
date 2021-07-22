@@ -44,13 +44,13 @@ def update_twitter_data():
     # quick database query to see what the id of the last imported tweet was.
     conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
-    curs.execute("""SELECT tweet_id FROM twitter_incidents_36 ORDER BY tweet_id DESC LIMIT 1""")
+    curs.execute("""SELECT tweet_id FROM final_test ORDER BY tweet_id DESC LIMIT 1""")
     maxid = str(curs.fetchall()[0][0])
     curs.close()
     conn.close()
 
     db = dataset.connect(os.getenv("DB_URI"))
-    table = db["twitter_incidents_36"]
+    table = db["final_test"]
     conn = psycopg2.connect(os.getenv("DB_URI"))
     curs = conn.cursor()
     conn.commit()
@@ -89,7 +89,7 @@ def update_twitter_data():
             
             if rank_int > 1:
                 tweet_id = tweet.id_str
-                date_created = tweet.created_at
+                incident_date = tweet.created_at
                 user_name = tweet.user.screen_name
                 description = tweet.full_text
                 force_rank = rank_dict[str(rank_int)]
@@ -100,12 +100,13 @@ def update_twitter_data():
                 city = None
                 state = None
                 status = 'pending'
+                src = ["https://twitter.com/username/status/" + str(tweet_id)]
                 
 
                 try:
                     table.insert(dict(
                         tweet_id=tweet_id,
-                        date_created=date_created,
+                        incident_date=incident_date,
                         user_name=user_name,
                         description=description,
                         force_rank=force_rank,
@@ -113,7 +114,8 @@ def update_twitter_data():
                         tags=tags,
                         city=city,
                         state=state,
-                        status=status
+                        status=status,
+                        src=src
                         ))
 
                     print('success', tweet.id_str)
