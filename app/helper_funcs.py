@@ -24,7 +24,7 @@ def get_rank_of_force(text):
         Format: {Rank #: ##.##%}
 
     """
-    model = FrankenBert('app\saved_model')
+    model = FrankenBert('app/saved_model')
     text = clean_data(text)
     return model.predict(text)
 
