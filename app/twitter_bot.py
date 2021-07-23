@@ -119,7 +119,7 @@ def received_reply(tweet, curs):
 
     # responses fetches all responses that are currently stored to DB for the specific tweet id (bot tweet)
 
-    if responses == None:
+    if responses is None:
         responses = ""
 
     #The next two lines convers the response string to a list then adds the new response to it and converts back to string
@@ -164,7 +164,7 @@ def send_bot_tweet(tweet, text):
     return sent_tweet
 
 
-def string_to_list(str, append=""):
+def string_to_list(s, append=""):
     """
     This function is used to store lists of strings in SQLDB because it cannot store a list, it is stored as a single string
     Args:
@@ -174,7 +174,7 @@ def string_to_list(str, append=""):
     Returns: a list of strings
 
     """
-    str_list = str.split(":.:.:")
+    str_list = s.split(":.:.:")
     if str_list[-1] == "":
         str_list.pop()
     if append != "":

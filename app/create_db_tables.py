@@ -10,19 +10,6 @@ from dotenv import load_dotenv
 
 def initialize_police_table():
     load_dotenv()
-    # police_table = """CREATE TABLE IF NOT EXISTS police_force (
-    # id SERIAL PRIMARY KEY NOT NULL,
-    # dates TIMESTAMP,
-    # links TEXT,
-    # case_id TEXT,
-    # city TEXT,
-    # state TEXT,
-    # title TEXT,
-    # description TEXT,
-    # tags TEXT,
-    # force_rank TEXT,
-    # confidence TEXT
-    #     );"""
 
     pi_table = """CREATE TABLE IF NOT EXISTS final_test (
     incident_id SERIAL PRIMARY KEY NOT NULL,
@@ -43,9 +30,6 @@ def initialize_police_table():
           );"""
 
 
-    drop_table = """DROP TABLE final_test;
-    
-    """
     db_url = os.getenv('DB_URI')
     conn = psycopg2.connect(db_url)
     curs = conn.cursor()
