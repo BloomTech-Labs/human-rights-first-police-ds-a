@@ -1,7 +1,7 @@
 from app.twitter_bot import twitter_reply
 
 
-# Dummy class for a ticket to monitor replies, is not currently being used
+# Class for a ticket to monitor replies, is not currently being used
 
 
 class TweetReachOut:
