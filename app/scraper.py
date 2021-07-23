@@ -16,6 +16,7 @@ from app.helper_funcs import get_rank_of_force, clean_data
 from app.TagMaker import TagMaker
 from app.TagList import pb_tags
 from app.frankenbert import FrankenBert
+import json
 
 
 # import BD url from .env file
@@ -94,13 +95,13 @@ def update_twitter_data():
                 description = tweet.full_text
                 force_rank = rank_dict[str(rank_int)]
                 confidence = rank_confidence
-                tags = TagMaker(tweet.full_text, pb_tags).tags()
+                tags = json.dumps(TagMaker(tweet.full_text, pb_tags).tags(), separators=(',', ':'))
                 print("tags: ", tags) # DELETE DELETE DELETE
                 print("tags data type: ", type(tags)) # DELETE DELETE DELETE
                 city = None
                 state = None
                 status = 'pending'
-                src = ["https://twitter.com/username/status/" + str(tweet_id)]
+                src = json.dumps(["https://twitter.com/username/status/" + str(tweet_id)], separators=(',', ':'))
                 
 
                 try:
