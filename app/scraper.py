@@ -15,7 +15,6 @@ import psycopg2
 from app.helper_funcs import get_rank_of_force
 from app.TagMaker import TagMaker
 from app.TagList import pb_tags
-from app.frankenbert import FrankenBert
 import json
 
 
