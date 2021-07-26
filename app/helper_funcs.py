@@ -25,14 +25,16 @@ def get_rank_of_force(text):
 
     """
     model = FrankenBert('app/saved_model')
-    text = clean_data(text)
     return model.predict(text)
 
 
 def clean_data(text):
     """
     Accepts a single text document and performs several regex
-    substitutions in order to clean the document.
+    substitutions in order to clean the document. Currently not used.
+    May potentially be used in the future to clean training data and 
+    tweets
+
     Parameters
     ----------
     text: string or object
@@ -49,9 +51,6 @@ def clean_data(text):
     text = re.sub(r'http\S+', '', text)
     return text.lower()
 
-
-#### These functions are used by main.py which is deprecated for now but is kept
-#### as reference or in case it is necessary to implement in the future
 
 def check_new_items(db_info, api_info):
     """ Find the number of new items on the API """
