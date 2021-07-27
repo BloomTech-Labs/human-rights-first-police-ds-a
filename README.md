@@ -7,12 +7,12 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 
 # Contributors
 
-| [Justin Alirkan](https://github.com/jalirkan) | [Nico Carvajal](https://github.com/nicolascarva) | [Israel Aikulola](https://github.com/israelaikulola) | [Nathan Fleck](https://github.com/njfleck24)
-| :---: | :---: | :---: | :---: |
-| [<img src="https://ca.slack-edge.com/ESZCHB482-U01H3L1G4SZ-01489e584d36-512" width = "200" />](https://github.com/jalirkan) | [<img src="https://ca.slack-edge.com/ESZCHB482-U01H00ZQZ2S-4498fa2e56ee-512" width = "200" />](https://github.com/nicolascarva) | [<img src="https://avatars.githubusercontent.com/u/77282517?v=4" width = "200" />](https://github.com/israelaikulola) | [<img src="https://media-exp3.licdn.com/dms/image/C4E03AQHp_Wbg-oZ7NA/profile-displayphoto-shrink_800_800/0/1612385183980?e=1629936000&v=beta&t=3MhQbIj1rJUXkabhquInaLeKBpTgu-ndxIQS_CtJw9Q" width = "200" />](https://github.com/njfleck24) |
-| Data Scientist | Data Scientist | Data Scientist | Data Scientist |
-|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/jalirkan) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/nicolascarva) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/israelaikulola) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/njfleck24) |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/justin-a-ds/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/nico-carvajal/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/dr-israel-o-aikulola/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/nathan-j-fleck/) |
+| [Hillary Khan](https://github.com/hillarykhan) | [Marcos Morales](https://github.com/MarcosMorales2011) | [Eric Park](https://github.com/ericyeonpark)
+| :---: | :---: | :---: |
+| [<img src="https://avatars.githubusercontent.com/u/35015753?v=4" width = "200" />](https://github.com/hillarykhan) | [<img src="https://avatars.githubusercontent.com/u/40769305?v=4" width = "200" />](https://github.com/MarcosMorales2011) | [<img src="https://avatars.githubusercontent.com/u/77295658?v=4" width = "200" />](https://github.com/ericyeonpark) |
+| Data Scientist | Data Scientist | Data Scientist |
+|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/hillarykhan) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/MarcosMorales2011) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ericyeonpark) |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/hillary-khan/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/marcos-morales-bb7307181/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ericyjpark/) |
 
 <br>          
 
