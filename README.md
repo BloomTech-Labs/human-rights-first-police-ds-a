@@ -2,7 +2,7 @@
 
 The Human Rights First Organization is a US-based nonprofit, nonpartisan organization concerned with international human rights. At its forefront are American ideals and universal values. For nearly 40 years HRF has challenged the status quo by highlighting the global struggle for human rights and stepping in to demand reform accountability and justice. The goal of this project is to create a full functioning web application capable of visually demonstrating valid and current incidences of police use of force within the United States. The information will help users, such as journalists and passersby, to formulate their perspectives on current matters. The exemplary user interface immediately captures attention with the clusters of incidence shown by geotagging. 
 
-This project has been worked on by many lab teams over the past 9 months. One task of labs32 was to clean up the existing data pipeline from twitter. The admin will approve or reject the tweets based on whether the tweet truly represents an instance of police brutality.  Approved tweets will be displayed on the website with the existing reddit data.
+This project has been worked on by many lab teams over the past 10 months. In the final month of development, labs36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Bean Stalk, connecting our architecture to the backend team's architecture, labeling 5,000 tweets, retrainining our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation.
 
 
 # Contributors
@@ -25,9 +25,9 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 ![torch](https://img.shields.io/badge/torch-1.8.1-red)
 ![transformers](https://img.shields.io/badge/transformers-4.5.1-brightgreen)
 ![spacy](https://img.shields.io/badge/spacy-2.3.2-lightgrey)
-![plotly](https://img.shields.io/badge/plotly-4.9.0-orange)
+![plotly](https://img.shields.io/badge/plotly-4.10.0-orange)
 ![tweepy](https://img.shields.io/badge/tweepy-3.10.0-9cf)
-![beautifulsoup4](https://img.shields.io/badge/beautifulsoup4-4.9.1-orange)
+![beautifulsoup4](https://img.shields.io/badge/beautifulsoup4-4.10.1-orange)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-11.3.20-yellowgreen)
 ![dataset](https://img.shields.io/badge/dataset-1.4.5-grey)
 ![python-dotenv](https://img.shields.io/badge/python--dotenv-0.14.0-green)
@@ -38,7 +38,7 @@ This project has been worked on by many lab teams over the past 9 months. One ta
 
 # Deployed Product
 [Front End Dashboard](https://a.humanrightsfirst.dev/) |
-[Data Science API](http://hrf-blue-witness.us-east-1.elasticbeanstalk.com/)
+[Data Science API](http://hrf-bw-labs36-dev.us-east-1.elasticbeanstalk.com/#/)
 
 
 # How to access DB from browser
@@ -60,7 +60,7 @@ In order for the app to function correctly, the user must set up their own envir
 		c. ACCESS_KEY
 		d. ACCESS_SECRET
 	2. Postgres database connection 
-		a. DB_URL
+		a. DB_URI
 
 ### Installation Instructions and running API locally
 
