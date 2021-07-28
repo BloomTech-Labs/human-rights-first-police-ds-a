@@ -60,18 +60,55 @@ In order for the app to function correctly, the user must set up their own envir
 		c. ACCESS_KEY
 		d. ACCESS_SECRET
 	2. Postgres database connection 
-		a. DB_URI
+		a. DB_URL
 
 ### Installation Instructions and running API locally
 
-We used pipenv for ease of library installations and environment setup. 
+We used requirement.txt for our dependencies. Here are steps to create a virtual environment and install dependencies from our requirements.txt to run the app locally. Alternative instructions for creating a pipfile with pipenv follow. All code is for Unix/macOS. Here are the [Windows equivalents](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) for creating a virtual environment with pip. 
 
-1. Clone the repo
+1. clone the repo
+2. cd into repo
+3. create virtual environment:
+```terminal
+$ python3 -m venv name_for_env
+```
+4. activate virtual environment:
+```terminal
+$ source name_for_env/bin/activate
+```
+5. check activation:
+```terminal
+$ which python
+# should return:
+#   name_for_env/bin/python
+```
+
+6. install all dependencies with requirements.txt:
+```terminal
+$ python3 -m pip install -r requirements.txt
+```
+7. run the API locally on your machine
+```terminal
+$ gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker
+```
+Or
+```terminal
+uvicorn app.main:app --reload
+```
+8. close the app with control+c in terminal
+9. deactivate environment:
+```terminal
+$ deactivate
+```
+
+If you prefer to use pipenv and create a pipfile from our requirements.txt:
+1. clone the repo
 2. cd into repo
 3. install pip environment
 ```terminal
 $ pipenv install
 ```
+will create a pipfile for you
 4. activate the environment
 ```terminal
 $ pipenv shell
@@ -83,3 +120,9 @@ $ gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker
 Or
 ```terminal
 uvicorn app.main:app --reload
+```
+6. close the app with control+c in terminal
+7. deactivate environment:
+```terminal
+$ exit
+```
