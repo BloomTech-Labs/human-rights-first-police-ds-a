@@ -27,18 +27,18 @@ There are two notebooks pertaining to the model:
  - `BertModel.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our database 
  - `BertPerformance.ipynb`: used for statistical analysis and to calculate model performance metrics (i.e. binary and multi-classification confusion matrices, accuracy, etc.)
  
-This notebooks can be accessed from your virtual environment once all dependencies are installed in it.  Two additional libraries, Transformers and psycoph2-binary, are both installed after running the first cell within the notebooks.
+These notebooks can be accessed from your virtual environment once all dependencies are installed within it.  Two additional libraries, Transformers and psycoph2-binary, are both installed after running the first cell in the notebooks.
 
 
 </br>  
 
-## Architecture
-
+## DS Architecture
+![Architecture](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/DS%20Flowchart.png?raw=true)
 
 </br>  
 
 ## Old Codebase
-
+Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are include starter codes that could help provide inspiration for additional features (e.g. Twitter Bot) or functionality that was deprioritized for release. A more in depth description of each of the files is stored in a markdown file in the `archive` directory.
 </br>  
 
 ## Deployed Product
@@ -49,11 +49,6 @@ This notebooks can be accessed from your virtual environment once all dependenci
 
 ## How to access DB from browser
 ![CredentialsMap](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/Credentials_map.png?raw=true)
-
-</br>
-
-## DS Architecture
-![Architecture](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/DS%20Flowchart.png?raw=true)
 
 </br>
 </br>
