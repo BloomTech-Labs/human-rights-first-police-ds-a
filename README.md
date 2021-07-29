@@ -2,7 +2,7 @@
 
 The Human Rights First Organization is a US-based nonprofit, nonpartisan organization concerned with international human rights. At its forefront are American ideals and universal values. For nearly 40 years HRF has challenged the status quo by highlighting the global struggle for human rights and stepping in to demand reform accountability and justice. The goal of this project is to create a full functioning web application capable of visually demonstrating valid and current incidences of police use of force within the United States. The information will help users, such as journalists and passersby, to formulate their perspectives on current matters. The exemplary user interface immediately captures attention with the clusters of incidence shown by geotagging. 
 
-This project has been worked on by many labs teams over the past 10 months. In the final month of development, Labs Cohort 36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Elastic Beanstalk, adapting our database architecture to the backend team's schema, labeling 5,000 tweets to retrain our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation. The next team will need to work with the backend team to ensure that they are able to populate the database with the data thats currently populating the Blue Witness website.
+This project has been worked on by many Lambda labs teams over the past 10 months. In the final month of development, Labs Cohort 36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Elastic Beanstalk, adapting our database architecture to the backend team's schema, labeling 5,000 tweets to retrain our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation. The next team will need to work with the backend team to ensure that they are able to populate the database with the data thats currently populating the Blue Witness website.
 
 </br>  
 
@@ -35,7 +35,7 @@ The BERT model does not currently live in the GitHub repository due to its large
 
 ## Notebooks
 There are two notebooks pertaining to the model:
- - `BertModel.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our database 
+ - `BertModel.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our `postgres` AWS database 
  - `BertPerformance.ipynb`: used for statistical analysis and to calculate model performance metrics (i.e. binary and multi-classification confusion matrices, accuracy, etc.)
  
 These notebooks can be accessed from your virtual environment once all dependencies are installed within it.  Two additional libraries, Transformers and psycopg2-binary, are both installed after running the first cell in the notebooks.
@@ -48,15 +48,15 @@ These notebooks can be accessed from your virtual environment once all dependenc
 </br>  
 
 ## Old Codebase
-Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are starter codes that could help provide inspiration for features that was deprioritized for initial release (e.g. Twitter Bot). A more in-depth description of each of the files is stored in a markdown file in the `archive` directory.
+Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are starter codes that could help provide inspiration for features that were deprioritized for initial release (e.g. conversational Twitter Bot). A more in-depth description of each of the files is stored in a markdown file in the `archive` directory.
 
 </br>
 
 # Next Steps
 For those interested in improving upon the data science codebase, here are some recommendations: 
-- Explore the efficacy of adding an additional table to the AWS 'postgres' database that would function as storage for data collected from the Twitter scraper, and is only accessible by the data science team. This would exist in addition to the 'force_ranks' table that stores data collected from the scraper, seed data added by our backend team. Currently, 'force_ranks' is accessible in both the data science and backend codebases.
-- Develop an evidence-based strategy to maximize the effectiveness of our Twitter queries in the scraper feature. Currently, the Twitter API has a 500 tweet limit per scraping. Can we develop metrics to compare querying methods (i.e. which methods return a greater percentage of tweets describing police use-of-force in the United States?)
-- Continue to improve BERT model performance. There is a deactivated labeler application created by Robert Sharp that is connected to a repository of nearly 300,000 unlabeled tweets. The model was retrained at the end of July with roughly 6,000 manually labeled tweets. Labeling about 4,000 more to retrain the model and assess performance improvements may be worthwhile. Alternatively, the model has greater difficulty identifying use-of-force rankings 2, 3, and 4. Implementing a strategy to increase the number of tweets regarding these classifications can improve the model in a more targeted way. 
+- Explore the efficacy of separating the AWS 'postgres' database into two different databases. The first database would be the primary database for the Twitter scraper outputs and DS would redesign the schema to fit their needs. The second database would be the primary database for backend and they could extract data from the DS database and fit the schema to their needs. Currently, the primary AWS data table 'force_ranks' is accessible in both the data science and backend codebases.
+- Develop an evidence-based strategy to maximize the effectiveness of our Twitter queries in the scraper feature. Currently, the Twitter API has a 500 tweet limit per scraping. This would include developing metrics to compare querying methods. Metrics would allow us to determine which methods return a greater percentage of tweets describing police use-of-force in the United States.
+- Continue to improve BERT model performance. There is a deactivated labeler web application created by Robert Sharp that is connected to a repository of nearly 300,000 unlabeled tweets. The model was retrained at the end of July with roughly 6,000 manually labeled tweets. Labeling about 4,000 more to retrain the model and assess performance improvements may be worthwhile. Alternatively, the model has greater difficulty identifying use-of-force rankings 2, 3, and 4. Implementing a strategy to increase the number of tweets the model sees regarding these classifications could improve the model in a more targeted way. 
 
 </br>
 </br>
@@ -113,7 +113,7 @@ In order for the app to function correctly, the user must set up their own envir
 
 ## Installation Instructions and running API locally
 
-We used requirement.txt for our dependencies. Here are steps to create a virtual environment and install dependencies from our requirements.txt to run the app locally. Alternative instructions for creating a pipfile with pipenv follow. All code is for Unix/macOS. Here are the [Windows equivalents](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) for creating a virtual environment with pip. 
+For AWS deployment we used requirement.txt to store our dependencies. Here are steps to create a virtual environment and install dependencies from our requirements.txt to run the app locally. Alternative instructions for creating a pipfile with pipenv follow. All code is for Unix/macOS. Here are the [Windows equivalents](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) for creating a virtual environment with pip. 
 
 1. clone the repo
 2. cd into repo
