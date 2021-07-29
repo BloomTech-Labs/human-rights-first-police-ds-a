@@ -1,11 +1,64 @@
-# Description
+# Overview
 
 The Human Rights First Organization is a US-based nonprofit, nonpartisan organization concerned with international human rights. At its forefront are American ideals and universal values. For nearly 40 years HRF has challenged the status quo by highlighting the global struggle for human rights and stepping in to demand reform accountability and justice. The goal of this project is to create a full functioning web application capable of visually demonstrating valid and current incidences of police use of force within the United States. The information will help users, such as journalists and passersby, to formulate their perspectives on current matters. The exemplary user interface immediately captures attention with the clusters of incidence shown by geotagging. 
 
-This project has been worked on by many lab teams over the past 10 months. In the final month of development, labs36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Bean Stalk, connecting our architecture to the backend team's architecture, labeling 5,000 tweets, retrainining our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation.
+This project has been worked on by many labs teams over the past 10 months. In the final month of development, Labs Cohort 36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Elastic Beanstalk, connecting our architecture to the backend team's architecture, labeling 5,000 tweets to retrain our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation.
 
+</br>  
 
-# Contributors
+# Features
+## Twitter Scraper
+- Automated through the FastAPI framework in ```main.py``` to run every four hours
+- Everytime it runs, will randomly select a search query from a set of phrases (police, police brutality, police abuse, police violence) to use in the Twitter API search
+- Relevant functions for the scraper feature can be found in ```scraper.py```
+
+</br>  
+
+## BERT Model
+[BERT is an open-source, pre-trained, natural language processing (NLP) model from Google](https://ai.googleblog.com/2018/11/open-sourcing-bert-state-of-art-pre.html). The role of BERT in our project is to take the tweets collected from our Twitter scraper and predict whether or not the tweet discusses police use-of-force and what type of force they used. BERT uses a 6-rank classification system as follows:
+- Rank 0: No police presence.
+- Rank 1: Police are present, but no force detected.
+- Rank 2: Open-hand: Officers use bodily force to gain control of a situation. Officers may use grabs, holds, and joint locks to restrain an individual.
+- Rank 3: Blunt Force: Officers use less-lethal technologies to gain control of a situation. Baton or projectile may be used to immobilize a combative person for example.
+- Rank 4: Chemical & Electric: Officers use less-lethal technologies to gain control of a situation, such as chemical sprays, projectiles embedded with chemicals, or tasers to restrain an individual.
+- Rank 5: Lethal Force: Officers use lethal weapons (guns, explosives) to gain control of a situation.
+
+The BERT model does not currently live in the GitHub repository due to its large file size. When running the app locally, it is best to manually story the `saved_model` file in the `app` directory.
+
+</br>  
+
+## Notebooks
+There are two notebooks pertaining to the model:
+ - `BertModel.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our database 
+ - `BertPerformance.ipynb`: used for statistical analysis and to calculate model performance metrics (i.e. binary and multi-classification confusion matrices, accuracy, etc.)
+ 
+These notebooks can be accessed from your virtual environment once all dependencies are installed within it.  Two additional libraries, Transformers and psycoph2-binary, are both installed after running the first cell in the notebooks.
+
+</br>  
+
+## DS Architecture
+![Architecture](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/DS_Flowchart.png?raw=true)
+
+</br>  
+
+## Old Codebase
+Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are include starter codes that could help provide inspiration for additional features (e.g. Twitter Bot) or functionality that was deprioritized for initial release. A more in-depth description of each of the files is stored in a markdown file in the `archive` directory.
+</br>  
+
+## Deployed Product
+[Front End Dashboard](https://a.humanrightsfirst.dev/) |
+[Data Science API](http://hrf-bw-labs36-dev.us-east-1.elasticbeanstalk.com/#/)
+
+</br>  
+
+## How to access DB from browser
+![CredentialsMap](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/Credentials_map.png?raw=true)
+
+</br>
+</br>
+</br>
+
+# Labs 36 Contributors
 
 | [Hillary Khan](https://github.com/hillarykhan) | [Marcos Morales](https://github.com/MarcosMorales2011) | [Eric Park](https://github.com/ericyeonpark)
 | :---: | :---: | :---: |
@@ -14,10 +67,13 @@ This project has been worked on by many lab teams over the past 10 months. In th
 |[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/hillarykhan) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/MarcosMorales2011) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ericyeonpark) |
 | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/hillary-khan/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/marcos-morales-bb7307181/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ericyjpark/) |
 
-<br>          
+</br>
+</br>
+</br>
 
-<br>
-<br>
+# Getting Started
+
+## Dependencies
 
 ![pandas](https://img.shields.io/badge/pandas-1.1.0-blueviolet)
 ![numpy](https://img.shields.io/badge/numpy-1.19.5-yellow)
@@ -35,22 +91,9 @@ This project has been worked on by many lab teams over the past 10 months. In th
 ![fastapi](https://img.shields.io/badge/fastapi-0.60.1-blue)
 ![fastapi-utils](https://img.shields.io/badge/fastapi--utils-0.2.1-informational)
 
+</br>  
 
-# Deployed Product
-[Front End Dashboard](https://a.humanrightsfirst.dev/) |
-[Data Science API](http://hrf-bw-labs36-dev.us-east-1.elasticbeanstalk.com/#/)
-
-
-# How to access DB from browser
-![CredentialsMap](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/Credentials_map.png?raw=true)
-
-# DS Architecture
-![Architecture](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/DS%20Flowchart.png?raw=true)
-
-
-# Getting Started
-
-### Environment Variables
+## Environment Variables
 
 In order for the app to function correctly, the user must set up their own environment variables. There should be a .env file containing the following:
 
@@ -60,18 +103,57 @@ In order for the app to function correctly, the user must set up their own envir
 		c. ACCESS_KEY
 		d. ACCESS_SECRET
 	2. Postgres database connection 
-		a. DB_URI
+		a. DB_URL
 
-### Installation Instructions and running API locally
+</br>  
 
-We used pipenv for ease of library installations and environment setup. 
+## Installation Instructions and running API locally
 
-1. Clone the repo
+We used requirement.txt for our dependencies. Here are steps to create a virtual environment and install dependencies from our requirements.txt to run the app locally. Alternative instructions for creating a pipfile with pipenv follow. All code is for Unix/macOS. Here are the [Windows equivalents](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) for creating a virtual environment with pip. 
+
+1. clone the repo
+2. cd into repo
+3. create virtual environment:
+```terminal
+$ python3 -m venv name_for_env
+```
+4. activate virtual environment:
+```terminal
+$ source name_for_env/bin/activate
+```
+5. check activation:
+```terminal
+$ which python
+# should return:
+#   name_for_env/bin/python
+```
+
+6. install all dependencies with requirements.txt:
+```terminal
+$ python3 -m pip install -r requirements.txt
+```
+7. run the API locally on your machine
+```terminal
+$ gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker
+```
+Or
+```terminal
+uvicorn app.main:app --reload
+```
+8. close the app with control+c in terminal
+9. deactivate environment:
+```terminal
+$ deactivate
+```
+
+If you prefer to use pipenv and create a pipfile from our requirements.txt:
+1. clone the repo
 2. cd into repo
 3. install pip environment
 ```terminal
 $ pipenv install
 ```
+will create a pipfile for you
 4. activate the environment
 ```terminal
 $ pipenv shell
@@ -83,3 +165,9 @@ $ gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker
 Or
 ```terminal
 uvicorn app.main:app --reload
+```
+6. close the app with control+c in terminal
+7. deactivate environment:
+```terminal
+$ exit
+```
