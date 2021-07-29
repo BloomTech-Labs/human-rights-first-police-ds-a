@@ -2,11 +2,14 @@
 
 The Human Rights First Organization is a US-based nonprofit, nonpartisan organization concerned with international human rights. At its forefront are American ideals and universal values. For nearly 40 years HRF has challenged the status quo by highlighting the global struggle for human rights and stepping in to demand reform accountability and justice. The goal of this project is to create a full functioning web application capable of visually demonstrating valid and current incidences of police use of force within the United States. The information will help users, such as journalists and passersby, to formulate their perspectives on current matters. The exemplary user interface immediately captures attention with the clusters of incidence shown by geotagging. 
 
-This project has been worked on by many labs teams over the past 10 months. In the final month of development, Labs Cohort 36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Elastic Bean Stalk, connecting our architecture to the backend team's architecture, labeling 5,000 tweets to retrain our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation.
+This project has been worked on by many labs teams over the past 10 months. In the final month of development, Labs Cohort 36 was tasked with finalizing our codebase and architecture to deploy a production-ready app. This included: automating our collection of Twitter data, deploying to AWS Elastic Beanstalk, connecting our architecture to the backend team's architecture, labeling 5,000 tweets to retrain our BERT model, creating performance metrics for our model, cleaning our codebase, and updating the documentation.
 
+</br>  
+
+# Features
 ## Twitter Scraper
 - Automated through the FastAPI framework in ```main.py``` to run every four hours
-- Everytime it runs, will randomly select a search query from a set of phrases (e.g. police, police brutality, police abuse, police violence) to use in the Twitter API search
+- Everytime it runs, will randomly select a search query from a set of phrases (police, police brutality, police abuse, police violence) to use in the Twitter API search
 - Relevant functions for the scraper feature can be found in ```scraper.py```
 
 </br>  
@@ -22,13 +25,14 @@ This project has been worked on by many labs teams over the past 10 months. In t
 
 The BERT model does not currently live in the GitHub repository due to its large file size. When running the app locally, it is best to manually story the `saved_model` file in the `app` directory.
 
-### Model Retraining & Performance Metrics
+</br>  
+
+## Notebooks
 There are two notebooks pertaining to the model:
  - `BertModel.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our database 
  - `BertPerformance.ipynb`: used for statistical analysis and to calculate model performance metrics (i.e. binary and multi-classification confusion matrices, accuracy, etc.)
  
 These notebooks can be accessed from your virtual environment once all dependencies are installed within it.  Two additional libraries, Transformers and psycoph2-binary, are both installed after running the first cell in the notebooks.
-
 
 </br>  
 
@@ -38,7 +42,7 @@ These notebooks can be accessed from your virtual environment once all dependenc
 </br>  
 
 ## Old Codebase
-Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are include starter codes that could help provide inspiration for additional features (e.g. Twitter Bot) or functionality that was deprioritized for release. A more in depth description of each of the files is stored in a markdown file in the `archive` directory.
+Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are include starter codes that could help provide inspiration for additional features (e.g. Twitter Bot) or functionality that was deprioritized for initial release. A more in-depth description of each of the files is stored in a markdown file in the `archive` directory.
 </br>  
 
 ## Deployed Product
