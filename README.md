@@ -7,6 +7,12 @@ This project has been worked on by many labs teams over the past 10 months. In t
 </br>  
 
 # Features
+## Deployed Product
+[Front End Dashboard](https://a.humanrightsfirst.dev/) |
+[Data Science API](http://hrf-bw-labs36-dev.us-east-1.elasticbeanstalk.com/#/)
+
+</br>  
+
 ## Twitter Scraper
 - Automated through the FastAPI framework in ```main.py``` to run every four hours
 - Everytime it runs, will randomly select a search query from a set of phrases (police, police brutality, police abuse, police violence) to use in the Twitter API search
@@ -43,16 +49,14 @@ These notebooks can be accessed from your virtual environment once all dependenc
 
 ## Old Codebase
 Old and currently undeployed code is stored in the `archive` folder of the repo. Some files are stored to show the evolution of the code from previous Lambda cohorts to the current deployed code. Some files are starter codes that could help provide inspiration for features that was deprioritized for initial release (e.g. Twitter Bot). A more in-depth description of each of the files is stored in a markdown file in the `archive` directory.
-</br>  
 
-## Deployed Product
-[Front End Dashboard](https://a.humanrightsfirst.dev/) |
-[Data Science API](http://hrf-bw-labs36-dev.us-east-1.elasticbeanstalk.com/#/)
+</br>
 
-</br>  
-
-## How to access DB from browser
-![CredentialsMap](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/Credentials_map.png?raw=true)
+# Next Steps
+For those interested in improving upon the data science codebase, here are some recommendations: 
+- Explore the efficacy of adding an additional table to the AWS 'postgres' database that would function as storage for data collected from the Twitter scraper, and is only accessible by the data science team. This would exist in addition to the 'force_ranks' table that stores data collected from the scraper, seed data added by our backend team. Currently, 'force_ranks' is accessible in both the data science and backend codebases.
+- Develop an evidence-based strategy to maximize the effectiveness of our Twitter queries in the scraper feature. Currently, the Twitter API has a 500 tweet limit per scraping. Can we develop metrics to compare querying methods (i.e. which methods return a greater percentage of tweets describing police use-of-force in the United States?)
+- Continue to improve BERT model performance. There is a deactivated labeler application created by Robert Sharp that is connected to a repository of nearly 300,000 unlabeled tweets. The model was retrained at the end of July with roughly 6,000 manually labeled tweets. Labeling about 4,000 more to retrain the model and assess performance improvements may be worthwhile. Alternatively, the model has greater difficulty identifying use-of-force rankings 2, 3, and 4. Implementing a strategy to increase the number of tweets regarding these classifications can improve the model in a more targeted way. 
 
 </br>
 </br>
@@ -171,3 +175,8 @@ uvicorn app.main:app --reload
 ```terminal
 $ exit
 ```
+
+</br>  
+
+## How to access DB from browser
+![CredentialsMap](https://github.com/Lambda-School-Labs/human-rights-first-police-ds-a/blob/main/Credentials_map.png?raw=true)
