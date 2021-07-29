@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import psycopg2
 import psycopg2.extras
 import re
-from app.frankenbert import FrankenBert
+from old_app.frankenbert import FrankenBert
 
 
 load_dotenv()

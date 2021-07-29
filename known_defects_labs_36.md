@@ -1,3 +1,13 @@
+Labs 36 Notes
+- no known defects known right now
+- Some possible next steps could be:
+      - assisting backend/frontend develop the google form portion of the Twitter Bot. However the codebase and database utilized is backends/frontends, so this may be difficult/ out of scope for incoming DS teams
+	  - re-visit the functionality of creating a conversational Twitter Bot
+	  - redesign the data science AWS data table. Current table specifications were made to accommadate backends needs. Ideally, we design the table on our specifications and backend pulls the data from the new table. Future teams should confirm with backend (to see if they have the ability to do so), and Robert Sharp to see if he finds this nessasary
+	  - continue to improve upon BERT model performance
+
+
+Labs 34 Notes
 Thoughts for README file, Instructions for Labs 35 : Draft 01. 
 
 Training Data / BERT:

@@ -4,8 +4,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from app.scraper import update_twitter_data
-from app.helper_funcs import get_rank_of_force
+from old_app.scraper import update_twitter_data
+from old_app.helper_funcs import get_rank_of_force
 
 import logging
 

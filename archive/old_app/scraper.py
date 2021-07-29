@@ -12,9 +12,9 @@ import tweepy
 from sqlalchemy.exc import ProgrammingError
 from dotenv import load_dotenv
 import psycopg2
-from app.helper_funcs import get_rank_of_force
-from app.TagMaker import TagMaker
-from app.TagList import pb_tags
+from old_app.helper_funcs import get_rank_of_force
+from old_app.TagMaker import TagMaker
+from old_app.TagList import pb_tags
 import json
 
 
@@ -95,8 +95,6 @@ def update_twitter_data():
                 force_rank = rank_dict[str(rank_int)]
                 confidence = rank_confidence
                 tags = json.dumps(TagMaker(tweet.full_text, pb_tags).tags(), separators=(',', ':'))
-                print("tags: ", tags) # DELETE DELETE DELETE
-                print("tags data type: ", type(tags)) # DELETE DELETE DELETE
                 city = None
                 state = None
                 status = 'pending'
