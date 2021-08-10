@@ -198,7 +198,6 @@ def insert_conversations(data: List[dict]) -> str:  # wherever output is string 
 		for datum in data:
 			ins = conversations.insert().values(datum)
 			connection.execute(ins)
-
 		### WRITE - do I need to write line by line? manage rollback?
 
 # should switch over db interface to sqlalchemy, req'd for this user input table, should do both for consistency
@@ -223,7 +222,6 @@ def update_force_rank_location(data: Tuple, tweet_id: int) -> str:
 	conn.close()
 	print('Updated {}'.format(tweet_id))
 
-
 def get_to_advance() -> List[Tuple]:
 	# for each root_id, get highest conversation_status
 	with engine.begin() as connection:
@@ -237,8 +235,6 @@ def advance_all():
 	for points in to_advance:
 		advance_conversation(points[1])
 		print('success', points[1])
-
-
 
 def clean_str(string: str) -> str:
 	return string.replace('\n', ' ').replace("'", "’")
@@ -259,7 +255,6 @@ def scrape_twitter(query: str) -> List[Dict]:
 			"src": f'["https://twitter.com/{status.user.screen_name}/status/{status.id_str}"]'
 		})
 	return tweets
-
 
 def user_tweets(user_id: str) -> List[Dict]:
 	"""For testing, getting one user's tweets for tweet ids to test reponse"""
@@ -306,10 +301,8 @@ def update_conversation_checks(root_id: int, max_step: List):
 		where(conversations.c.root_tweet_id == root_id).
 		values(checks_made = (max_step[8]+1))
 		)
-	engine = create_engine(db2)
 	with engine.begin() as connection:
 		connection.execute(query)
-
 
 # MAX(conversation_status)WHERE root_tweet_id LIKE '%1423714816145772545'
 # update conversations will go something like this ^ to increment conversation_status
@@ -427,7 +420,6 @@ def get_replies(user_id: str, tweet_id: int, tweeter_id: str) -> str:
 	#return replies
 	while True:
 		try:
-
 			reply = replies.next()
 			if not hasattr(reply, 'in_reply_to_status_id_str'):
 				continue
@@ -446,13 +438,10 @@ def get_replies(user_id: str, tweet_id: int, tweeter_id: str) -> str:
 			logger.error("Failed while fetching replies {}".format(e))
 			break
 
-
-
 def clean_query_string(string: str) -> str:
 	string.replace(' ', '%20')
 	string.replace(',', '')
 	return string
-
 
 def find_location(query_string: str) -> Dict:
 	query_string = clean_query_string(query_string)
