@@ -93,6 +93,28 @@ demo_entries = [
 	]
 
 
+def create_api():
+	consumer_key = os.getenv("TWITTER_API_KEY")
+	consumer_secret = os.getenv("TWITTER_API_KEY_SECRET")
+	access_token = os.getenv("ACCESS_TOKEN")
+	access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
+
+	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
+	auth.set_access_token(access_token, access_token_secret)
+	api = tweepy.API(auth, wait_on_rate_limit=True,
+		wait_on_rate_limit_notify=True)
+
+	try:
+		api.verify_credentials()
+	except Exception as e:
+		logger.error("Error creating API", exc_info=True)
+		print('failed')
+		raise e
+	logger.info("API created")
+	return api
+
+api = create_api()
+
 def create_conversations_table():
 	#session = Session()
 	#conversations.create(engine)
@@ -111,13 +133,13 @@ def create_conversations_table():
 		Column('checks_made',Integer),  # iterate each time check is made
 		Column('reachout_template', String)
 	)
-	meta.create_all(engine)
+	metadata.create_all(engine)
 
 def drop_conversations_table():
-	engine = create_engine(db2)
-	meta = MetaData()
+	# engine = create_engine(db2)
+	# meta = MetaData()
 	conversations = Table(
-		'conversations', meta,
+		'conversations', metadata,
 		Column('id', Integer, primary_key = True),
 		Column('root_tweet_id', String),  # Should be able to relate to main DB, if status == 5, push to main db
 		Column('sent_tweet_id', String),
@@ -134,7 +156,6 @@ def drop_conversations_table():
 
 def load_data_conversations() -> List[Tuple]:
 	"""Get all data from conversations"""
-	engine = create_engine(db2)
 	with engine.begin() as connection:
 		query = select(conversations)
 		conversations_data = connection.execute(query)
@@ -142,7 +163,6 @@ def load_data_conversations() -> List[Tuple]:
 
 def get_conversation_root(root_id: int) -> List[Tuple]:
 	"""Get conversations with a specific root"""
-	engine = create_engine(db2)
 	with engine.begin() as connection:
 		query = select(conversations).where(conversations.c.root_tweet_id == root_id)
 		conversations_data = connection.execute(query)
@@ -174,7 +194,6 @@ def get_no_location_force_rank() -> List[Tuple]:
 def insert_conversations(data: List[dict]) -> str:  # wherever output is string on u func, log status
 	# fmt [{"id":0,"root_tweet_id":'',"sent_tweet_id":'',"received_tweet_id":'',"in_reply_to_id":'',"conversation_status":0,"tweet_text":''}]
 	# Need to check existing conversations against root_id, and increment conversation_id
-	engine = create_engine(db2)
 	with engine.begin() as connection:
 		for datum in data:
 			ins = conversations.insert().values(datum)
@@ -207,7 +226,6 @@ def update_force_rank_location(data: Tuple, tweet_id: int) -> str:
 
 def get_to_advance() -> List[Tuple]:
 	# for each root_id, get highest conversation_status
-	engine = create_engine(db2)
 	with engine.begin() as connection:
 		query1 = select(func.max(conversations.c.conversation_status).label("status"), conversations.c.root_tweet_id).group_by(conversations.c.root_tweet_id).cte('wow')
 		query2 = select(conversations).join(query1, query1.c.root_tweet_id==conversations.c.root_tweet_id).filter(conversations.c.conversation_status==query1.c.status)
@@ -221,31 +239,11 @@ def advance_all():
 		print('success', points[1])
 
 
-def create_api():
-	consumer_key = os.getenv("TWITTER_API_KEY")
-	consumer_secret = os.getenv("TWITTER_API_KEY_SECRET")
-	access_token = os.getenv("ACCESS_TOKEN")
-	access_token_secret = os.getenv("ACCESS_TOKEN_SECRET")
-
-	auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-	auth.set_access_token(access_token, access_token_secret)
-	api = tweepy.API(auth, wait_on_rate_limit=True,
-		wait_on_rate_limit_notify=True)
-
-	try:
-		api.verify_credentials()
-	except Exception as e:
-		logger.error("Error creating API", exc_info=True)
-		print('failed')
-		raise e
-	logger.info("API created")
-	return api
 
 def clean_str(string: str) -> str:
 	return string.replace('\n', ' ').replace("'", "’")
 
 def scrape_twitter(query: str) -> List[Dict]:
-	api = create_api()
 	tweets = []
 	for status in tweepy.Cursor(
 		api.search,
@@ -265,7 +263,6 @@ def scrape_twitter(query: str) -> List[Dict]:
 
 def user_tweets(user_id: str) -> List[Dict]:
 	"""For testing, getting one user's tweets for tweet ids to test reponse"""
-	api = create_api()
 	temp = api.user_timeline(screen_name=f'{user_id}',
 		count = 200,
 		include_rts = False,
@@ -281,7 +278,6 @@ def user_tweets(user_id: str) -> List[Dict]:
 
 def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
 	"""Function to reply to a certain tweet_id"""
-	api = create_api()
 	return api.update_status(status=tweet_body, in_reply_to_status_id = tweet_id, auto_populate_reply_metadata=True)
 
 def reset_conversations_for_test():
@@ -291,14 +287,16 @@ def reset_conversations_for_test():
 	print("done, you idiot")
 
 def end_conversation(root_id: int, max_step: List):
-	api = create_api()
 	other_person = api.get_status(max_step[3])
 	other_person = other_person.user.screen_name
 	test = get_replies(bot_name, max_step[2], other_person) ## (me, last tweet I sent, person I'm talking to)
 	if test:
-		status = respond_to_tweet(test.id_str, conversation_tree[4])
-		to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id,"received_tweet_id":test.id_str,"in_reply_to_id":test.in_reply_to_status_id,"tweeter_id":test.in_reply_to_screen_name,"conversation_status":5,"tweet_text":test.full_text,"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[4]}]
-		insert_conversations(to_insert)
+		try:
+			status = respond_to_tweet(test.id_str, conversation_tree[4])
+			to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id,"received_tweet_id":test.id_str,"in_reply_to_id":test.in_reply_to_status_id,"tweeter_id":test.in_reply_to_screen_name,"conversation_status":5,"tweet_text":test.full_text,"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[4]}]
+			insert_conversations(to_insert)
+		except tweepy.TweepError as e:
+			logging.error("Tweepy error occured:{}".format(e))
 	else:
 		print('error here')
 
@@ -326,25 +324,32 @@ def advance_conversation(root_id: int) -> str:
 			max_step = steps
 			print(max_step)
 	if max_step[6] == 0:
-		status = respond_to_tweet(max_step[1], conversation_tree[1])
-		# Need to get columns from status object
-		print(max_step[6])
-		print(max_step[7])
-		print(max_step[9])
-		to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id_str,"in_reply_to_id":status.in_reply_to_status_id,"tweeter_id":max_step[5],"conversation_status":(max_step[6]+1),"tweet_text":max_step[7],"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[1]}]
+		try:
+			status = respond_to_tweet(max_step[1], conversation_tree[1])
+			# Need to get columns from status object
+			print(max_step[6])
+			print(max_step[7])
+			print(max_step[9])
+			to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id_str,"in_reply_to_id":status.in_reply_to_status_id,"tweeter_id":max_step[5],"conversation_status":(max_step[6]+1),"tweet_text":max_step[7],"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[1]}]
 
-		print(to_insert)
-		insert_conversations(to_insert)
+			print(to_insert)
+			insert_conversations(to_insert)
+		except tweepy.TweepError as e:
+			logging.error("Tweepy error occured:{}".format(e))
+
 	elif max_step[6] == 1:
 		print('works so far')
 		test = get_replies(bot_name, max_step[2], max_step[5])
 		if test:
 			if test.full_text == '@RowenWitt Yes':  ###### INSERT CLASSIFICATION MODEL HERE ####
-				status = respond_to_tweet(test.id_str,conversation_tree[2])
-				to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id,"received_tweet_id":test.id_str,"in_reply_to_id":test.in_reply_to_status_id,"tweeter_id":test.in_reply_to_screen_name,"conversation_status":(max_step[6]+1),"tweet_text":test.full_text,"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[2]}]
-				print(to_insert)
-				insert_conversations(to_insert)
-				return test
+				try:
+					status = respond_to_tweet(test.id_str,conversation_tree[2])
+					to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id,"received_tweet_id":test.id_str,"in_reply_to_id":test.in_reply_to_status_id,"tweeter_id":test.in_reply_to_screen_name,"conversation_status":(max_step[6]+1),"tweet_text":test.full_text,"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[2]}]
+					print(to_insert)
+					insert_conversations(to_insert)
+					return test
+				except tweepy.TweepError as e:
+					logging.error("Tweepy error occured:{}".format(e))
 			elif test.full_text == '@RowenWitt No': ###### INSERT CLASSIFICATION MODEL HERE ###
 				end_conversation(root_id, max_step)
 			else:
@@ -381,11 +386,14 @@ def advance_conversation(root_id: int) -> str:
 					print('START HERE ------------------')
 					print(update_data)
 					update_force_rank_location(update_data, root_id)
-					status = respond_to_tweet(test.id, conversation_tree[3])
-					to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id,"received_tweet_id":test.id_str,"in_reply_to_id":test.in_reply_to_status_id,"tweeter_id":test.in_reply_to_screen_name,"conversation_status":5,"tweet_text":test.full_text,"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[3]}]
-					print('LOOK HERE --------------------')
-					print(to_insert)
-					insert_conversations(to_insert)
+					try:
+						status = respond_to_tweet(test.id, conversation_tree[3])
+						to_insert = [{"root_tweet_id":root_id,"sent_tweet_id":status.id,"received_tweet_id":test.id_str,"in_reply_to_id":test.in_reply_to_status_id,"tweeter_id":test.in_reply_to_screen_name,"conversation_status":5,"tweet_text":test.full_text,"checks_made":(max_step[8]+1),"reachout_template":conversation_tree[3]}]
+						print('LOOK HERE --------------------')
+						print(to_insert)
+						insert_conversations(to_insert)
+					except tweepy.TweepError as e:
+						logging.error("Tweepy error occured:{}".format(e))
 				elif location['status'] == "ZERO_RESULTS":
 					pass
 					return end_conversation(root_id, max_step)
@@ -399,7 +407,6 @@ def advance_conversation(root_id: int) -> str:
 
 def get_user_id(screen_name: str) -> List[Dict]:
 	"""Get user ids"""
-	api = create_api()
 	name_id_pairs = []
 	resp = api.lookup_users(screen_name=screen_name)
 	for user in resp:
@@ -413,7 +420,6 @@ def get_replies(user_id: str, tweet_id: int, tweeter_id: str) -> str:
 	""" System to get replies to a given tweet, tweeted by user, replied by replier """
 	# if type(user_id) != str:
 	# 	user_id = get_user_id(user_id)
-	api = create_api()
 	replies = tweepy.Cursor(api.search, q='to:{}'.format(user_id),
 		since_id=tweet_id, tweet_mode='extended').items(100)
 	list_replies = []
