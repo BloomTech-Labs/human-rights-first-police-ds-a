@@ -72,8 +72,6 @@ For those interested in improving upon the data science codebase, here are some 
 | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ryan-fikejs/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/imanifaith/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/joshua-elamin-2b2ba9209/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/rowenwitt/) |
 
 </br>
-</br>
-</br>
 
 | [Brody Osterbuhr](https://github.com/BOsterbuhr) | [Rhia George](https://github.com/rhiag) | [Andrew Haney](https://github.com/Andrew-Haney) | [Murat Benbanaste](https://github.com/mbenbanaste)
 | :---: | :---: | :---: |:---: | 
