@@ -40,7 +40,7 @@ async def view_data():
     await update()
     return load_data()
 
-
+@app.on_event("startup")
 @repeat_every(seconds=60*60*4)
 async def update():
     """ 1. scrape twitter for police use of force
