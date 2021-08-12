@@ -5,10 +5,12 @@ from typing import Tuple, List, Dict
 from dotenv import load_dotenv
 import psycopg2
 
+
 from sqlalchemy import create_engine, select, insert, update, func, inspect
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from app.models import ForceRanks, Base
+
 
 load_dotenv()
 db_url = os.getenv('DB_URL')
@@ -81,4 +83,3 @@ class Database(object):
         if insp.has_table(table_name) == True:
             ForceRanks.__table__.drop(self.engine)
         self.initialize_ranks_table()
-
