@@ -141,6 +141,8 @@ def create_welcome_message(name: str,
     list_of_welcome_messages.append(welcome_response)
 
 
+# Can take out for loop for welcome_message by just using welcome_message_id
+# Have the welcome_message_name be displayed to admin but have it pass welcome_message_id
 def reply_to_tweet(tweet_id,
                    reply_text,
                    welcome_message_name,
@@ -175,19 +177,21 @@ def get_initial_dms(user_ids: List[str]) -> List[Dict]:
                 "text": dm.message_create['message_data']['text'],
                 "quick_reply_response": dm.message_create['message_data']['quick_reply_response']['metadata']
             })
+    # have this just commit to db
     return dm_list
 
 
-def send_clarification_dm(dm_id, A_B_txt, welcome_message_name, quick_replies: List[Dict] = None, ):
+def send_clarification_dm(dm_id, A_B_txt, quick_replies: List[Dict] = None, ):
     """ Sends DM to twitter user_id with quick reply options to clarify if tweet is police misconduct. """
     user_id = None  # Use dm_id to search db for recipient_id
-    
+
     api.send_direct_message(user_id, A_B_txt, quick_replies)
 
 
 def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
     """ Function to get DMs after initial response """
-    # Need to get a list of dm_ids from database
+    # Need to get a list of dm_ids from database to then check for responses
+
     pass
 
 
