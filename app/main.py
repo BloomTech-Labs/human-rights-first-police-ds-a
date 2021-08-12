@@ -5,9 +5,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from app.db import insert_data, load_data
-from app.scraper import deduplicate, frankenbert_rank, scrape_twitter
-
+from app.db import Database
+from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -38,9 +37,11 @@ async def frankenbert(user_input: str):
 @app.get("/view-data/")
 async def view_data():
     await update()
-    return load_data()
+    first_5000 = DB.load_data()[:5000]
+    return first_5000
 
 
+@app.on_event("startup")
 @repeat_every(seconds=60*60*4)
 async def update():
     """ 1. scrape twitter for police use of force
@@ -55,7 +56,7 @@ async def update():
     ))
     data: List[Dict] = scrape_twitter(search)
     clean_data: List[Dict] = deduplicate(data)
-    insert_data(clean_data)
+    DB.insert_data(clean_data)
 
 
 app.add_middleware(
