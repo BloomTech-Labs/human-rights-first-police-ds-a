@@ -161,12 +161,12 @@ def get_user_id_from_tweet(tweet_id):
     return user_id
 
 
-def get_initial_dms(user_id: List[str]) -> List[Dict]:
+def get_initial_dms(user_ids: List[str]) -> List[Dict]:
     """Function to get DMs sent from button in tweet"""
     dms = api.list_direct_messages()
     dm_list = []
     for dm in dms:
-        if dm.message_create['sender_id'] in user_id:
+        if dm.message_create['sender_id'] in user_ids:
             dm_list.append({
                 "dm_id": dm.id,
                 "time_created": dm.created_timestamp,
