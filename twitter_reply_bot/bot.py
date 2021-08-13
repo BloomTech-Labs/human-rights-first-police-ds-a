@@ -8,7 +8,7 @@ from db import Database
 import twitter
 
 
-#load_dotenv(find_dotenv())
+load_dotenv(find_dotenv())
 
 ###### TODO #####
 ### DB DE-IDIOTIZATION ###
