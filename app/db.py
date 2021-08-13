@@ -4,10 +4,12 @@ from typing import Tuple, List, Dict
 
 from dotenv import load_dotenv
 
+
 from sqlalchemy import create_engine, select, insert, update, func, inspect
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from app.models import ForceRanks, Base
+
 
 load_dotenv()
 db_url = os.getenv('DB_URL')

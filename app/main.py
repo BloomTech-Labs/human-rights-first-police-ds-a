@@ -7,6 +7,7 @@ from fastapi_utils.tasks import repeat_every
 
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 
+
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
 
@@ -37,8 +38,10 @@ async def frankenbert(user_input: str):
 async def view_data():
     """ update and get first 5000 observations dump endpoint """
     await update()
+
     first_5000 = DB.load_data()[:5000]
     return first_5000
+
 
 
 @app.on_event("startup")
@@ -56,7 +59,9 @@ async def update():
     ))
     data: List[Dict] = scrape_twitter(search)
     clean_data: List[Dict] = deduplicate(data)
+
     DB.insert_data(clean_data)
+
 
 
 app.add_middleware(
