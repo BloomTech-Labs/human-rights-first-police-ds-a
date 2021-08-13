@@ -5,7 +5,6 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from app.db import Database
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 
 description = """
@@ -36,6 +35,7 @@ async def frankenbert(user_input: str):
 
 @app.get("/view-data/")
 async def view_data():
+    """ update and get first 5000 observations dump endpoint """
     await update()
     first_5000 = DB.load_data()[:5000]
     return first_5000
@@ -52,7 +52,7 @@ async def update():
         'police',
         'police brutality',
         'police violence',
-        'police abuse',
+        'police abuse'
     ))
     data: List[Dict] = scrape_twitter(search)
     clean_data: List[Dict] = deduplicate(data)

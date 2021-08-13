@@ -3,7 +3,6 @@ import os
 from typing import Tuple, List, Dict
 
 from dotenv import load_dotenv
-import psycopg2
 
 from sqlalchemy import create_engine, select, insert, update, func, inspect
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -36,7 +35,7 @@ class Database(object):
 
 
     def model_to_dict(self, obj):
-
+        """ removes _sa_instance_state from .__dict__ representation of data model object """
         data = obj.__dict__
         if '_sa_instance_state' in data:
             del data['_sa_instance_state']
@@ -45,17 +44,25 @@ class Database(object):
 
 
     def load_data(self):
-
+        """ gets all data from force_ranks"""
         with self.Sessionmaker() as session:
             query = select(ForceRanks)
-            force_ranks_data = force_ranks_data = session.execute(query).fetchall()
+            force_ranks_data = session.execute(query).fetchall()
 
+        return force_ranks_data
+
+
+    def load_tweet_ids(self):
+        """ gets all tweet_ids from force_ranks """
+        with self.Sessionmaker() as session:
+            query = select(ForceRanks.tweet_id)
+            force_ranks_data = session.execute(query).fetchall()
 
         return force_ranks_data
 
 
     def insert_data(self, data: List[Dict]):
-
+        """ inserts data into force_ranks """
         with self.Sessionmaker() as session:
             last = select(func.max(ForceRanks.incident_id))
             last_value = session.execute(last).fetchall()[0][0]
@@ -70,6 +77,7 @@ class Database(object):
 
 
     def initialize_ranks_table(self):
+        """ creates table if not exists """
         insp = inspect(self.engine)
         if insp.has_table(table_name) == False:
             ForceRanks.__table__.create(self.engine)
@@ -77,8 +85,14 @@ class Database(object):
 
     def reset_table(self):
         """ DANGER! this will delete all data in the table!!! """
-        insp = inspect(self.engine)
-        if insp.has_table(table_name) == True:
-            ForceRanks.__table__.drop(self.engine)
-        self.initialize_ranks_table()
+        check = input('Are you sure? This will delete all table data (Y/N):')
+        if check == 'Y':
+            insp = inspect(self.engine)
+            if insp.has_table(table_name) == True:
+                ForceRanks.__table__.drop(self.engine)
+            self.initialize_ranks_table()
+        elif check == 'N':
+            pass
+        else:
+            print('Please answer Y or N')
 
