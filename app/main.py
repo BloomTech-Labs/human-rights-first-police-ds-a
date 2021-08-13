@@ -44,6 +44,7 @@ async def view_data():
 
 
 
+
 @app.on_event("startup")
 @repeat_every(seconds=60*60*4)
 async def update():
@@ -52,7 +53,8 @@ async def update():
         3. insert data into database
         4. repeat every 4 hours """
     search = choice((
-        'police',
+        'police', 'pigs',
+        'cops', 'ACAB', 'arrested',
         'police brutality',
         'police violence',
         'police abuse'
