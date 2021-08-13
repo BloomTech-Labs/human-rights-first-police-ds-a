@@ -81,8 +81,6 @@ demo_entries = [
 
 
 def create_conversations_table():
-	#session = Session()
-	#conversations.create(engine)
 	meta = MetaData()
 	conversations = Table(
 		'conversations', meta,
@@ -92,7 +90,6 @@ def create_conversations_table():
 		Column('received_tweet_id', String), #Could be combined with above?
 		Column('in_reply_to_id', String),
 		Column('tweeter_id', String),  # screen_name
-		# Column('conversation_id', Integer),
 		Column('conversation_status', Integer), # query to get largest of each conv_id
 		Column('tweet_text', String),  # just to have the text for records
 		Column('checks_made',Integer),  # iterate each time check is made
