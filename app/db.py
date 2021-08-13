@@ -3,76 +3,98 @@ import os
 from typing import Tuple, List, Dict
 
 from dotenv import load_dotenv
-import psycopg2
+
+
+from sqlalchemy import create_engine, select, insert, update, func, inspect
+from sqlalchemy.orm import sessionmaker, scoped_session
+
+from app.models import ForceRanks, Base
+
 
 load_dotenv()
 db_url = os.getenv('DB_URL')
 table_name = 'force_ranks'
 
 
-def db_action(sql_action: str):
-    """ DB Setter - Performs a DB action returns None """
-    conn = psycopg2.connect(db_url)
-    curs = conn.cursor()
-    curs.execute(sql_action)
-    conn.commit()
-    curs.close()
-    conn.close()
+class Database(object):
+
+    def __init__(self):
+        self.engine = create_engine(
+            db_url,
+            pool_recycle=3600,
+            pool_size=10,
+            echo=False,
+            pool_pre_ping=True
+        )
+
+        self.Sessionmaker = scoped_session(
+            sessionmaker(
+                autoflush=False,
+                autocommit=False,
+                bind=self.engine
+            )
+        )
 
 
-def db_query(sql_query: str) -> List[Tuple]:
-    """ DB Getter - Returns query results as a list """
-    conn = psycopg2.connect(db_url)
-    curs = conn.cursor()
-    curs.execute(sql_query)
-    results = curs.fetchall()
-    curs.close()
-    conn.close()
-    return results
+    def model_to_dict(self, obj):
+        """ removes _sa_instance_state from .__dict__ representation of data model object """
+        data = obj.__dict__
+        if '_sa_instance_state' in data:
+            del data['_sa_instance_state']
+
+        return data
 
 
-def insert_data(data: List[Dict]):
-    """ Insert data into the table """
-    for item in data:
-        db_action(f"""INSERT INTO {table_name} (
-        incident_date,
-        tweet_id,
-        user_name,
-        description,
-        force_rank,
-        status,
-        confidence,
-        tags,
-        src) 
-        VALUES {json.dumps(tuple(item.values()))};""")
+    def load_data(self):
+        """ gets all data from force_ranks"""
+        with self.Sessionmaker() as session:
+            query = select(ForceRanks)
+            force_ranks_data = session.execute(query).fetchall()
+
+        return force_ranks_data
 
 
-def load_data() -> List[Tuple]:
-    """ Get all incidents stored in police_force table """
-    return db_query(f"SELECT * FROM {table_name};")
+    def load_tweet_ids(self):
+        """ gets all tweet_ids from force_ranks """
+        with self.Sessionmaker() as session:
+            query = select(ForceRanks.tweet_id)
+            force_ranks_data = session.execute(query).fetchall()
+
+        return force_ranks_data
 
 
-def initialize_ranks_table():
-    """ This only needs to be run once when setting up the DB """
-    db_action(f"""CREATE TABLE IF NOT EXISTS {table_name} (
-    incident_id SERIAL PRIMARY KEY NOT NULL,
-    incident_date TEXT,
-    tweet_id TEXT,
-    user_name TEXT,
-    description TEXT,
-    city TEXT,
-    state TEXT,
-    lat FLOAT,
-    long FLOAT,
-    title TEXT,
-    force_rank TEXT,
-    status TEXT,
-    confidence FLOAT,
-    tags TEXT,
-    src TEXT);""")
+    def insert_data(self, data: List[Dict]):
+        """ inserts data into force_ranks """
+        with self.Sessionmaker() as session:
+            last = select(func.max(ForceRanks.incident_id))
+            last_value = session.execute(last).fetchall()[0][0]
+            for datum in range(len(data)):
+                last_value += 1
+                data[datum]['incident_id'] = last_value
+                if type(data[datum]['confidence']) != float:
+                    data[datum]['confidence'] = data[datum]['confidence'].item()
+                obj = ForceRanks(**data[datum])
+                session.add(obj)
+                session.commit()
 
 
-def reset_table():
-    """ DANGER! this will delete all data in the table!!! """
-    db_action(f"DROP TABLE {table_name}")
-    initialize_ranks_table()
+    def initialize_ranks_table(self):
+        """ creates table if not exists """
+        insp = inspect(self.engine)
+        if insp.has_table(table_name) == False:
+            ForceRanks.__table__.create(self.engine)
+
+
+    def reset_table(self):
+        """ DANGER! this will delete all data in the table!!! """
+        check = input('Are you sure? This will delete all table data (Y/N):')
+        if check == 'Y':
+            insp = inspect(self.engine)
+            if insp.has_table(table_name) == True:
+                ForceRanks.__table__.drop(self.engine)
+            self.initialize_ranks_table()
+        elif check == 'N':
+            pass
+        else:
+            print('Please answer Y or N')
+
