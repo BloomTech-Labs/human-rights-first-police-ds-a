@@ -41,9 +41,7 @@ async def view_data():
 
     first_5000 = DB.load_data()[:5000]
     return first_5000
-
-
-
+    
 
 @app.on_event("startup")
 @repeat_every(seconds=60*60*4)
