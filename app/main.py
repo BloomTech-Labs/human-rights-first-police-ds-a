@@ -39,7 +39,7 @@ async def view_data():
     """ update and get first 5000 observations dump endpoint """
     await update()
 
-    first_5000 = DB.load_data()[:5000]
+    first_5000 = DB.load_data_force_ranks()[:5000]
     return first_5000
     
 
@@ -60,7 +60,7 @@ async def update():
     data: List[Dict] = scrape_twitter(search)
     clean_data: List[Dict] = deduplicate(data)
 
-    DB.insert_data(clean_data)
+    DB.insert_data_force_ranks(clean_data)
 
 
 

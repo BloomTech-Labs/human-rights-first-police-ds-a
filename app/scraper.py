@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 
 from app.db import Database
 from app.franken_bert import FrankenBert
+from app.twitter import api
 
 DB = Database()
 
@@ -52,9 +53,9 @@ def clean_date(date: dt.datetime) -> str:
 def scrape_twitter(query: str) -> List[Dict]:
     """ Pull tweets from twitter that report police use of force """
     load_dotenv()
-    auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
-    auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
-    api = tweepy.API(auth, wait_on_rate_limit=True)
+    # auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
+    # auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
+    # api = tweepy.API(auth, wait_on_rate_limit=True)
     tweets = []
     for status in tweepy.Cursor(
         api.search,
