@@ -5,9 +5,11 @@ from typing import Tuple, List, Dict
 import tweepy
 from dotenv import load_dotenv
 
-from app.db import load_data
+
+from app.db import Database
 from app.franken_bert import FrankenBert
 
+DB = Database()
 
 model = FrankenBert("app/saved_model")
 
@@ -29,10 +31,10 @@ def frankenbert_rank(user_input: str) -> Tuple[str, str, Tuple[int, float]]:
 
 def deduplicate(new_data: List[Dict]) -> List[Dict]:
     """ Checks for duplicates and omits them """
-    old_data = load_data()
+    old_data = DB.load_tweet_ids()
     data = []
     for new in new_data:
-        if all(new['tweet_id'] != old[2] for old in old_data):
+        if all(new['tweet_id'] != old.tweet_id for old in old_data):
             data.append(new)
     return data
 
