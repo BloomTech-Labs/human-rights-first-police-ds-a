@@ -94,7 +94,7 @@ def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
 
 def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
 	""" Function to reply to a certain tweet_id """
-	return api.update_status(status=tweet_body, in_reply_to_status_id = tweet_id, autopopulate_reply_metadat = True)
+	return api.update_status(status=tweet_body, in_reply_to_status_id=tweet_id, autopopulate_reply_metadata=True)
 
 
 # Direct messaging

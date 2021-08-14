@@ -1,4 +1,4 @@
-from sqlalchemy import Table, Column, Integer, String, Date, Float
+from sqlalchemy import Table, Column, Integer, String, Date, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -53,7 +53,7 @@ class Conversations(Base):
 	root_tweet_id = Column(String)
 	form = Column(Integer)
 	root_tweet_city = Column(String(255))
-	root_tweet_state = Column(string(255))
+	root_tweet_state = Column(String(255))
 	root_tweet_lat = Column(Float)
 	root_tweet_long = Column(Float)
 	root_tweet_date = Column(Date)
@@ -66,11 +66,12 @@ class Conversations(Base):
 	tweet_text = Column(String)
 	checks_made = Column(Integer)
 	reachout_template = Column(String)
+	isChecked = Column(Boolean)
 
 
 	def __repr__(self):
 		return(
-			"id:{}, root_tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}").format(
+			"id:{}, root_tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
 			self.id,
 			self.root_tweet_id,
 			self.form,
@@ -84,10 +85,10 @@ class Conversations(Base):
 			self.received_tweet_id,
 			self.in_reply_to_id,
 			self.tweeter_id,
-			self.conversation_state,
+			self.conversation_status,
 			self.tweet_text,
 			self.checks_made,
 			self.reachout_template,
-
+			self.isChecked
 			)
 

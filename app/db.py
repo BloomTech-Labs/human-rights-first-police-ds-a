@@ -5,7 +5,7 @@ from typing import Tuple, List, Dict
 from dotenv import load_dotenv
 
 
-from sqlalchemy import create_engine, select, insert, update, func, inspect
+from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 
 from app.models import ForceRanks, Conversations #, Base
@@ -48,8 +48,7 @@ class Database(object):
     def get_conversation_root(self, root_id: int):
         """ Get conversation with a specific root_tweet_id """
         with self.Sessionmaker() as session:
-            query = select(Conversations).
-                where(Conversations.root_tweet_id == root_id)
+            query = select(Conversations).where(Conversations.root_tweet_id == root_id)
             conversations_data = session.execute(query)
 
         return [i[0] for i in conversations_data.fetchall()]
@@ -94,6 +93,8 @@ class Database(object):
             last = select(func.max(Conversations.id))
             last_value = session.execute(last).fetchall()[0][0]
             for datum in range(len(data)):
+                if last_value is None:
+                    last_value = 0
                 last_value += 1
                 data[datum]['id'] = last_value
                 obj = Conversations(**data[datum])
@@ -125,6 +126,16 @@ class Database(object):
         with self.Sessionmaker() as session:
             session.execute(query)
             session.commit()
+
+
+    def get_root_seven(self, root_id):
+        """ gets root_ids with value of 7 """
+        with self.Sessionmaker() as session:
+            query = (select(Conversations).
+            filter(and_(Conversations.root_tweet_id == str(root_id), Conversations.conversation_status == 7)))
+            check_data = session.execute(query)
+
+        return check_data.fetchall()
 
 
     def get_to_advance(self):
@@ -164,6 +175,75 @@ class Database(object):
             session.commit()
 
 
+    def convert_invocation_conversations(self, data):
+        """ converts invocation dict to correct column names """
+        clean_data = {}
+        try:
+            clean_data['form'] = data['form']
+        except KeyError:
+            pass
+        try:
+            clean_data['isChecked'] = True
+        except KeyError:
+            pass
+        try:
+            clean_data['link'] = data['link']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_id'] = data['tweet_id']
+        except KeyError:
+            pass
+        try:
+            clean_data['tweeter_id'] = data['user_name']
+        except KeyError:
+            pass
+        try:
+            clean_data['user_name'] = data['user_name']
+        except KeyError:
+            pass
+        return clean_data
+
+
+    def convert_form_conversations(self, data):
+        """ Converts form dict to correct column names """
+        clean_data = {}
+        clean_data['form'] = 1
+        try:
+            clean_data['root_tweet_id'] = data['tweet_id']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_city'] = data['city']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_state'] = data['state']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_lat'] = data['lat']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_long'] = data['long']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_date'] = data['incident_date']
+        except KeyError:
+            pass
+        try:
+            clean_data['root_tweet_force_rank'] = data['force_rank']
+        except KeyError:
+            pass
+        try:
+            clean_data['tweeter_id'] = data['user_name']
+        except KeyError:
+            pass
+        return clean_data
+
+
     def initialize_ranks_table(self):
         """ creates force_ranks table if not exists """
         insp = inspect(self.engine)
@@ -171,10 +251,10 @@ class Database(object):
             ForceRanks.__table__.create(self.engine)
 
 
-    def intialize_conversations_table(self):
+    def initialize_conversations_table(self):
         """ creates conversations table if not exists """
         insp = inspect(self.engine)
-        if insp.has_table("conversations"):
+        if insp.has_table("conversations") == False:
             Conversations.__table__.create(self.engine)
 
 
