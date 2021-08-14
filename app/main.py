@@ -34,14 +34,14 @@ class form_out(BaseModel):
 
 class form_in(BaseModel):
     city: str
-    confidence: Optional[float] = None
+    confidence: Optional[float] = 0
     description: str
     force_rank: str
     incident_date: str
     incident_id: int
     lat: float
     long: float
-    src: List[str]
+    src: List[str] = []
     state: str
     status: str
     title: str
@@ -62,22 +62,22 @@ app = FastAPI(
     version="0.36.6",
 )
 
-
+### THE PROBLEM IS LIKELY RELATED TO NEW FILES
 @app.post("/form_in/")
 async def create_form_in(data: form_in):
-    return form_in
-    # bot.send_form(form_in)
+    bot.receive_form(data)
 
 
-@app.post("/form_out/")
+@app.post("/form_out/", response_model=form_out)
 async def create_form_out(data: form_out):
-    return form_out
-    # bot.receive_form(form_out)
+    bot.send_form(data)
+    return data
 
 
 @app.post("/approval_check/")
 async def create_check(data: check):
-    return check
+    out = DB.get_root_seven(data.tweet_id)
+    return out
     # bot.DB
 
 
@@ -97,7 +97,7 @@ async def view_data():
     return first_5000
     
 
-@app.on_event("startup")
+#@app.on_event("startup")
 @repeat_every(seconds=60*60*4)
 async def update():
     """ 1. scrape twitter for police use of force

@@ -179,7 +179,7 @@ class Database(object):
         """ converts invocation dict to correct column names """
         clean_data = {}
         try:
-            clean_data['form'] = data['form']
+            clean_data['form'] = data.form
         except KeyError:
             pass
         try:
@@ -187,19 +187,19 @@ class Database(object):
         except KeyError:
             pass
         try:
-            clean_data['link'] = data['link']
+            clean_data['link'] = data.link
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_id'] = data['tweet_id']
+            clean_data['root_tweet_id'] = data.tweet_id
         except KeyError:
             pass
         try:
-            clean_data['tweeter_id'] = data['user_name']
+            clean_data['tweeter_id'] = data.user_name
         except KeyError:
             pass
         try:
-            clean_data['user_name'] = data['user_name']
+            clean_data['user_name'] = data.user_name
         except KeyError:
             pass
         return clean_data
@@ -210,35 +210,35 @@ class Database(object):
         clean_data = {}
         clean_data['form'] = 1
         try:
-            clean_data['root_tweet_id'] = data['tweet_id']
+            clean_data['root_tweet_id'] = data.tweet_id
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_city'] = data['city']
+            clean_data['root_tweet_city'] = data.city
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_state'] = data['state']
+            clean_data['root_tweet_state'] = data.state
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_lat'] = data['lat']
+            clean_data['root_tweet_lat'] = data.lat
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_long'] = data['long']
+            clean_data['root_tweet_long'] = data.long
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_date'] = data['incident_date']
+            clean_data['root_tweet_date'] = data.incident_date
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_force_rank'] = data['force_rank']
+            clean_data['root_tweet_force_rank'] = data.force_rank
         except KeyError:
             pass
         try:
-            clean_data['tweeter_id'] = data['user_name']
+            clean_data['tweeter_id'] = data.user_name
         except KeyError:
             pass
         return clean_data
