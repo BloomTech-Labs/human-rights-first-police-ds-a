@@ -68,7 +68,7 @@ def scrape_twitter(query: str) -> List[Dict]:
                 tweets.append({
                     "incident_date": clean_date(status.created_at),
                     "tweet_id": status.id_str,
-                    "user_name": clean_str(status.user.screen_name),  # FIXED
+                    "user_name": clean_str(status.user.screen_name),
                     "description": clean_str(status.full_text),
                     "force_rank": force_str,
                     "status": "pending",
