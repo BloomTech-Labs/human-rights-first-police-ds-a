@@ -30,34 +30,18 @@ app = FastAPI(
 )
 
 
-@app.post("/form-in/")
-async def create_form_in(data: form_in):
-    bot.receive_form(data)
-
-
 @app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
+    """ replies to a given tweet with a link """
     DB.update_force_rank({"status":"awaiting response"}, data.tweet_id)
     bot.send_form(data)
 
 
-@app.post("/approval_check/")
-async def create_check(data: check):
-    out = DB.get_root_seven(data.tweet_id)
-    return out
 
-
-@app.post("/approve/")
-async def approve(data: check):
-    for_update = DB.get_root_seven(data.tweet_id)
-    data = {}
-    data['city'] = for_update[0]['Conversations'].root_tweet_city
-    data['state'] = for_update[0]['Conversations'].root_tweet_state
-    data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
-    data['incident_date'] = for_update[0]['Conversations'].root_tweet_date
-    data['status'] = 'approved'
-    location = bot.find_location(data['city'] + ',' + data['state'])
-    print(location) # DELETE BEFORE PR
+@app.post("/form-in/")
+async def create_form_in(data: form_in):
+    """ receives form response and stores in holding table """
+    location = bot.find_location(data.city + ',' + data.state)
     if location['status'] == "OK":
         loc_list = location['candidates'][0]['formatted_address'].split(',')
 
@@ -69,9 +53,34 @@ async def approve(data: check):
             city = loc_list[0]
             state = loc_list[1].split()[0]
 
-        data['lat'] = location['candidates'][0]['geometry']['location']['lat']
-        data['long'] = location['candidates'][0]['geometry']['location']['lng']
-    
+        data.lat = location['candidates'][0]['geometry']['location']['lat']
+        data.long = location['candidates'][0]['geometry']['location']['lng']
+    else:
+        print(location['status'])
+    bot.receive_form(data)
+
+
+
+@app.post("/approval_check/")
+async def create_check(data: check):
+    """ returns value of holding table row with given tweet_id """
+    out = DB.get_root_seven(data.tweet_id)
+    return out
+
+
+@app.post("/approve/")
+async def approve(data: check):
+    """ updates force_ranks with value of holding table row which is a form response """
+    for_update = DB.get_root_seven(data.tweet_id)
+    data = {}
+    data['city'] = for_update[0]['Conversations'].root_tweet_city
+    data['state'] = for_update[0]['Conversations'].root_tweet_state
+    data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
+    data['incident_date'] = for_update[0]['Conversations'].root_tweet_date
+    data['status'] = 'approved'
+    data['lat'] = for_update[0]['Conversations'].root_tweet_lat
+    data['long'] = for_update[0]['Conversations'].root_tweet_long
+
     DB.update_force_rank(data, for_update[0]['Conversations'].root_tweet_id)
     return data
 
