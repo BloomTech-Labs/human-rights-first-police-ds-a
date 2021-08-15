@@ -34,6 +34,11 @@ app = FastAPI(
     version="0.37.1",
 )
 
+@app.post("/form/send")
+async def send_form_tweet(form_data: FormData):
+    tweet = form_tweet(form_data.tweet_source, form_data.information_requested)
+    return tweet.id  # Returns the ID of the tweet that was just sent.
+
 
 
 @app.post("/form-out/", response_model=form_out)

@@ -48,6 +48,24 @@ class ForceRanks(Base):
 			self.src
 			)
 
+Base = declarative_base()
+
+class FormData(BaseModel):
+    tweet_source: str
+    information_requested: str
+
+
+class DirectMessages(Base):
+    
+    __tablename__ = 'direct_messages'
+    
+    id = Column(Integer, primary_key=True)
+    created_timestamp = Column(Date, nullable=False)
+    welcome_message_id = Column(String, nullable=False)
+    sender_id = Column(String, nullable=False)
+    dm_text = Column(String)
+    quick_reply_response = Column(String)
+
 
 class Conversations(Base):
 

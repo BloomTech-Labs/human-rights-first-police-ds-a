@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from typing import Dict, List
 
 import requests
@@ -95,13 +96,32 @@ list_of_welcome_messages = [
         }
     }
 ]
-
-list_of_A_B_txts = ['''Hi! I am a bot for Blue Witness, a project by the
-                    Human Rights First. We noticed a tweet that may involve
-                    police misconduct, can you confirm this?''',
-                    ]
+# Change to dict with keys of date location, and confirmation. Values list of A/B text
+list_of_A_B_txts = [
+    '''Hi! I am a bot for Blue Witness, a project by @humanrights1st. We noticed your tweet may involve police misconduct, please confirm the date of this incident here: ''',
+    '''Hi! I am a bot for Blue Witness, a project by @humanrights1st. We noticed your tweet may involve police misconduct, please confirm the location of this incident here: ''',
+]
 
 list_of_quick_replies = [quick_reply_use_of_force, confirmation_reply]
+
+
+def get_tweet_id(tweet_url):
+    """Get the tweet ID from the tweet URL"""
+    tweet_id = re.search(r'\d+$', tweet_url)
+    return tweet_id.group(0)
+
+
+def form_tweet(tweet_source: str, information_requested: str) -> Dict:
+    tweet_id = get_tweet_id(tweet_source)
+    if information_requested == 'date':
+        tweet_txt = list_of_A_B_txts[0]
+    if information_requested == 'location':
+        tweet_txt = list_of_A_B_txts[1]
+    link = os.getenv("FORM_URL")
+    reply_message = f"{tweet_txt} \n {link}"
+    tweet = api.update_status(reply_message, in_reply_to_status_id=tweet_id,
+                              auto_populate_reply_metadata=True)
+    return tweet
 
 
 def create_welcome_message(name: str,
@@ -143,6 +163,8 @@ def create_welcome_message(name: str,
 
 # Can take out for loop for welcome_message by just using welcome_message_id
 # Have the welcome_message_name be displayed to admin but have it pass welcome_message_id
+
+
 def reply_to_tweet(tweet_id,
                    reply_text,
                    welcome_message_name,
@@ -195,5 +217,7 @@ def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
     pass
 
 
-dms_to_check = ["204178035", "1424579675645378561"]
-print(get_initial_dms(dms_to_check))
+# dms_to_check = ["204178035", "1424579675645378561"]
+# print(get_initial_dms(dms_to_check))
+# tweet = form_tweet('https://twitter.com/BrodyOsterbuhr/status/1386536629280468996', 'location')
+# print(tweet.id)
