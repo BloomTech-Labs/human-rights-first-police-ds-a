@@ -7,6 +7,8 @@ from fastapi_utils.tasks import repeat_every
 
 from app.db import insert_data, load_data
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter
+from app.models import FormData
+from app.tweep_dm import form_tweet
 
 
 description = """
@@ -26,6 +28,11 @@ app = FastAPI(
     docs_url='/',
     version="0.36.6",
 )
+
+@app.post("/form/send")
+async def send_form_tweet(form_data: FormData):
+    tweet = form_tweet(form_data.tweet_source, form_data.information_requested)
+    return tweet.id  # Returns the ID of the tweet that was just sent.
 
 
 @app.get("/frankenbert/{user_input}")

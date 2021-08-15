@@ -1,8 +1,13 @@
 from sqlalchemy import Table, Column, Integer, String, Date, Float
 from sqlalchemy.ext.declarative import declarative_base
-
+from pydantic import BaseModel
 
 Base = declarative_base()
+
+class FormData(BaseModel):
+    tweet_source: str
+    information_requested: str
+
 
 class DirectMessages(Base):
     
