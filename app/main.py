@@ -95,13 +95,13 @@ async def frankenbert(user_input: str):
 @app.get("/view-data/")
 async def view_data():
     """ update and get first 5000 observations dump endpoint """
-    #await update()
+    await update()
 
     first_5000 = DB.load_data_force_ranks()[:5000]
     return first_5000
     
 
-#@app.on_event("startup")
+@app.on_event("startup")
 @repeat_every(seconds=60*60*4)
 async def update():
     """ 1. scrape twitter for police use of force
