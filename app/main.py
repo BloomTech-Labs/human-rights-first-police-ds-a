@@ -37,6 +37,7 @@ async def create_form_in(data: form_in):
 
 @app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
+    DB.update_force_rank({"status":"awaiting response"}, data.tweet_id)
     bot.send_form(data)
 
 
@@ -44,6 +45,35 @@ async def create_form_out(data: form_out):
 async def create_check(data: check):
     out = DB.get_root_seven(data.tweet_id)
     return out
+
+
+@app.post("/approve/")
+async def approve(data: check):
+    for_update = DB.get_root_seven(data.tweet_id)
+    data = {}
+    data['city'] = for_update[0]['Conversations'].root_tweet_city
+    data['state'] = for_update[0]['Conversations'].root_tweet_state
+    data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
+    data['incident_date'] = for_update[0]['Conversations'].root_tweet_date
+    data['status'] = 'approved'
+    location = bot.find_location(data['city'] + ',' + data['state'])
+    print(location) # DELETE BEFORE PR
+    if location['status'] == "OK":
+        loc_list = location['candidates'][0]['formatted_address'].split(',')
+
+        if len(loc_list) == 4:
+            city = loc_list[1]
+            state = loc_list[2].split()[0]
+
+        if len(loc_list) == 3:
+            city = loc_list[0]
+            state = loc_list[1].split()[0]
+
+        data['lat'] = location['candidates'][0]['geometry']['location']['lat']
+        data['long'] = location['candidates'][0]['geometry']['location']['lng']
+    
+    DB.update_force_rank(data, for_update[0]['Conversations'].root_tweet_id)
+    return data
 
 
 @app.get("/frankenbert/{user_input}")

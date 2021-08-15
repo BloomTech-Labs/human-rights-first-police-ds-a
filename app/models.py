@@ -106,15 +106,16 @@ class form_out(BaseModel):
 
 class form_in(BaseModel):
     city: str
+    state: str
     confidence: Optional[float] = 0
     description: str
     force_rank: str
     incident_date: str
     incident_id: int
-    lat: float
-    long: float
+    lat: Optional[float] = None
+    long: Optional[float] = None
     src: List[str] = []
-    state: str
+
     status: str
     title: str
     tweet_id: str
