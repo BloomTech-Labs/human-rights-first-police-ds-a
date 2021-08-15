@@ -1,5 +1,7 @@
 from sqlalchemy import Table, Column, Integer, String, Date, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
+from pydantic import BaseModel
+from typing import Optional, List, Dict
 
 Base = declarative_base()
 
@@ -91,4 +93,34 @@ class Conversations(Base):
 			self.reachout_template,
 			self.isChecked
 			)
+
+
+class form_out(BaseModel):
+    form: int
+    incident_id: int
+    isChecked: bool
+    link: str
+    tweet_id: str
+    user_name: str
+
+
+class form_in(BaseModel):
+    city: str
+    confidence: Optional[float] = 0
+    description: str
+    force_rank: str
+    incident_date: str
+    incident_id: int
+    lat: float
+    long: float
+    src: List[str] = []
+    state: str
+    status: str
+    title: str
+    tweet_id: str
+    user_name: str
+
+
+class check(BaseModel):
+    tweet_id: str
 

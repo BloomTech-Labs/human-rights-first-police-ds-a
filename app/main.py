@@ -1,14 +1,15 @@
 from random import choice
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
-from pydantic import BaseModel
+
 
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
-import app.bot as bot # This might work
-# SHOULD LIMIT TO ONE DB IMPORT, WHAT MAKES THE MOST SENSE???
+import app.bot as bot
+from app.models import form_out, form_in, check
+
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -21,40 +22,6 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
-### MOVE TO MODELS
-
-class form_out(BaseModel):
-    form: int
-    incident_id: int
-    isChecked: bool
-    link: str
-    tweet_id: str
-    user_name: str
-
-
-class form_in(BaseModel):
-    city: str
-    confidence: Optional[float] = 0
-    description: str
-    force_rank: str
-    incident_date: str
-    incident_id: int
-    lat: float
-    long: float
-    src: List[str] = []
-    state: str
-    status: str
-    title: str
-    tweet_id: str
-    user_name: str
-
-
-class check(BaseModel):
-    tweet_id: str
-
-### MOVE TO MODELS
-
-
 app = FastAPI(
     title='Labs 36 HRF BW DS API',
     description=description,
@@ -62,23 +29,21 @@ app = FastAPI(
     version="0.36.6",
 )
 
-### THE PROBLEM IS LIKELY RELATED TO NEW FILES
-@app.post("/form_in/")
+
+@app.post("/form-in/")
 async def create_form_in(data: form_in):
     bot.receive_form(data)
 
 
-@app.post("/form_out/", response_model=form_out)
+@app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
     bot.send_form(data)
-    return data
 
 
 @app.post("/approval_check/")
 async def create_check(data: check):
     out = DB.get_root_seven(data.tweet_id)
     return out
-    # bot.DB
 
 
 @app.get("/frankenbert/{user_input}")
@@ -97,7 +62,7 @@ async def view_data():
     return first_5000
     
 
-#@app.on_event("startup")
+@app.on_event("startup")
 @repeat_every(seconds=60*60*4)
 async def update():
     """ 1. scrape twitter for police use of force

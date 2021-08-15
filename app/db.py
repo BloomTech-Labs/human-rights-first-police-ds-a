@@ -1,9 +1,8 @@
-import json
-import os
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
+import json, os
 from typing import Tuple, List, Dict
-
-from dotenv import load_dotenv
-
 
 from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -11,10 +10,8 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 from app.models import ForceRanks, Conversations #, Base
 
 
-load_dotenv()
-db_url = os.getenv('DB_URL')
-#table_name = 'force_ranks'
-
+#db_url = os.getenv('DB_URL')
+db_url = os.getenv('DB_URL2')
 
 class Database(object):
 
@@ -78,9 +75,11 @@ class Database(object):
             last = select(func.max(ForceRanks.incident_id))
             last_value = session.execute(last).fetchall()[0][0]
             for datum in range(len(data)):
+                if last_value is None:
+                    last_value = 0
                 last_value += 1
                 data[datum]['incident_id'] = last_value
-                if type(data[datum]['confidence']) != float:
+                if type(data[datum]['confidence']) != float and data[datum]['confidence'] != None:
                     data[datum]['confidence'] = data[datum]['confidence'].item()
                 obj = ForceRanks(**data[datum])
                 session.add(obj)
@@ -136,6 +135,24 @@ class Database(object):
             check_data = session.execute(query)
 
         return check_data.fetchall()
+
+
+    def get_user_name(self):
+        """ gets user_name from src """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+                filter(ForceRanks.incident_id > 1332).
+                order_by(ForceRanks.incident_id.desc())
+
+                )
+            data = session.execute(query).fetchall()
+            for datum in data:
+                if datum['ForceRanks'].src[:22] == '["https://twitter.com/': # REEEMOVE FOR PROD
+                    point = datum[0].src[22:]
+                    point = point[:point.index('/')]
+                    datum['ForceRanks'].user_name = point
+
+        return data
 
 
     def get_to_advance(self):

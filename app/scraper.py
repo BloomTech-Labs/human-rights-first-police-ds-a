@@ -1,10 +1,11 @@
+from dotenv import load_dotenv, find_dotenv
+load_dotenv(find_dotenv())
+
 import os
 import datetime as dt
 from typing import Tuple, List, Dict
 
 import tweepy
-from dotenv import load_dotenv
-
 
 from app.db import Database
 from app.franken_bert import FrankenBert
@@ -32,7 +33,7 @@ def frankenbert_rank(user_input: str) -> Tuple[str, str, Tuple[int, float]]:
 
 def deduplicate(new_data: List[Dict]) -> List[Dict]:
     """ Checks for duplicates and omits them """
-    old_data = DB.load_tweet_ids()
+    old_data = DB.load_tweet_ids_force_ranks()
     data = []
     for new in new_data:
         if all(new['tweet_id'] != old.tweet_id for old in old_data):
@@ -52,10 +53,6 @@ def clean_date(date: dt.datetime) -> str:
 
 def scrape_twitter(query: str) -> List[Dict]:
     """ Pull tweets from twitter that report police use of force """
-    load_dotenv()
-    # auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
-    # auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
-    # api = tweepy.API(auth, wait_on_rate_limit=True)
     tweets = []
     for status in tweepy.Cursor(
         api.search,
@@ -71,7 +68,7 @@ def scrape_twitter(query: str) -> List[Dict]:
                 tweets.append({
                     "incident_date": clean_date(status.created_at),
                     "tweet_id": status.id_str,
-                    "user_name": clean_str(status.user.name),
+                    "user_name": clean_str(status.user.screen_name),  # FIXED
                     "description": clean_str(status.full_text),
                     "force_rank": force_str,
                     "status": "pending",

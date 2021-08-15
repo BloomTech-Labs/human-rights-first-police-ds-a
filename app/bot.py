@@ -5,9 +5,9 @@ import os, logging, tweepy
 from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, select, insert, update, func
 
-from app.db import Database
-import app.twitter as twitter # Maybe only need some functions
-#import app.db  # Maybe only need some functions
+from app.scraper import DB
+import app.twitter as twitter
+
 
 
 MAP_API = os.getenv("MAP_API")
@@ -15,14 +15,13 @@ MAP_API = os.getenv("MAP_API")
 #### NEED TO TEST
 	# NORMAL REPLY CONVERSATION WITH SELF (CAN DO)
 	# NORMAL REPLY CONVERSATION WITH OTHER (A LITTLE DOING)
-	# FORM FLOW WITH SELF (NEED FORM OUTPUT)
-	# FORM FLOW WITH OTHER (NEED FORM OUTPUT AND FRIENDS)
+
+
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 bot_name = 'RowenWitt' # Need bot name
-DB = Database()
 
 conversation_tree = {
 	1:"Hi, do you have more information about the location of this incident?",
@@ -267,17 +266,6 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 		DB.update_conversation_checks(root_id)
 
 
-# def input_form_response(data: dict):  # FIGURE OUT HOW DATA IS BEING STORED IN THE FORM
-# 	""" Inputs form respnse into conversations """
-# 	to_insert = [{
-# 		"root_tweet_id":data.root_tweet_id,
-# 		"sent_tweet_id":data.sent_tweet_id,
-# 		"conversation_status":5,
-# 		"tweet_text":data.form_link,
-# 		""
-# 	}]
-
-
 def clean_query_string(string: str) -> str:
 	""" Cleans string of ' 's and 's """
 	string.replace(' ', '%20')
@@ -292,14 +280,3 @@ def find_location(query_string: str) -> Dict:
 	resp = requests.get(query)
 	data = json.loads(resp.content)
 	return data
-
-
-### How to manage form as an input type in conversation tree?
-	# Allow form to be passed at any step except for 5
-	# Status 4? will be waiting for form response
-	# WHEN RESPONSE FIRED FROM FORM, NEED TO HAVE ENDPOINT TO ADVANCE CONVERSATION STATUS
-	# TO 5, INSERT UPDATED DATA TO CONVERSATIONS,
-		# HOW TO AUTHENTICATE??? FORM MUST DO SO...
-	# Status 5 will be all done
-
-
