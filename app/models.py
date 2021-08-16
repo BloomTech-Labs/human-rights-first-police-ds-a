@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 Base = declarative_base()
 
-class FormData(BaseModel):
+class RequestedFormData(BaseModel):
     tweet_source: str
     information_requested: str
 
