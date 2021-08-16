@@ -1,15 +1,14 @@
 from random import choice
-from typing import List, Dict
+from typing import Dict, List
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
 from app.db import insert_data, load_data
-from app.scraper import deduplicate, frankenbert_rank, scrape_twitter
 from app.models import RequestedFormData
+from app.scraper import deduplicate, frankenbert_rank, scrape_twitter
 from app.tweep_dm import form_tweet
-
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -38,7 +37,13 @@ async def send_form_tweet(data: RequestedFormData):
     Args:
         data (RequestedFormData):  JSON containing information required to send reply tweet with form link
             data.tweet_source (str): Full URL to source tweet
-            data.information_requested (str): One of a pre-defined set of information requests
+            data.information_requested (str): One of a pre-defined set of information requests:
+                                            - location or date (for now)
+
+            e.g.{
+                    "tweet_source": "https://twitter.com/elonmusk/status/1423830326665650179",
+                    "information_requested": "location"
+                }
 
     Returns:
         tweet.id (int): ID of the tweet that was sent

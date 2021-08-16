@@ -1,9 +1,9 @@
 import json
 import os
-from typing import Tuple, List, Dict
+from typing import Dict, List, Tuple
 
-from dotenv import load_dotenv
 import psycopg2
+from dotenv import load_dotenv
 
 load_dotenv()
 db_url = os.getenv('DB_URL')

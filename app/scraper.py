@@ -1,13 +1,12 @@
-import os
 import datetime as dt
-from typing import Tuple, List, Dict
+import os
+from typing import Dict, List, Tuple
 
 import tweepy
 from dotenv import load_dotenv
 
 from app.db import load_data
 from app.franken_bert import FrankenBert
-
 
 model = FrankenBert("app/saved_model")
 
@@ -50,7 +49,8 @@ def clean_date(date: dt.datetime) -> str:
 def scrape_twitter(query: str) -> List[Dict]:
     """ Pull tweets from twitter that report police use of force """
     load_dotenv()
-    auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
+    auth = tweepy.OAuthHandler(
+        os.getenv("CONSUMER_KEY"), os.getenv("CONSUMER_SECRET"))
     auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
     api = tweepy.API(auth, wait_on_rate_limit=True)
     tweets = []
