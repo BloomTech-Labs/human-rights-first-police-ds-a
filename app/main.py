@@ -34,10 +34,22 @@ app = FastAPI(
     version="0.37.1",
 )
 
+
 @app.post("/form/send")
-async def send_form_tweet(form_data: FormData):
-    tweet = form_tweet(form_data.tweet_source, form_data.information_requested)
-    return tweet.id  # Returns the ID of the tweet that was just sent.
+async def send_form_tweet(data: RequestedFormData):
+    '''
+    Sends a reply tweet with a linked form to gather additional information on an incident.
+
+    Args:
+        data (RequestedFormData):  JSON containing information required to send reply tweet with form link
+            data.tweet_source (str): Full URL to source tweet
+            data.information_requested (str): One of a pre-defined set of information requests
+
+    Returns:
+        tweet.id (int): ID of the tweet that was sent
+    '''
+    tweet = form_tweet(data.tweet_source, data.information_requested)
+    return tweet.id
 
 
 
@@ -120,6 +132,7 @@ async def to_approve():
     """ get all rows of Conversations that are form responses that have not been approved """
     needs_approval = DB.get_sevens()
     return needs_approval
+
 
 
 @app.on_event("startup")
