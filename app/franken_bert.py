@@ -1,6 +1,6 @@
 import numpy as np
 import torch
-from transformers import BertTokenizer, BertForSequenceClassification
+from transformers import BertForSequenceClassification, BertTokenizer
 
 
 class FrankenBert:

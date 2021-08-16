@@ -3,7 +3,8 @@ load_dotenv(find_dotenv())
 
 import os
 import datetime as dt
-from typing import Tuple, List, Dict
+import os
+from typing import Dict, List, Tuple
 
 import tweepy
 
