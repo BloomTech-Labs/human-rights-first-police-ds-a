@@ -186,7 +186,7 @@ class Database(object):
                 func.max(Conversations.conversation_status).label("status"),
                 Conversations.tweet_id
             ).group_by(
-                Converstaions.tweet_id
+                Conversations.tweet_id
             ).cte('wow')
 
             query2 = select(

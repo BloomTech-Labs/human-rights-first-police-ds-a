@@ -14,6 +14,8 @@ from app.twitter import create_api
 
 DB = Database()
 
+DB = Database()
+
 model = FrankenBert("app/saved_model")
 
 

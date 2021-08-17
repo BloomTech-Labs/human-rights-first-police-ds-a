@@ -149,6 +149,7 @@ async def update():
         2. deduplicate data based on tweet id
         3. insert data into database
         4. repeat every 4 hours """
+# possible additions 'police', 'cop', 'policeman', 'cop', 'officer', 'cop', 'officers', 'officer', 'officers',
     search = choice((
         'police', 'pigs',
         'cops', 'ACAB', 'arrested',
