@@ -79,7 +79,6 @@ def advance_all():
 	to_advance = DB.get_to_advance()
 	for threads in to_advance:
 		advance_conversation(points.root_tweet_id)
-		print('success', threads.root_tweet_id)  # DELETE BEFORE PR
 
 
 def reset_conversations_for_test():   # DELETE BEFORE PR
@@ -117,20 +116,19 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 		except tweepy.TweepError as e:
 			logging.error("Tweepy error occured:{}".format(e))
 	else:
-		print('error_here')   # DELETE
+		pass
 
 
 def advance_conversation(root_id: int, form_link: str) -> str:
 	""" Advances conversation by root_id """
 	root_conversation = DB.get_conversation_root(root_id)
 	max = -1
-	print([i.__dict__ for i in root_conversation])  # DELETE BEFORE PR
+
 	for steps in root_conversation:
-		print(steps.__dict__)  # DELETE BEFORE PR
+
 		if steps.conversation_status > max:
 			max = steps.conversation_status
 			max_step = steps
-			print(max_step.__dict__)  # DELETE BEFORE PR
 	if max_step.conversation_status == 0 and max_step.form == 0:
 		try:
 			status = twitter.respond_to_tweet(max_step.root_tweet_id, conversation_tree[1])
@@ -149,16 +147,13 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 				"form":0
 			}]
 
-			print(to_insert)  # DELETE BEFORE PR
 			DB.insert_data_conversations(to_insert)
 		except tweepy.TweepError as e:
 			logging.error("Tweepy error occured:{}".format(e))
 	elif max_step.conversation_status == 0 and max_step.form == 1:
 		try:
 			status = twitter.respond_to_tweet(max_step.root_tweet_id, max_step.form_link)
-			print(max_step.conversation_status)  # DELETE BEFORE PR
-			print(max_step.tweet_text) # DELETE BEFORE PR (SHOULD ALWAYS BE EMPTY?)
-			print(max_step.reachout_template) # DELETE BEFORE PR (SHOULD ALWAYS BE EMPTY?)
+
 			to_insert = [{
 				"root_tweet_it":root_id,
 				"sent_tweet_id":status.id_str,
@@ -171,12 +166,11 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 				"form":1
 			}]
 
-			print(to_insert)  # DELETE BEFORE PR
 			DB.insert_data_conversations(to_insert)
 		except tweepy.TweepError as e:
 			logging.error("Tweepy error occured:{}".format(e))
 	elif max_step.conversation_status == 1 and max_step.form == 0:
-		print('works so far') # DELETE BEFORE PR
+
 		test = twitter.get_replies(bot_name, max_step.sent_tweet_id, max_step.tweeter_id)
 		if test:
 			if test.full_text == '@' + bot_name + 'Yes': ### INSERT CLASSIFICATION MODEL CALL HERE ####
@@ -194,29 +188,28 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 						"reachout_template":conversation_tree[2],
 						"form":0
 					}]
-					print(to_insert) # DELETE BEFORE PR
+
 					DB.insert_data_conversations(to_insert)
 					return test
 				except tweepy.TweepError as e:
 					logging.error("Tweepy error occured:{}".format(e))
-			elif test.full_text == "@" + bot_name + 'No': ### INSERT CLASSIFICATION MODEL CALL HERE ####
+			elif test.full_text == "@" + bot_name + 'No':                           ### INSERT CLASSIFICATION MODEL CALL HERE ####
 				end_conversation(root_id, max_step, received_tweet_id=test.id_str)
-			else:  ### INSERT CLASSIFICATION MODEL HERE (MAYBE CASE)
+			else:                                                                   ### INSERT CLASSIFICATION MODEL HERE (MAYBE CASE)
 				end_conversation(root_id, max_step, received_tweet_id=test.id_str)
 		else:
 			pass
 	elif max_step.conversation_status == 2 and max_step.form == 0:
-		print('We got this far')  # DELETE BEFORE PR
-		print(max_step) # DELETE BEFORE PR
+
 		other_person = twitter.api.get_status(max_step.received_tweet_id)
 		other_person = other_person.user.screen_name
 		test = twitter.get_replies(bot_name, max_step.sent_tweet_id, other_person)
 
 		if test is not None:
-			print(test.full_text) # DELETE BEFORE PR
-			if test.full_text: ### VALIDATION GOES HERE ####
+
+			if test.full_text:
 				location = find_location(test.fill_text.lstrip("@" + bot_name + " "))
-				print(location) # DELETE BEFORE PR
+
 				if location['status'] == "OK":
 					loc_list = location['candidates'][0]['formatted_address'].split(',')
 
@@ -246,7 +239,7 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 							"reachout_template":conversation_tree[3],
 							"form":0
 						}]
-						print(to_insert) # DELETE BEFORE PR
+
 						DB.insert_data_conversations(to_insert)
 					except tweepy.TweepError as e:
 						logging.error("Tweepy error occured:{}".format(e))
