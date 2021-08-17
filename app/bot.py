@@ -81,10 +81,10 @@ def advance_all():
 		advance_conversation(points.root_tweet_id)
 
 
-def reset_conversations_for_test():   # DELETE BEFORE PR
-	DB.reset_conversations()   # DELETE BEFORE PR
-	DB.insert_data_conversations(test_entries)   # DELETE BEFORE PR
-	print("done, you idiot")   # DELETE BEFORE PR
+def reset_conversations_for_test(): 
+	DB.reset_conversations()
+	DB.insert_data_conversations(test_entries) 
+	print("done,")
 
 
 def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
