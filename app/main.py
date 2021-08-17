@@ -69,7 +69,11 @@ async def update():
         'shot', 'lethal', 'non-lethal', 
         'pepper spray', 'oc', 'tear gas', 
         'rubber bullets', 'push', 
-        'non-violent', 'tased'
+        'non-violent', 'tased', 'clashed with police',
+        '#policebrutality', '#pig', '#pigs', 
+        '#5-0', '#policeofficer', '#ACAB', 
+        '#1312', '#fuckthepolice', 
+        '#BlackLivesMatter', '#policeaccountability'
     ))
     data: List[Dict] = scrape_twitter(search)
     clean_data: List[Dict] = deduplicate(data)
