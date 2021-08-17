@@ -4,12 +4,12 @@ from typing import List, Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
+from pydantic import BaseModel
 
 
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 from app.models import form_out, form_in, check
-
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -22,12 +22,18 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
+
+class InputString(BaseModel):
+    text: str
+
+
 app = FastAPI(
     title='Labs 36 HRF BW DS API',
     description=description,
     docs_url='/',
-    version="0.36.6",
+    version="0.37.1",
 )
+
 
 
 @app.post("/form-out/", response_model=form_out)
@@ -91,7 +97,7 @@ async def approve(data: check):
 @app.get("/frankenbert/{user_input}")
 async def frankenbert(user_input: str):
     """ Prediction endpoint, for testing and demonstration purposes """
-    rank, conf, *_ = frankenbert_rank(user_input)
+    rank, conf, *_ = frankenbert_rank(user_input.text)
     return {"Rank": rank, "Confidence": conf}
 
 
@@ -159,8 +165,9 @@ async def get_waiting_time():
     return data
 
 
+
 @app.on_event("startup")
-@repeat_every(seconds=60*60*4)
+@repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force
         2. deduplicate data based on tweet id
@@ -190,6 +197,7 @@ app.add_middleware(
 
 if __name__ == '__main__':
     import uvicorn
+
     """ To run locally, use this command in the terminal:
     python3 -m app.main
     """
