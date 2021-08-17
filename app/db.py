@@ -118,7 +118,7 @@ class Database(object):
         """ updates conversations columns of matching tweet_id """
         query = (
             update(Conversations).
-            where(Conversations.root_tweet_id == str(root_id)).
+            where(Conversations.root_tweet_id == str(tweet_id)).
             values(**data)
         )
 
@@ -135,6 +135,78 @@ class Database(object):
             check_data = session.execute(query)
 
         return check_data.fetchall()
+
+
+    def get_sevens(self):
+        """ get all conversations with value of 7 """
+        with self.Sessionmaker() as session:
+            query = (select(Conversations).
+            filter(Conversations.conversation_status == 7))
+            check_data = session.execute(query)
+
+        return check_data.fetchall()
+
+
+    def get_approved_force_ranks(self):
+        """ get all approved from force_ranks """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+            filter(ForceRanks.status == 'approved'))
+            data = session.execute(query)
+
+        return data.fetchall()
+
+
+    def get_approved_force_ranks_timeline(self):
+        """ get all approved from force_ranks ordered by time (descending) """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+            filter(ForceRanks.status == 'approved'))
+            data = session.execute(query)
+
+        return data.fetchall()
+
+
+    def get_pending_force_ranks(self):
+        """ get all unapproved from force_ranks """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+            filter(ForceRanks.status == 'pending'))
+            data = session.execute(query)
+
+        return data.fetchall()
+
+
+    def get_pending_force_ranks_timeline(self):
+        """ get all unnaproved from force_ranks ordered by time (descending) """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+            filter(ForceRanks.status == 'pending').
+            order_by(ForceRanks.incident_date.desc()))
+            data = session.execute(query)
+
+        return data.fetchall()
+
+
+    def get_waiting_force_ranks(self):
+        """ get all awaiting response from force_ranks """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+            filter(ForceRanks.status == 'awaiting response'))
+            data = session.execute(query)
+
+        return data.fetchall()
+
+
+    def get_waiting_force_ranks_timeline(self):
+        """ get all awaiting repsonse from force_ranks ordered by time (descending) """
+        with self.Sessionmaker() as session:
+            query = (select(ForceRanks).
+            filter(ForceRanks.status == 'awaiting response').
+            order_by(ForceRanks.incident_date.desc()))
+            data = session.execute(query)
+
+        return data.fetchall()
 
 
     def get_user_name(self):

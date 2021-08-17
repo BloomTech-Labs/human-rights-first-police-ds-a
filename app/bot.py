@@ -9,13 +9,7 @@ from app.scraper import DB
 import app.twitter as twitter
 
 
-
 MAP_API = os.getenv("MAP_API")
-
-#### NEED TO TEST
-	# NORMAL REPLY CONVERSATION WITH SELF (CAN DO)
-	# NORMAL REPLY CONVERSATION WITH OTHER (A LITTLE DOING)
-
 
 
 logging.basicConfig(level=logging.INFO)
@@ -123,7 +117,7 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 		except tweepy.TweepError as e:
 			logging.error("Tweepy error occured:{}".format(e))
 	else:
-		print('error_here')
+		print('error_here')   # DELETE
 
 
 def advance_conversation(root_id: int, form_link: str) -> str:

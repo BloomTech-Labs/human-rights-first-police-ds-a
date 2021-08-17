@@ -40,7 +40,7 @@ async def create_form_out(data: form_out):
 
 @app.post("/form-in/")
 async def create_form_in(data: form_in):
-    """ receives form response and stores in holding table """
+    """ receives form response and stores in Conversations table """
     location = bot.find_location(data.city + ',' + data.state)
     if location['status'] == "OK":
         loc_list = location['candidates'][0]['formatted_address'].split(',')
@@ -63,14 +63,14 @@ async def create_form_in(data: form_in):
 
 @app.post("/approval-check/")
 async def create_check(data: check):
-    """ returns value of holding table row with given tweet_id """
+    """ returns value of Conversations table row with given tweet_id """
     out = DB.get_root_seven(data.tweet_id)
     return out
 
 
 @app.post("/approve/")
 async def approve(data: check):
-    """ updates force_ranks with value of holding table row which is a form response """
+    """ updates ForceRanks with value of Conversations table row which is a form response """
     for_update = DB.get_root_seven(data.tweet_id)
     data = {}
     data['city'] = for_update[0]['Conversations'].root_tweet_city
@@ -82,6 +82,9 @@ async def approve(data: check):
     data['long'] = for_update[0]['Conversations'].root_tweet_long
 
     DB.update_force_rank(data, for_update[0]['Conversations'].root_tweet_id)
+    data2 = {}
+    data2['conversation_status'] = 8
+    DB.update_conversations(data2, for_update[0]['Conversations'].root_tweet_id)
     return data
 
 
@@ -99,7 +102,62 @@ async def view_data():
 
     first_5000 = DB.load_data_force_ranks()[:5000]
     return first_5000
-    
+
+
+@app.get("/to-approve")
+async def to_approve():
+    """ get all rows of Conversations that are form responses that have not been approved """
+    needs_approval = DB.get_sevens()
+    return needs_approval
+
+
+@app.get('/get-approved/')
+async def get_approved():
+    """ get all approved from force_ranks """
+    data = DB.get_approved_force_ranks()
+
+    return data
+
+
+@app.get('/get-approved-timeline/')
+async def get_approved_time():
+    """ get all approved from force_ranks ordered by time (descending) """
+    data = DB.get_approved_force_ranks_timeline()
+
+    return data
+
+
+@app.get('/get-pending/')
+async def get_pending():
+    """ get all pending from force_ranks """
+    data = DB.get_pending_force_ranks()
+
+    return data
+
+
+@app.get('/get-pending-timeline/')
+async def get_pending_time():
+    """ get all unnaproved from force_ranks ordered by time (descending) """
+    data = DB.get_pending_force_ranks_timeline()
+
+    return data
+
+
+@app.get('/get-waiting/')
+async def get_waiting():
+    """ get all awaiting response from force_ranks """
+    data = DB.get_waiting_force_ranks()
+
+    return data
+
+
+@app.get('/get-waiting-timeline/')
+async def get_waiting_time():
+    """ get all awaiting repsonse from force_ranks ordered by time (descending) """
+    data = DB.get_waiting_force_ranks_timeline()
+
+    return data
+
 
 @app.on_event("startup")
 @repeat_every(seconds=60*60*4)
@@ -124,8 +182,8 @@ async def update():
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=['*'],
-    allow_credentials=True,
+    allow_origins=['*'],  # List of approved origins
+    allow_credentials=True,  # Can only allow certain headers as well
     allow_methods=['*'],
     allow_headers=['*'],
 )
