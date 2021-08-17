@@ -52,8 +52,28 @@ class ForceRanks(Base):
     lat = Column(Float)
     long = Column(Float)
     title = Column(String(255), default=None)
-    force_rank = Column(String(255), nullable=False)
+    force_rank = Column(String(255), default=None)
     status = Column(String(255), default='pending', nullable=False)
     confidence = Column(Float)
     tags = Column(String(255))
     src = Column(String(8000))
+
+    def __repr__(self):
+        return (
+            "incident_id:{}, incident_date:{}, tweet_id:{}, user_name:{}, description:{}, city:{}, state:{}, lat:{}, long:{}, title:{}, force_rank:{}, status:{}, confidence:{}, tags:{}, src:{}").format(
+            self.incident_id,
+            self.incident_date,
+            self.tweet_id,
+            self.user_name,
+            self.description,
+            self.city,
+            self.state,
+            self.lat,
+            self.long,
+            self.title,
+            self.force_rank,
+            self.status,
+            self.confidence,
+            self.tags,
+            self.src
+        )

@@ -5,9 +5,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 
-from app.db import insert_data, load_data
+
 from app.models import RequestedFormData
-from app.scraper import deduplicate, frankenbert_rank, scrape_twitter
+from app.scraper import DB, deduplicate, frankenbert_rank, scrape_twitter
 from app.tweep_dm import form_tweet
 
 description = """
@@ -61,26 +61,30 @@ async def frankenbert(user_input: str):
 
 @app.get("/view-data/")
 async def view_data():
+    """ update and get first 5000 observations dump endpoint """
     await update()
-    return load_data()
+    first_5000 = DB.load_data()[:5000]
+    return first_5000
+
 
 
 @app.on_event("startup")
-@repeat_every(seconds=60*60*4)
+@repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force
         2. deduplicate data based on tweet id
         3. insert data into database
         4. repeat every 4 hours """
+# possible additions 'police', 'cop', 'policeman', 'cop', 'officer', 'cop', 'officers', 'officer', 'officers',
     search = choice((
         'police',
-        'police brutality',
-        'police violence',
-        'police abuse',
+        'police brutality', 
+        'police violence', 
+        'police abuse', 
     ))
     data: List[Dict] = scrape_twitter(search)
     clean_data: List[Dict] = deduplicate(data)
-    insert_data(clean_data)
+    DB.insert_data(clean_data)
 
 
 app.add_middleware(
