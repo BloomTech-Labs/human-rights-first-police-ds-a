@@ -86,6 +86,13 @@ def reset_conversations_for_test():
 	DB.reset_table("conversations")
 	DB.insert_data_conversations(test_entries) 
 
+<<<<<<< HEAD
+=======
+def reset_conversations_for_test(): 
+	DB.reset_conversations()
+	DB.insert_data_conversations(test_entries) 
+	print("done,")
+>>>>>>> 84e83751378e7302c4079f18928ba4a6979ebbe5
 
 
 def end_conversation(root_id: int, max_step: List, received_tweet_id=None):

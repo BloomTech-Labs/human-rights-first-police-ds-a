@@ -4,12 +4,12 @@ from typing import List, Dict
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
+from pydantic import BaseModel
 
 
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 from app.models import form_out, form_in, check
-
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -22,12 +22,18 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
+
+class InputString(BaseModel):
+    text: str
+
+
 app = FastAPI(
     title='Labs 37 HRF BW DS API',
     description=description,
     docs_url='/',
-    version="0.36.6",
+    version="0.37.1",
 )
+
 
 
 @app.post("/form-out/", response_model=form_out)
@@ -91,7 +97,7 @@ async def approve(data: check):
 @app.get("/frankenbert/{user_input}")
 async def frankenbert(user_input: str):
     """ Prediction endpoint, for testing and demonstration purposes """
-    rank, conf, *_ = frankenbert_rank(user_input)
+    rank, conf, *_ = frankenbert_rank(user_input.text)
     return {"Rank": rank, "Confidence": conf}
 
 
@@ -111,8 +117,60 @@ async def to_approve():
     return needs_approval
 
 
+<<<<<<< HEAD
+=======
+@app.get('/get-approved/')
+async def get_approved():
+    """ get all approved from force_ranks """
+    data = DB.get_approved_force_ranks()
+
+    return data
+
+
+@app.get('/get-approved-timeline/')
+async def get_approved_time():
+    """ get all approved from force_ranks ordered by time (descending) """
+    data = DB.get_approved_force_ranks_timeline()
+
+    return data
+
+
+@app.get('/get-pending/')
+async def get_pending():
+    """ get all pending from force_ranks """
+    data = DB.get_pending_force_ranks()
+
+    return data
+
+
+@app.get('/get-pending-timeline/')
+async def get_pending_time():
+    """ get all unnaproved from force_ranks ordered by time (descending) """
+    data = DB.get_pending_force_ranks_timeline()
+
+    return data
+
+
+@app.get('/get-waiting/')
+async def get_waiting():
+    """ get all awaiting response from force_ranks """
+    data = DB.get_waiting_force_ranks()
+
+    return data
+
+
+@app.get('/get-waiting-timeline/')
+async def get_waiting_time():
+    """ get all awaiting repsonse from force_ranks ordered by time (descending) """
+    data = DB.get_waiting_force_ranks_timeline()
+
+    return data
+
+
+
+>>>>>>> 84e83751378e7302c4079f18928ba4a6979ebbe5
 @app.on_event("startup")
-@repeat_every(seconds=60*60*4)
+@repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force
         2. deduplicate data based on tweet id
@@ -142,6 +200,7 @@ app.add_middleware(
 
 if __name__ == '__main__':
     import uvicorn
+
     """ To run locally, use this command in the terminal:
     python3 -m app.main
     """
