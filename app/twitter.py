@@ -30,13 +30,12 @@ def create_api():
 	logger.info("API created")
 	return api
 
-api = create_api()
-
 
 # Users
 
 def user_tweets(user_id: str) -> List[Dict]:
 	""" FOR TESTING, get one user's tweets for tweet_ids to test response """
+	api = create_api()
 	temp = api.user_timeline(screen_name=('{}').format(user_id),
 		count = 200,
 		include_rts = False,
@@ -54,6 +53,7 @@ def user_tweets(user_id: str) -> List[Dict]:
 def get_user_id(screen_name: str) -> List[Dict]:
 	""" Get user id from screenname """
 	name_id_pairs = []
+	api = create_api
 	resp = api.lookup_users(screen_name = screen_name)
 	for user in resp:
 		name_id_pairs.append({
@@ -67,6 +67,7 @@ def get_user_id(screen_name: str) -> List[Dict]:
 
 def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
 	""" Gets replies to a tweet (tweet_id) originally posted by a user (user_id) replies from replier """
+	api = create_api()
 	replies = tweepy.Cursor(api.search, q='to:{}'.format(user_id),
 		since_id=tweet_id, tweet_mode='extended').items(100)
 	list_replies = []
@@ -94,6 +95,7 @@ def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
 
 def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
 	""" Function to reply to a certain tweet_id """
+	api = create_api()
 	return api.update_status(status=tweet_body, in_reply_to_status_id=tweet_id, autopopulate_reply_metadata=True)
 
 

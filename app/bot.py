@@ -7,6 +7,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 
 from app.scraper import DB
 import app.twitter as twitter
+from app.twitter import create_api
 
 
 MAP_API = os.getenv("MAP_API")
@@ -26,9 +27,9 @@ conversation_tree = {
 }
 
 # test_entries = [
-# 	{"root_tweet_id":"1424511565932359685","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 1 🦟📡","checks_made":0},
-# 	{"root_tweet_id":"1424420702208237573","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 2 🐥","checks_made":0},
-# 	{"root_tweet_id":"1424452159744077826","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 3🦧","checks_made":0},
+# 	{"tweet_id":"1424511565932359685","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 1 🦟📡","checks_made":0},
+# 	{"tweet_id":"1424420702208237573","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 2 🐥","checks_made":0},
+# 	{"tweet_id":"1424452159744077826","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 3🦧","checks_made":0},
 # ]
 
 test_entries = [
@@ -44,13 +45,13 @@ def send_form(data:Dict):
 	""" Sends form to user, inserts to conversations table """
 
 	to_insert = DB.convert_invocation_conversations(data)
-	to_insert['root_tweet_id'] = int(to_insert['root_tweet_id'])
-	to_insert['tweet_text'] = '@' + to_insert['user_name'] + ' ' + conversation_tree[5] + to_insert['link'] 
+	to_insert['tweet_id'] = int(to_insert['tweet_id'])
+	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[5] + to_insert['link'] 
 	to_insert['reachout_template'] = conversation_tree[5]
 	del to_insert['link']
-	del to_insert['user_name']
+
 	try:
-		status = twitter.respond_to_tweet(to_insert['root_tweet_id'], to_insert['tweet_text'])
+		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
 		to_insert['tweeter_id'] = bot_name
 		to_insert['isChecked'] = True
 		to_insert['conversation_status'] = 6
@@ -66,35 +67,34 @@ def receive_form(data:Dict):
 	""" Takes input from user/POST inputs into conversations if no root_id with conversation_status 7 """
 
 	to_insert = DB.convert_form_conversations(data)
-	to_insert['root_tweet_id'] = int(to_insert['root_tweet_id'])
+	to_insert['tweet_id'] = int(to_insert['tweet_id'])
 	to_insert['isChecked'] = True
 	to_insert['conversation_status'] = 7
-	validation_check = DB.get_root_seven(to_insert['root_tweet_id'])
+	validation_check = DB.get_root_seven(to_insert['tweet_id'])
 	if len(validation_check) == 0:
 		DB.insert_data_conversations([to_insert])
 
 
 def advance_all():
-	""" Advances all conversations based on highest conversations status per root_tweet_id """
+	""" Advances all conversations based on highest conversations status per tweet_id """
 	to_advance = DB.get_to_advance()
 	for threads in to_advance:
-		advance_conversation(points.root_tweet_id)
+		advance_conversation(points.tweet_id)
 
 
-def reset_conversations_for_test():   # DELETE BEFORE PR
-	DB.reset_conversations()   # DELETE BEFORE PR
-	DB.insert_data_conversations(test_entries)   # DELETE BEFORE PR
-	print("done, you idiot")   # DELETE BEFORE PR
+def reset_conversations_for_test():
+	DB.reset_table("conversations")
+	DB.insert_data_conversations(test_entries) 
+
 
 
 def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 	""" Ends conversation of given root, sets conversation_status to 5 """
-	print("\n", "\n", "\n", max_step.__dict__)  # DELETE BEFORE PR
-
+	api = create_api()
 	if received_tweet_id:
-		other_person = twitter.api.get_status(received_tweet_id)
+		other_person = api.get_status(received_tweet_id)
 	else:
-		other_person = twitter.api.get_status(max_step.received_tweet_id)
+		other_person = api.get_status(max_step.received_tweet_id)
 
 	other_person = other_person.screen_name
 	test = twitter.get_replies(bot_name, max_step.sent_tweet_id, other_person)
@@ -102,7 +102,7 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 		try:
 			status = twitter.respond_to_tweet(test.id_str, conversation_tree[4])
 			to_insert = [{
-				"root_tweet_id":root_id,
+				"tweet_id":root_id,
 				"sent_tweet_id":status_id,
 				"received_tweet_id":test.id_str,
 				"in_reply_to_id":test.in_reply_to_status_id,
@@ -121,6 +121,7 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 
 def advance_conversation(root_id: int, form_link: str) -> str:
 	""" Advances conversation by root_id """
+	api = create_api()
 	root_conversation = DB.get_conversation_root(root_id)
 	max = -1
 
@@ -131,12 +132,12 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 			max_step = steps
 	if max_step.conversation_status == 0 and max_step.form == 0:
 		try:
-			status = twitter.respond_to_tweet(max_step.root_tweet_id, conversation_tree[1])
+			status = twitter.respond_to_tweet(max_step.tweet_id, conversation_tree[1])
 			print(max_step.conversation_status)
 			print(max_step.tweet_text)
 			print(max_step.reachout_template)
 			to_insert = [{
-				"root_tweet_id":root_id,
+				"tweet_id":root_id,
 				"sent_tweet_id":status.id_str,
 				"in_reply_to_id":status.in_reply_to_status_id,
 				"tweeter_id":max_step.tweeter_id,
@@ -152,10 +153,10 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 			logging.error("Tweepy error occured:{}".format(e))
 	elif max_step.conversation_status == 0 and max_step.form == 1:
 		try:
-			status = twitter.respond_to_tweet(max_step.root_tweet_id, max_step.form_link)
+			status = twitter.respond_to_tweet(max_step.tweet_id, max_step.form_link)
 
 			to_insert = [{
-				"root_tweet_it":root_id,
+				"tweet_id":root_id,
 				"sent_tweet_id":status.id_str,
 				"in_reply_to_id":status.in_reply_to_status_id,
 				"tweeter_id":max_step.tweeter_id,
@@ -177,7 +178,7 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 				try:
 					status = twitter.respond_to_tweet(test.id_str,conversation_tree[2])
 					to_insert = [{
-						"root_tweet_id":root_id,
+						"tweet_id":root_id,
 						"sent_tweet_id":status_id,
 						"received_tweet_id":test.id_str,
 						"in_reply_to_id":test.in_reply_to_status_id,
@@ -201,7 +202,7 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 			pass
 	elif max_step.conversation_status == 2 and max_step.form == 0:
 
-		other_person = twitter.api.get_status(max_step.received_tweet_id)
+		other_person = api.get_status(max_step.received_tweet_id)
 		other_person = other_person.user.screen_name
 		test = twitter.get_replies(bot_name, max_step.sent_tweet_id, other_person)
 
@@ -228,7 +229,7 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 					try:
 						status = twitter.respond_to_tweet(test_id, conversation_tree[3])
 						to_insert = [{
-							"root_tweet_id":root_id,
+							"tweet_id":root_id,
 							"sent_tweet_id":status_id,
 							"received_tweet_id":test.id_str,
 							"in_reply_to_id":test.in_reply_to_status_id,

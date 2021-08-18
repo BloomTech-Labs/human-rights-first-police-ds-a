@@ -23,7 +23,7 @@ To use these interactive docs:
 """
 
 app = FastAPI(
-    title='Labs 36 HRF BW DS API',
+    title='Labs 37 HRF BW DS API',
     description=description,
     docs_url='/',
     version="0.36.6",
@@ -33,7 +33,7 @@ app = FastAPI(
 @app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
     """ replies to a given tweet with a link """
-    DB.update_force_rank({"status":"awaiting response"}, data.tweet_id)
+    DB.update_tables({"status":"awaiting response"}, data.tweet_id, "ForceRanks")
     bot.send_form(data)
 
 
@@ -81,10 +81,10 @@ async def approve(data: check):
     data['lat'] = for_update[0]['Conversations'].root_tweet_lat
     data['long'] = for_update[0]['Conversations'].root_tweet_long
 
-    DB.update_force_rank(data, for_update[0]['Conversations'].root_tweet_id)
+    DB.update_tables(data, for_update[0]['Conversations'].tweet_id, "ForceRanks")
     data2 = {}
     data2['conversation_status'] = 8
-    DB.update_conversations(data2, for_update[0]['Conversations'].root_tweet_id)
+    DB.update_tables(data2, for_update[0]['Conversations'].tweet_id, "Conversations")
     return data
 
 
@@ -109,54 +109,6 @@ async def to_approve():
     """ get all rows of Conversations that are form responses that have not been approved """
     needs_approval = DB.get_sevens()
     return needs_approval
-
-
-@app.get('/get-approved/')
-async def get_approved():
-    """ get all approved from force_ranks """
-    data = DB.get_approved_force_ranks()
-
-    return data
-
-
-@app.get('/get-approved-timeline/')
-async def get_approved_time():
-    """ get all approved from force_ranks ordered by time (descending) """
-    data = DB.get_approved_force_ranks_timeline()
-
-    return data
-
-
-@app.get('/get-pending/')
-async def get_pending():
-    """ get all pending from force_ranks """
-    data = DB.get_pending_force_ranks()
-
-    return data
-
-
-@app.get('/get-pending-timeline/')
-async def get_pending_time():
-    """ get all unnaproved from force_ranks ordered by time (descending) """
-    data = DB.get_pending_force_ranks_timeline()
-
-    return data
-
-
-@app.get('/get-waiting/')
-async def get_waiting():
-    """ get all awaiting response from force_ranks """
-    data = DB.get_waiting_force_ranks()
-
-    return data
-
-
-@app.get('/get-waiting-timeline/')
-async def get_waiting_time():
-    """ get all awaiting repsonse from force_ranks ordered by time (descending) """
-    data = DB.get_waiting_force_ranks_timeline()
-
-    return data
 
 
 @app.on_event("startup")

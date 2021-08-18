@@ -7,10 +7,8 @@ from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from app.models import ForceRanks, Conversations #, Base
+from app.models import ForceRanks, Conversations
 
-
-#db_url = os.getenv('DB_URL')
 db_url = os.getenv('DB_URL2')
 
 class Database(object):
@@ -43,9 +41,9 @@ class Database(object):
 
 
     def get_conversation_root(self, root_id: int):
-        """ Get conversation with a specific root_tweet_id """
+        """ Get conversation with a specific tweet_id """
         with self.Sessionmaker() as session:
-            query = select(Conversations).where(Conversations.root_tweet_id == root_id)
+            query = select(Conversations).where(Conversations.tweet_id == root_id)
             conversations_data = session.execute(query)
 
         return [i[0] for i in conversations_data.fetchall()]
@@ -74,14 +72,14 @@ class Database(object):
         with self.Sessionmaker() as session:
             last = select(func.max(ForceRanks.incident_id))
             last_value = session.execute(last).fetchall()[0][0]
-            for datum in range(len(data)):
+            for i in range(len(data)):
                 if last_value is None:
                     last_value = 0
                 last_value += 1
-                data[datum]['incident_id'] = last_value
-                if type(data[datum]['confidence']) != float and data[datum]['confidence'] != None:
-                    data[datum]['confidence'] = data[datum]['confidence'].item()
-                obj = ForceRanks(**data[datum])
+                data[i]['incident_id'] = last_value
+                if type(data[i]['confidence']) != float and data[i]['confidence'] != None:
+                    data[i]['confidence'] = data[i]['confidence'].item()
+                obj = ForceRanks(**data[i])
                 session.add(obj)
                 session.commit()
 
@@ -91,34 +89,25 @@ class Database(object):
         with self.Sessionmaker() as session:
             last = select(func.max(Conversations.id))
             last_value = session.execute(last).fetchall()[0][0]
-            for datum in range(len(data)):
+            for i in range(len(data)):
                 if last_value is None:
                     last_value = 0
                 last_value += 1
-                data[datum]['id'] = last_value
-                obj = Conversations(**data[datum])
+                data[i]['id'] = last_value
+                obj = Conversations(**data[i])
                 session.add(obj)
                 session.commit()
 
 
-    def update_force_rank(self, data, tweet_id):
-        """ updates force rank columns of matching tweet_id """
+    def update_tables(self, data, tweet_id, tablename):
+        """ updates table 'tablename' columns of matching tweet_id """
+        if tablename == 'ForceRanks':
+            table = ForceRanks
+        elif tablename == 'Conversations':
+            table = Conversations
         query = (
-            update(ForceRanks).
-            where(ForceRanks.tweet_id == str(tweet_id)).
-            values(**data)
-        )
-
-        with self.Sessionmaker() as session:
-            session.execute(query)
-            session.commit()
-
-
-    def update_conversations(self, data, tweet_id):
-        """ updates conversations columns of matching tweet_id """
-        query = (
-            update(Conversations).
-            where(Conversations.root_tweet_id == str(tweet_id)).
+            update(table).
+            where(table.tweet_id == str(tweet_id)).
             values(**data)
         )
 
@@ -131,7 +120,7 @@ class Database(object):
         """ gets root_ids with value of 7 """
         with self.Sessionmaker() as session:
             query = (select(Conversations).
-            filter(and_(Conversations.root_tweet_id == str(root_id), Conversations.conversation_status == 7)))
+            filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 7)))
             check_data = session.execute(query)
 
         return check_data.fetchall()
@@ -145,68 +134,6 @@ class Database(object):
             check_data = session.execute(query)
 
         return check_data.fetchall()
-
-
-    def get_approved_force_ranks(self):
-        """ get all approved from force_ranks """
-        with self.Sessionmaker() as session:
-            query = (select(ForceRanks).
-            filter(ForceRanks.status == 'approved'))
-            data = session.execute(query)
-
-        return data.fetchall()
-
-
-    def get_approved_force_ranks_timeline(self):
-        """ get all approved from force_ranks ordered by time (descending) """
-        with self.Sessionmaker() as session:
-            query = (select(ForceRanks).
-            filter(ForceRanks.status == 'approved'))
-            data = session.execute(query)
-
-        return data.fetchall()
-
-
-    def get_pending_force_ranks(self):
-        """ get all unapproved from force_ranks """
-        with self.Sessionmaker() as session:
-            query = (select(ForceRanks).
-            filter(ForceRanks.status == 'pending'))
-            data = session.execute(query)
-
-        return data.fetchall()
-
-
-    def get_pending_force_ranks_timeline(self):
-        """ get all unnaproved from force_ranks ordered by time (descending) """
-        with self.Sessionmaker() as session:
-            query = (select(ForceRanks).
-            filter(ForceRanks.status == 'pending').
-            order_by(ForceRanks.incident_date.desc()))
-            data = session.execute(query)
-
-        return data.fetchall()
-
-
-    def get_waiting_force_ranks(self):
-        """ get all awaiting response from force_ranks """
-        with self.Sessionmaker() as session:
-            query = (select(ForceRanks).
-            filter(ForceRanks.status == 'awaiting response'))
-            data = session.execute(query)
-
-        return data.fetchall()
-
-
-    def get_waiting_force_ranks_timeline(self):
-        """ get all awaiting repsonse from force_ranks ordered by time (descending) """
-        with self.Sessionmaker() as session:
-            query = (select(ForceRanks).
-            filter(ForceRanks.status == 'awaiting response').
-            order_by(ForceRanks.incident_date.desc()))
-            data = session.execute(query)
-
-        return data.fetchall()
 
 
     def get_user_name(self):
@@ -228,20 +155,20 @@ class Database(object):
 
 
     def get_to_advance(self):
-        """ gets highest conversation_status row of each root_tweet_id """
+        """ gets highest conversation_status row of each tweet_id """
         with self.Sessionmaker() as session:
             query1 = select(
                 func.max(Conversations.conversation_status).label("status"),
-                Conversations.root_tweet_id
+                Conversations.tweet_id
             ).group_by(
-                Converstaions.root_tweet_id
+                Converstaions.tweet_id
             ).cte('wow')
 
             query2 = select(
                 Conversations
             ).join(
                 query1,
-                query1.c.root_tweet_id == Conversations.root_tweet_id
+                query1.c.tweet_id == Conversations.tweet_id
             ).filter(
                 Conversations.conversation_status == query1.c.status
             )
@@ -252,10 +179,10 @@ class Database(object):
 
 
     def update_conversation_checks(self, root_id):
-        """ iterates conversation_checks column of matching root_tweet_id """
+        """ iterates conversation_checks column of matching tweet_id """
         query =(
             update(Conversations).
-            where(Conversations.root_tweet_id == str(root_id)).
+            where(Conversations.tweet_id == str(root_id)).
             values(checks_made = Conversations.checks_made + 1)
         )
 
@@ -280,17 +207,14 @@ class Database(object):
         except KeyError:
             pass
         try:
-            clean_data['root_tweet_id'] = data.tweet_id
+            clean_data['tweet_id'] = data.tweet_id
         except KeyError:
             pass
         try:
             clean_data['tweeter_id'] = data.user_name
         except KeyError:
             pass
-        try:
-            clean_data['user_name'] = data.user_name
-        except KeyError:
-            pass
+
         return clean_data
 
 
@@ -299,7 +223,11 @@ class Database(object):
         clean_data = {}
         clean_data['form'] = 1
         try:
-            clean_data['root_tweet_id'] = data.tweet_id
+            clean_data['incident_id'] = data.incident_id
+        except KeyError:
+            pass
+        try:
+            clean_data['tweet_id'] = data.tweet_id
         except KeyError:
             pass
         try:
@@ -330,45 +258,39 @@ class Database(object):
             clean_data['tweeter_id'] = data.user_name
         except KeyError:
             pass
+
         return clean_data
 
 
-    def initialize_ranks_table(self):
-        """ creates force_ranks table if not exists """
+    def initialize_table(self, tablename):
+        """ creates table if not exists and table model exists """
+        if tablename == 'force_ranks':
+            table = ForceRanks
+        elif tablename == 'conversations':
+            table = Conversations
+        else:
+            return "Table model not found"
+
         insp = inspect(self.engine)
-        if insp.has_table("force_ranks") == False:
-            ForceRanks.__table__.create(self.engine)
+        if insp.has_table(tablename) == False:
+            table.__table__.create(self.engine)
 
 
-    def initialize_conversations_table(self):
-        """ creates conversations table if not exists """
-        insp = inspect(self.engine)
-        if insp.has_table("conversations") == False:
-            Conversations.__table__.create(self.engine)
-
-
-    def reset_force_ranks(self):
+    def reset_table(self, tablename):
         """ DANGER! this will delete all data in the table!!! """
+        if tablename == 'force_ranks':
+            table = ForceRanks
+        elif tablename == 'conversations':
+            table = Conversations
+        else:
+            return "Table model not found"
+
         check = input('Are you sure? This will delete all table data (Y/N):')
         if check == 'Y':
             insp = inspect(self.engine)
-            if insp.has_table("force_ranks") == True:
-                ForceRanks.__table__.drop(self.engine)
-            self.initialize_ranks_table()
-        elif check == 'N':
-            pass
-        else:
-            print('Please answer Y or N')
-
-
-    def reset_conversations(self):
-        """ DANGER! this will delete all data in the table!!! """
-        check = input("Are you sure? This will delete all table data (Y/N):")
-        if check == 'Y':
-            insp = inspect(self.engine)
-            if insp.has_table("conversations") == True:
-                Conversations.__table__.drop(self.engine)
-            self.initialize_conversations_table()
+            if insp.has_table(tablename) == True:
+                table.__table__.drop(self.engine)
+            self.initialize_table(tablename)
         elif check == 'N':
             pass
         else:

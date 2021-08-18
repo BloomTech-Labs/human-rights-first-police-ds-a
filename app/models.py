@@ -1,4 +1,5 @@
-from sqlalchemy import Table, Column, Integer, String, Date, Float, Boolean
+from sqlalchemy import Table, Column, Integer, String, Date, Float, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from typing import Optional, List, Dict
@@ -9,7 +10,7 @@ class ForceRanks(Base):
 
 	__tablename__ = "force_ranks"
 
-	incident_id = Column(Integer, primary_key=True, nullable=False)
+	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
 	incident_date = Column(Date, nullable=False)
 	tweet_id = Column(String(255))
 	user_name = Column(String(255))
@@ -24,6 +25,7 @@ class ForceRanks(Base):
 	confidence = Column(Float)
 	tags = Column(String(255))
 	src = Column(String(8000))
+	children = relationship("Conversations", back_populates="parent")
 
 
 	def __repr__(self):
@@ -52,7 +54,8 @@ class Conversations(Base):
 	__tablename__ = "conversations"
 
 	id = Column(Integer, primary_key=True)
-	root_tweet_id = Column(String)
+	incident_id = Column(Integer, ForeignKey('force_ranks.incident_id'))
+	tweet_id = Column(String(255))
 	form = Column(Integer)
 	root_tweet_city = Column(String(255))
 	root_tweet_state = Column(String(255))
@@ -69,13 +72,14 @@ class Conversations(Base):
 	checks_made = Column(Integer)
 	reachout_template = Column(String)
 	isChecked = Column(Boolean)
+	parent = relationship("ForceRanks", back_populates="children")
 
 
 	def __repr__(self):
 		return(
-			"id:{}, root_tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
+			"id:{}, tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
 			self.id,
-			self.root_tweet_id,
+			self.tweet_id,
 			self.form,
 			self.root_tweet_city,
 			self.root_tweet_state,

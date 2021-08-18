@@ -9,7 +9,7 @@ import tweepy
 
 from app.db import Database
 from app.franken_bert import FrankenBert
-from app.twitter import api
+from app.twitter import create_api
 
 DB = Database()
 
@@ -54,6 +54,7 @@ def clean_date(date: dt.datetime) -> str:
 def scrape_twitter(query: str) -> List[Dict]:
     """ Pull tweets from twitter that report police use of force """
     tweets = []
+    api = create_api
     for status in tweepy.Cursor(
         api.search,
         q=query,
