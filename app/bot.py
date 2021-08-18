@@ -26,11 +26,6 @@ conversation_tree = {
 	5:"Please fill out this form "
 }
 
-# test_entries = [
-# 	{"tweet_id":"1424511565932359685","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 1 🦟📡","checks_made":0},
-# 	{"tweet_id":"1424420702208237573","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 2 🐥","checks_made":0},
-# 	{"tweet_id":"1424452159744077826","tweeter_id":"witt_rowen","conversation_status":0,"tweet_text":"Incident report test 3🦧","checks_made":0},
-# ]
 
 test_entries = [
 	{"form":1,"incident_id":1,"isChecked":False,"link":"https://a.humanrightsfirst.dev/edit/1426290795267731463","tweet_id":"1424511565932359685","user_name":"witt_rowen"}
@@ -85,14 +80,6 @@ def advance_all():
 def reset_conversations_for_test():
 	DB.reset_table("conversations")
 	DB.insert_data_conversations(test_entries) 
-
-<<<<<<< HEAD
-=======
-def reset_conversations_for_test(): 
-	DB.reset_conversations()
-	DB.insert_data_conversations(test_entries) 
-	print("done,")
->>>>>>> 84e83751378e7302c4079f18928ba4a6979ebbe5
 
 
 def end_conversation(root_id: int, max_step: List, received_tweet_id=None):

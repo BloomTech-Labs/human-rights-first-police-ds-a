@@ -117,58 +117,6 @@ async def to_approve():
     return needs_approval
 
 
-<<<<<<< HEAD
-=======
-@app.get('/get-approved/')
-async def get_approved():
-    """ get all approved from force_ranks """
-    data = DB.get_approved_force_ranks()
-
-    return data
-
-
-@app.get('/get-approved-timeline/')
-async def get_approved_time():
-    """ get all approved from force_ranks ordered by time (descending) """
-    data = DB.get_approved_force_ranks_timeline()
-
-    return data
-
-
-@app.get('/get-pending/')
-async def get_pending():
-    """ get all pending from force_ranks """
-    data = DB.get_pending_force_ranks()
-
-    return data
-
-
-@app.get('/get-pending-timeline/')
-async def get_pending_time():
-    """ get all unnaproved from force_ranks ordered by time (descending) """
-    data = DB.get_pending_force_ranks_timeline()
-
-    return data
-
-
-@app.get('/get-waiting/')
-async def get_waiting():
-    """ get all awaiting response from force_ranks """
-    data = DB.get_waiting_force_ranks()
-
-    return data
-
-
-@app.get('/get-waiting-timeline/')
-async def get_waiting_time():
-    """ get all awaiting repsonse from force_ranks ordered by time (descending) """
-    data = DB.get_waiting_force_ranks_timeline()
-
-    return data
-
-
-
->>>>>>> 84e83751378e7302c4079f18928ba4a6979ebbe5
 @app.on_event("startup")
 @repeat_every(seconds=60 * 60 * 4)
 async def update():
