@@ -1,26 +1,12 @@
-"""Tools for the twitter bot to use for script selection and testing"""
+"""Tools for modifying 'bot_scripts' table"""
 
-# import dependencies for routing to the conversations table of the database
+# This is to be plugged in as helper function in the Class to be created here
+# def success_rate(self):
+#     if self.uses == 0:
+#         return 0
+#     else:
+#         return self.positive / self.uses
 
-
-# # Create a class for scripts
-# class BotScript():
-#     def __init__(self, script):
-#         self.script = script
-#         self.uses = 0
-#         self.positive = 0
-
-#     def success_rate(self):
-#         if self.uses == 0:
-#             return 0
-        
-#         else:
-#             return self.positive / self.uses
-
-# # Create a class to be the script tracker / selector
-# class ScriptGroup():
-
-### Functions
 def add_script(script, convo_node):
     """
     Updates the bot_scripts table with new row passing the given script

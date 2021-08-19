@@ -4,6 +4,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from typing import Optional, List, Dict
 
+from sqlalchemy.sql.sqltypes import ARRAY
+
 Base = declarative_base()
 
 class ForceRanks(Base):
@@ -96,6 +98,54 @@ class Conversations(Base):
 			self.checks_made,
 			self.reachout_template,
 			self.isChecked
+			)
+
+
+class BotScripts(Base):
+
+	__tablename__ = "bot_scripts"
+
+	script_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	script = Column(String(255))
+	convo_node = Column(Integer)  # we may consider using srings that identify the node i.e. 'Introduction', 'Location', 'Date', etc.
+	use_count = Column(Integer)
+	positive_count = Column(Integer)
+	active = Column(Boolean)
+
+	
+	def __repr__(self):
+		return (
+			"script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, active:{}").format(
+			self.script_id,
+			self.script,
+			self.convo_node,
+			self.use_count,
+			self.positive_count,
+			self.active
+			)
+
+
+class ScriptTesting(Base):
+
+	__tablename__ = "script_testing"
+
+	tweet_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	script_path = Column(String(600))  # consider actually using an array of 'script_id's used in the conversation
+	lat = Column(Float)
+	long = Column(Float)
+	force_rank = Column(String(10))  # we need to address the use of a string rather than integer for 'force_rank'
+	success = Column(Boolean)
+
+	
+	def __repr__(self):
+		return (
+			"tweet_id:{}, script_path:{}, lat:{}, long:{}, force_rank:{}, success:{}").format(
+			self.tweet_id,
+			self.script_path,
+			self.lat,
+			self.long,
+			self.force_rank,
+			self.success
 			)
 
 

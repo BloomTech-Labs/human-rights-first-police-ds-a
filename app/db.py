@@ -7,9 +7,15 @@ from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from app.models import ForceRanks, Conversations
+from app.models import ForceRanks, Conversations, BotScripts, ScriptTesting
 
 db_url = os.getenv('DB_URL2')
+
+TABLE_NAMES = {"force_ranks": ForceRanks,
+               "conversations": Conversations,
+               "bot_scripts": BotScripts,
+               "script_testing": ScriptTesting
+               }
 
 class Database(object):
 
@@ -289,10 +295,14 @@ class Database(object):
 
     def initialize_table(self, tablename):
         """ creates table if not exists and table model exists """
-        if tablename == 'force_ranks':
-            table = ForceRanks
-        elif tablename == 'conversations':
-            table = Conversations
+        
+        # if tablename in TABLE_NAMES:
+        #     table = TABLE_NAMES[tablename]
+        
+        if tablename == 'force_ranks':      # I suggest swapping these lines (and furtther lines to be added) with the above two
+            table = ForceRanks              #
+        elif tablename == 'conversations':  #
+            table = Conversations           #
         else:
             return "Table model not found"
 
@@ -303,10 +313,14 @@ class Database(object):
 
     def reset_table(self, tablename):
         """ DANGER! this will delete all data in the table!!! """
-        if tablename == 'force_ranks':
-            table = ForceRanks
-        elif tablename == 'conversations':
-            table = Conversations
+        
+        # if tablename in TABLE_NAMES:
+        #     table = TABLE_NAMES[tablename]
+        
+        if tablename == 'force_ranks':      # Same suggestion as above ^^^
+            table = ForceRanks              #
+        elif tablename == 'conversations':  #
+            table = Conversations           #
         else:
             return "Table model not found"
 
