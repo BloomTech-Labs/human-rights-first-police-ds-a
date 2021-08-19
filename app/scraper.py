@@ -54,7 +54,7 @@ def clean_date(date: dt.datetime) -> str:
 def scrape_twitter(query: str) -> List[Dict]:
     """ Pull tweets from twitter that report police use of force """
     tweets = []
-    api = create_api
+    api = create_api()
     for status in tweepy.Cursor(
         api.search,
         q=query,

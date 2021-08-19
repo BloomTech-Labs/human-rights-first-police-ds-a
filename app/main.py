@@ -110,7 +110,7 @@ async def view_data():
     return first_5000
 
 
-@app.get("/to-approve")
+@app.get("/to-approve/")
 async def to_approve():
     """ get all rows of Conversations that are form responses that have not been approved """
     needs_approval = DB.get_sevens()

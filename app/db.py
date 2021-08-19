@@ -129,11 +129,36 @@ class Database(object):
     def get_sevens(self):
         """ get all conversations with value of 7 """
         with self.Sessionmaker() as session:
-            query = (select(Conversations).
-            filter(Conversations.conversation_status == 7))
-            check_data = session.execute(query)
+            query = (select(Conversations, ForceRanks).
+            join(ForceRanks,
+                and_(Conversations.tweet_id == ForceRanks.tweet_id, Conversations.conversation_status == 7)))
+            data = session.execute(query).fetchall()
 
-        return check_data.fetchall()
+        out = []
+        for i in data:
+            record = {}
+            record['tweet_id'] = i['Conversations'].tweet_id
+            with self.Sessionmaker() as session:
+                query = (select(ForceRanks).
+                filter(ForceRanks.tweet_id == record['tweet_id']))
+                point = session.execute(query).fetchall()
+            record['city'] = i['Conversations'].root_tweet_city
+            record['confidence'] = None
+            record['description'] = i['ForceRanks'].description
+            record['force_rank'] = i['Conversations'].root_tweet_force_rank
+            record['incident_date'] = i['Conversations'].root_tweet_date
+            record['incident_id'] = i['ForceRanks'].incident_id
+            record['lat'] = i['Conversations'].root_tweet_lat
+            record['long'] = i['Conversations'].root_tweet_long
+            record['src'] = {e:i for (e,i) in enumerate(i['ForceRanks'].src.replace('"', '',).replace('[','').replace(']','').split(','))}
+            record['state'] = i['Conversations'].root_tweet_state
+            record['status'] = i['ForceRanks'].status
+            record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+            record['title'] = i['ForceRanks'].title
+            record['user_name'] = i['ForceRanks'].user_name
+            out.append(record)
+
+        return out
 
 
     def get_user_name(self):
