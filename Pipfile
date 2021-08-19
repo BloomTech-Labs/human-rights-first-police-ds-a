@@ -22,6 +22,9 @@ urllib3 = "==1.25.4"
 nltk = "*"
 requests = "*"
 torch = "*"
+transformers = "*"
+ipykernel = "*"
+tensorflow = "==2.4.0"
 
 [requires]
 python_version = "3"
