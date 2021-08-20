@@ -11,7 +11,7 @@ class ForceRanks(Base):
 	__tablename__ = "force_ranks"
 
 	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
-	incident_date = Column(Date, nullable=False)
+	incident_date = Column(Date, nullable=False)  # Convert to date not datetime
 	tweet_id = Column(String(255))
 	user_name = Column(String(255))
 	description = Column(String(10000), nullable=False)

@@ -9,7 +9,8 @@ import tweepy
 
 from app.db import Database
 from app.franken_bert import FrankenBert
-from app.twitter import create_api
+from app.twitter import create_api, logger
+
 
 DB = Database()
 
@@ -77,4 +78,5 @@ def scrape_twitter(query: str) -> List[Dict]:
                     "tags": "[]",
                     "src": f'["https://twitter.com/{status.user.screen_name}/status/{status.id_str}"]',
                 })
+    logger.info("Scraped {} valid tweets".format(len(tweets)))
     return tweets

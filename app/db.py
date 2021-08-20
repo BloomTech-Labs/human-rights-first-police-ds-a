@@ -127,7 +127,7 @@ class Database(object):
 
 
     def get_sevens(self):
-        """ get all conversations with value of 7 """
+        """ get all conversations with value of 7 and corresponding data from force_ranks """
         with self.Sessionmaker() as session:
             query = (select(Conversations, ForceRanks).
             join(ForceRanks,
@@ -138,10 +138,10 @@ class Database(object):
         for i in data:
             record = {}
             record['tweet_id'] = i['Conversations'].tweet_id
-            with self.Sessionmaker() as session:
-                query = (select(ForceRanks).
-                filter(ForceRanks.tweet_id == record['tweet_id']))
-                point = session.execute(query).fetchall()
+            # with self.Sessionmaker() as session:
+            #     query = (select(ForceRanks).
+            #     filter(ForceRanks.tweet_id == record['tweet_id']))
+            #     point = session.execute(query).fetchall()
             record['city'] = i['Conversations'].root_tweet_city
             record['confidence'] = None
             record['description'] = i['ForceRanks'].description
@@ -154,6 +154,7 @@ class Database(object):
             record['state'] = i['Conversations'].root_tweet_state
             record['status'] = i['ForceRanks'].status
             record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+            print(i['ForceRanks'].tags)
             record['title'] = i['ForceRanks'].title
             record['user_name'] = i['ForceRanks'].user_name
             out.append(record)
