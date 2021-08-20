@@ -1,0 +1,12 @@
+# markdowns
+*.md
+
+# notebooks
+*.ipynb
+/notebooks
+
+# csv files
+*.csv
+
+# license
+LICENSE
