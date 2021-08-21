@@ -152,7 +152,9 @@ cython_debug/
 test_notebook.ipynb
 
 # saved bert model
+app/old_saved_model/
 app/saved_model/
+old_saved_model/
 saved_model/
 
 # scraper.log
