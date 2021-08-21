@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from typing import Optional, List, Dict
+from sqlalchemy.orm.relationships import foreign
 
 from sqlalchemy.sql.sqltypes import ARRAY
 
@@ -107,7 +108,7 @@ class BotScripts(Base):
 
 	script_id = Column(Integer, primary_key=True, nullable=False, unique=True)
 	script = Column(String(255))
-	convo_node = Column(Integer)  # we may consider using srings that identify the node i.e. 'Introduction', 'Location', 'Date', etc.
+	convo_node = Column(Integer)
 	use_count = Column(Integer)
 	positive_count = Column(Integer)
 	active = Column(Boolean)
@@ -129,23 +130,53 @@ class ScriptTesting(Base):
 
 	__tablename__ = "script_testing"
 
-	tweet_id = Column(Integer, primary_key=True, nullable=False, unique=True)
-	script_path = Column(String(600))  # consider actually using an array of 'script_id's used in the conversation
-	lat = Column(Float)
-	long = Column(Float)
-	force_rank = Column(String(10))  # we need to address the use of a string rather than integer for 'force_rank'
+	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	script_path = Column(String(100))
 	success = Column(Boolean)
 
 	
 	def __repr__(self):
 		return (
-			"tweet_id:{}, script_path:{}, lat:{}, long:{}, force_rank:{}, success:{}").format(
-			self.tweet_id,
+			"incident_id:{}, script_path:{}, success:{}").format(
+			self.incident_id,
 			self.script_path,
-			self.lat,
-			self.long,
-			self.force_rank,
 			self.success
+			)
+
+
+class Sources(Base):
+
+	__tablename__ = "sources"
+
+	source_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	incident_id = Column(Integer, ForeignKey("force_ranks.incident_id"))
+	source = Column(String(255))
+
+	
+	def __repr__(self):
+		return (
+			"source_id:{}, incident_id:{}, sources:{}").format(
+			self.source_id,
+			self.incident_id,
+			self.source
+			)
+
+
+class Tags(Base):
+
+	__tablename__ = "tags"
+
+	tags_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	incident_id = Column(Integer, ForeignKey("force_ranks.incident_id"))
+	tag = Column(String(40))
+
+	
+	def __repr__(self):
+		return (
+			"tags_id:{}, incident_id:{}, sources:{}").format(
+			self.tags_id,
+			self.incident_id,
+			self.tag
 			)
 
 

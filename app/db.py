@@ -73,6 +73,25 @@ class Database(object):
         return force_ranks_data
 
 
+    """
+    These functions are specific to the Twitter bot script selection and testing and
+    will need to be moved and adapted into the apropriate table class later on.
+    """
+
+    def get_script_ids(self, convo_node):
+        """ Gets the script_ids associated with the given convo_node """
+        with self.Sessionmaker() as session:
+            query = select(BotScripts.scripts)
+            force_ranks_data = session.execute(query).fetchall()
+
+        return force_ranks_data
+
+
+    
+
+    """--------------------------------------------------------------------------------"""
+
+
     def insert_data_force_ranks(self, data: List[Dict]):
         """ inserts data into force_ranks """
         with self.Sessionmaker() as session:
