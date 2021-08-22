@@ -210,3 +210,10 @@ class form_in(BaseModel):
 class check(BaseModel):
     tweet_id: str
 
+class new_script(BaseModel):
+	script_id: int
+	script: str
+	convo_node: int
+	use_count: Optional[int] = 0
+	positive_count: Optional[int] = 0
+	active: Optional[bool] = True

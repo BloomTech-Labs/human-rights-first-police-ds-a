@@ -1,5 +1,7 @@
 """Tools for modifying 'bot_scripts' table"""
 
+from scraper import DB
+
 # This is to be plugged in as helper function in the Class to be created here
 # def success_rate(self):
 #     if self.uses == 0:
@@ -16,7 +18,10 @@ def add_script(script, convo_node):
     to this script.
     """
 
+    # Generate a new script_id
+
     # Create entry in bot_script table
+
 
 
 def deactivate_script(script_ID):

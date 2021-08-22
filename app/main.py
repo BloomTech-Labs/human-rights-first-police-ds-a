@@ -6,10 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 from pydantic import BaseModel
 
-
+from app.script_selection import add_to_use_count
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
-from app.models import form_out, form_in, check
+from app.models import form_out, form_in, check, new_script
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -94,6 +94,18 @@ async def approve(data: check):
     return data
 
 
+@app.post("/add-script/", response_model=new_script)
+async def post_script(data: new_script):
+    """ This endpoint allows the Admin to put a new script into the bot_scripts table """
+    print("--------------------", data)
+    DB.add_script(data)
+
+# Testing endpoint 
+# @app.post("/bump-use-count/")
+# async def add_one_to_use_count(script_id):
+#     add_to_use_count(script_id)
+
+
 @app.get("/frankenbert/{user_input}")
 async def frankenbert(user_input: str):
     """ Prediction endpoint, for testing and demonstration purposes """
@@ -117,7 +129,7 @@ async def to_approve():
     return needs_approval
 
 
-@app.on_event("startup")
+# @app.on_event("startup")
 @repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force
