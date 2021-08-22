@@ -19,11 +19,19 @@ logger = logging.getLogger()
 bot_name = 'RowenWitt' # Need bot name
 
 conversation_tree = {
-	1:"Hi, do you have more information about the location of this incident?",
-	2:"What is the location where this incident took place?",
-	3:"Thanks! You're helping (align incentives)!",
-	4:"Thanks anyway!",
-	5:"Please fill out this form "
+	1:"Hey, we noticed that you Tweeted about police misconduct. I'm a bot working on behalf of Blue Witness to gain supplementary information about these reports in order to track these incidents for the sake of social accountability. We noticed that the location and time of this incident are missing from your Tweet, are you willing to help us gain the information we need? Please reply 'Yes' or 'No.'",
+	2:"Do you want to fill out a form or talk with the bot",
+	3:"What is the location where this incident took place?",
+	4:"What is the date",
+	5:"what is the force_rank, here are the options",
+	6:"Thanks! You're helping (align incentives)!",
+	7:"Thanks anyway!",
+	8:"Please fill out this form "
+	# fix form number
+	# fix gutter number
+	# fix all numbers
+	# make all numbers call to Ryan's script
+	# make end of conversation gigantic number to leave ample spots to increase conversation steps
 }
 
 
