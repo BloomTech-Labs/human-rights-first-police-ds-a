@@ -7,17 +7,13 @@ from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from app.models import ForceRanks, Conversations, BotScripts, ScriptTesting
+from app.models import ForceRanks, Conversations, BotScripts, ScriptTesting, Tags, Sources
 
 db_url = os.getenv('DB_URL2')
 
-TABLE_NAMES = {"force_ranks": ForceRanks,
-               "conversations": Conversations,
-               "bot_scripts": BotScripts,
-               "script_testing": ScriptTesting
-               }
 
 class Database(object):
+
 
     def __init__(self):
         self.engine = create_engine(
@@ -35,6 +31,14 @@ class Database(object):
                 bind=self.engine
             )
         )
+
+        self.TABLE_NAMES = {"force_ranks": ForceRanks,
+                            "conversations": Conversations,
+                            "bot_scripts": BotScripts,
+                            "script_testing": ScriptTesting,
+                            "tags": Tags,
+                            "sources": Sources
+                            }
 
 
     def model_to_dict(self, obj):
@@ -78,13 +82,13 @@ class Database(object):
     will need to be moved and adapted into the apropriate table class later on.
     """
 
-    def get_script_ids(self, convo_node):
-        """ Gets the script_ids associated with the given convo_node """
-        with self.Sessionmaker() as session:
-            query = select(BotScripts.scripts)
-            force_ranks_data = session.execute(query).fetchall()
+    # def get_script_ids(self, convo_node):
+    #     """ Gets the script_ids associated with the given convo_node """
+    #     with self.Sessionmaker() as session:
+    #         query = select(BotScripts.scripts)
+    #         force_ranks_data = session.execute(query).fetchall()
 
-        return force_ranks_data
+    #     return force_ranks_data
 
 
     
@@ -211,7 +215,7 @@ class Database(object):
                 func.max(Conversations.conversation_status).label("status"),
                 Conversations.tweet_id
             ).group_by(
-                Converstaions.tweet_id
+                Conversations.tweet_id
             ).cte('wow')
 
             query2 = select(
@@ -315,13 +319,8 @@ class Database(object):
     def initialize_table(self, tablename):
         """ creates table if not exists and table model exists """
         
-        # if tablename in TABLE_NAMES:
-        #     table = TABLE_NAMES[tablename]
-        
-        if tablename == 'force_ranks':      # I suggest swapping these lines (and furtther lines to be added) with the above two
-            table = ForceRanks              #
-        elif tablename == 'conversations':  #
-            table = Conversations           #
+        if tablename in self.TABLE_NAMES:
+            table = self.TABLE_NAMES[tablename]
         else:
             return "Table model not found"
 
@@ -333,13 +332,8 @@ class Database(object):
     def reset_table(self, tablename):
         """ DANGER! this will delete all data in the table!!! """
         
-        # if tablename in TABLE_NAMES:
-        #     table = TABLE_NAMES[tablename]
-        
-        if tablename == 'force_ranks':      # Same suggestion as above ^^^
-            table = ForceRanks              #
-        elif tablename == 'conversations':  #
-            table = Conversations           #
+        if tablename in self.TABLE_NAMES:
+            table = self.TABLE_NAMES[tablename]
         else:
             return "Table model not found"
 
@@ -352,4 +346,23 @@ class Database(object):
         elif check == 'N':
             pass
         else:
-            print('Please answer Y or N')
+            print('You must answer Y or N to complete this function.')
+
+
+    def drop_table(self, tablename):
+        """ DANGER! this will delete the table!!! """
+        
+        if tablename in self.TABLE_NAMES:
+            table = self.TABLE_NAMES[tablename]
+        else:
+            return "Table model not found"
+
+        check = input('Are you sure? This will delete all table data (Y/N):')
+        if check == 'Y':
+            insp = inspect(self.engine)
+            if insp.has_table(tablename) == True:
+                table.__table__.drop(self.engine)
+        elif check == 'N':
+            pass
+        else:
+            print('You must answer Y or N to complete this function.')
