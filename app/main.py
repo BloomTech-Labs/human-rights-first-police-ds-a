@@ -97,7 +97,7 @@ async def approve(data: check):
 @app.get("/frankenbert/{user_input}")
 async def frankenbert(user_input: str):
     """ Prediction endpoint, for testing and demonstration purposes """
-    rank, conf, *_ = frankenbert_rank(user_input.text)
+    rank, conf, *_ = frankenbert_rank(user_input)
     return {"Rank": rank, "Confidence": conf}
 
 
