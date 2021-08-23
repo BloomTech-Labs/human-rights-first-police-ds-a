@@ -3,6 +3,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 from pydantic import BaseModel
 from typing import Optional, List, Dict
+from sqlalchemy.orm.relationships import foreign
+
+from sqlalchemy.sql.sqltypes import ARRAY
 
 Base = declarative_base()
 
@@ -99,6 +102,84 @@ class Conversations(Base):
 			)
 
 
+class BotScripts(Base):
+
+	__tablename__ = "bot_scripts"
+
+	script_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	script = Column(String(255))
+	convo_node = Column(Integer)
+	use_count = Column(Integer)
+	positive_count = Column(Integer)
+	active = Column(Boolean)
+
+	
+	def __repr__(self):
+		return (
+			"script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, active:{}").format(
+			self.script_id,
+			self.script,
+			self.convo_node,
+			self.use_count,
+			self.positive_count,
+			self.active
+			)
+
+
+class ScriptTesting(Base):
+
+	__tablename__ = "script_testing"
+
+	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	script_path = Column(String(100))
+	success = Column(Boolean)
+
+	
+	def __repr__(self):
+		return (
+			"incident_id:{}, script_path:{}, success:{}").format(
+			self.incident_id,
+			self.script_path,
+			self.success
+			)
+
+
+class Sources(Base):
+
+	__tablename__ = "sources"
+
+	source_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	incident_id = Column(Integer, ForeignKey("force_ranks.incident_id"))
+	source = Column(String(255))
+
+	
+	def __repr__(self):
+		return (
+			"source_id:{}, incident_id:{}, sources:{}").format(
+			self.source_id,
+			self.incident_id,
+			self.source
+			)
+
+
+class Tags(Base):
+
+	__tablename__ = "tags"
+
+	tags_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	incident_id = Column(Integer, ForeignKey("force_ranks.incident_id"))
+	tag = Column(String(40))
+
+	
+	def __repr__(self):
+		return (
+			"tags_id:{}, incident_id:{}, sources:{}").format(
+			self.tags_id,
+			self.incident_id,
+			self.tag
+			)
+
+
 class form_out(BaseModel):
     form: int
     incident_id: int
@@ -129,3 +210,10 @@ class form_in(BaseModel):
 class check(BaseModel):
     tweet_id: str
 
+class new_script(BaseModel):
+	script_id: int
+	script: str
+	convo_node: int
+	use_count: Optional[int] = 0
+	positive_count: Optional[int] = 0
+	active: Optional[bool] = True
