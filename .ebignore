@@ -1,0 +1,37 @@
+# markdowns
+*.md
+
+# notebooks
+*.ipynb
+/notebooks
+
+# csv files
+*.csv
+
+# archive directory
+/archive
+
+# synthetic tweets
+/synthetic_tweets
+synthetic_tweets/
+
+# virtual environment
+/env
+
+# pipfile
+
+*Pipfile
+*Pipfile.lock
+
+
+# environment variables
+*.env
+
+# git file
+*.git
+
+# images
+*.png
+
+# license
+LICENSE
