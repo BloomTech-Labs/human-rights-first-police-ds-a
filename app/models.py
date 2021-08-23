@@ -102,6 +102,23 @@ class Conversations(Base):
 			)
 
 
+class Training(Base):
+
+	__tablename__ = "training"
+
+	id = Column(Integer, primary_key=True)
+	tweets = Column(String)
+	labels = Column(Integer)
+
+	def __repr__(self):
+		return(
+			"id:{}, tweets:{}, labels:{}").format(
+			self.id,
+			self.tweets,
+			self.labels
+			)
+
+
 class BotScripts(Base):
 
 	__tablename__ = "bot_scripts"
