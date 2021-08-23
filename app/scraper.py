@@ -48,7 +48,7 @@ def clean_str(string: str) -> str:
 
 def clean_date(date: dt.datetime) -> str:
     """ Cleans date for SQL insertion """
-    return date.strftime("%Y-%m-%d %H:%M:%S")
+    return date.strftime("%Y-%m-%d")
 
 
 def scrape_twitter(query: str) -> List[Dict]:
