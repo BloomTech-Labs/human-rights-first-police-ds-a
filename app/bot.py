@@ -17,13 +17,19 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 bot_name = 'RowenWitt' # Need bot name
+bot_id = 1335727237400694784
+welcome_message_id = 1
+dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
 	1:"Hi, do you have more information about the location of this incident?",
 	2:"What is the location where this incident took place?",
 	3:"Thanks! You're helping (align incentives)!",
 	4:"Thanks anyway!",
-	5:"Please fill out this form "
+	5:"Please fill out this form ",
+	10:'Click button below to start conversation ',
+	11:'Please fill out this form ',
+	12:'Thanks anyway!'
 }
 
 
@@ -40,16 +46,17 @@ def send_form(data:Dict):
 	""" Sends form to user, inserts to conversations table """
 
 	to_insert = DB.convert_invocation_conversations(data)
+	user_id_str = twitter.get_user_id_from_tweet(to_insert['tweet_id'])
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
-	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[5] + to_insert['link'] 
-	to_insert['reachout_template'] = conversation_tree[5]
+	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link 
+	to_insert['reachout_template'] = conversation_tree[10]
 	del to_insert['link']
 
 	try:
 		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
 		to_insert['tweeter_id'] = bot_name
 		to_insert['isChecked'] = True
-		to_insert['conversation_status'] = 6
+		to_insert['conversation_status'] = 10
 		to_insert['checks_made'] = 1
 		to_insert['sent_tweet_id'] = status.id,
 
@@ -74,7 +81,7 @@ def advance_all():
 	""" Advances all conversations based on highest conversations status per tweet_id """
 	to_advance = DB.get_to_advance()
 	for threads in to_advance:
-		advance_conversation(points.tweet_id)
+		advance_conversation(threads.tweet_id)
 
 
 def reset_conversations_for_test():
@@ -246,7 +253,10 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 
 	elif max_step.conversation_status == 5:
 		DB.update_conversation_checks(root_id)
-
+	elif max_step.conversation_status == 10:
+		# Add params for process dms
+		processed_dms = twitter.process_dms()
+		# Update DB
 
 def clean_query_string(string: str) -> str:
 	""" Cleans string of ' 's and 's """
