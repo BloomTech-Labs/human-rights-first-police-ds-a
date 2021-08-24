@@ -126,7 +126,7 @@ def form_tweet(tweet_source: str, information_requested: str) -> Dict:
 
 def create_welcome_message(name: str,
                            msg_txt: str,
-                           quick_replies: List[Dict] = None) -> Dict:
+                           quick_replies: List[Dict] = None):
 
     url = "https://api.twitter.com/1.1/direct_messages/welcome_messages/new.json"
     if quick_replies:
