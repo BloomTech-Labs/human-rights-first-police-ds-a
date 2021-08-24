@@ -9,12 +9,14 @@ from sqlalchemy.sql.sqltypes import ARRAY
 
 Base = declarative_base()
 
+
 class ForceRanks(Base):
+
 
 	__tablename__ = "force_ranks"
 
 	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
-	incident_date = Column(Date, nullable=False)  # Convert to date not datetime
+	incident_date = Column(Date, nullable=False)
 	tweet_id = Column(String(255))
 	user_name = Column(String(255))
 	description = Column(String(10000), nullable=False)
@@ -52,54 +54,56 @@ class ForceRanks(Base):
 			)
 
 
+
 class Conversations(Base):
 
-	__tablename__ = "conversations"
+    __tablename__ = "conversations"
 
-	id = Column(Integer, primary_key=True)
-	incident_id = Column(Integer, ForeignKey('force_ranks.incident_id'))
-	tweet_id = Column(String(255))
-	form = Column(Integer)
-	root_tweet_city = Column(String(255))
-	root_tweet_state = Column(String(255))
-	root_tweet_lat = Column(Float)
-	root_tweet_long = Column(Float)
-	root_tweet_date = Column(Date)
-	root_tweet_force_rank = Column(String(255), default=None)
-	sent_tweet_id =	Column(String)
-	received_tweet_id = Column(String)
-	in_reply_to_id = Column(String)
-	tweeter_id = Column(String)
-	conversation_status = Column(Integer)
-	tweet_text = Column(String)
-	checks_made = Column(Integer)
-	reachout_template = Column(String)
-	isChecked = Column(Boolean)
-	parent = relationship("ForceRanks", back_populates="children")
+    id = Column(Integer, primary_key=True)
+    incident_id = Column(Integer, ForeignKey('force_ranks.incident_id'))
+    tweet_id = Column(String(255))
+    form = Column(Integer)
+    root_tweet_city = Column(String(255))
+    root_tweet_state = Column(String(255))
+    root_tweet_lat = Column(Float)
+    root_tweet_long = Column(Float)
+    root_tweet_date = Column(Date)
+    root_tweet_force_rank = Column(String(255), default=None)
+    sent_tweet_id = Column(String)
+    received_tweet_id = Column(String)
+    in_reply_to_id = Column(String)
+    tweeter_id = Column(String)
+    conversation_status = Column(Integer)
+    tweet_text = Column(String)
+    checks_made = Column(Integer)
+    reachout_template = Column(String)
+    isChecked = Column(Boolean)
+    #dm_text = Column(String)
+    #quick_reply_response = Column(String)
+    parent = relationship("ForceRanks", back_populates="children")
 
-
-	def __repr__(self):
-		return(
-			"id:{}, tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
-			self.id,
-			self.tweet_id,
-			self.form,
-			self.root_tweet_city,
-			self.root_tweet_state,
-			self.root_tweet_lat,
-			self.root_tweet_long,
-			self.root_tweet_date,
-			self.root_tweet_force_rank,
-			self.sent_tweet_id,
-			self.received_tweet_id,
-			self.in_reply_to_id,
-			self.tweeter_id,
-			self.conversation_status,
-			self.tweet_text,
-			self.checks_made,
-			self.reachout_template,
-			self.isChecked
-			)
+    def __repr__(self):
+        return(
+            "id:{}, tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
+            self.id,
+            self.tweet_id,
+            self.form,
+            self.root_tweet_city,
+            self.root_tweet_state,
+            self.root_tweet_lat,
+            self.root_tweet_long,
+            self.root_tweet_date,
+            self.root_tweet_force_rank,
+            self.sent_tweet_id,
+            self.received_tweet_id,
+            self.in_reply_to_id,
+            self.tweeter_id,
+            self.conversation_status,
+            self.tweet_text,
+            self.checks_made,
+            self.reachout_template,
+            self.isChecked
+        )
 
 
 class Training(Base):
@@ -200,7 +204,7 @@ class Tags(Base):
 class form_out(BaseModel):
     form: int
     incident_id: int
-    isChecked: bool
+    # isChecked: bool
     link: str
     tweet_id: str
     user_name: str
@@ -217,7 +221,6 @@ class form_in(BaseModel):
     lat: Optional[float] = None
     long: Optional[float] = None
     src: List[str] = []
-
     status: str
     title: str
     tweet_id: str
@@ -227,6 +230,7 @@ class form_in(BaseModel):
 class check(BaseModel):
     tweet_id: str
 
+
 class new_script(BaseModel):
 	script_id: int
 	script: str
@@ -234,3 +238,4 @@ class new_script(BaseModel):
 	use_count: Optional[int] = 0
 	positive_count: Optional[int] = 0
 	active: Optional[bool] = True
+

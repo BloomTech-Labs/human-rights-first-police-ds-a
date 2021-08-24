@@ -3,7 +3,8 @@ load_dotenv(find_dotenv())
 
 import os
 import datetime as dt
-from typing import Tuple, List, Dict
+import os
+from typing import Dict, List, Tuple
 
 import tweepy
 
@@ -11,6 +12,8 @@ from app.db import Database
 from app.franken_bert import FrankenBert
 from app.twitter import create_api, logger
 
+
+DB = Database()
 
 DB = Database()
 

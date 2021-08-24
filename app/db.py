@@ -49,6 +49,14 @@ class Database(object):
 
         return data
 
+    def get_conversation_root(self, root_id: int):
+        """ Get conversation with a specific root_tweet_id """
+        with self.Sessionmaker() as session:
+            query = select(Conversations).where(Conversations.root_tweet_id == root_id)
+            conversations_data = session.execute(query)
+
+        return [i[0] for i in conversations_data.fetchall()]
+
 
     def get_conversation_root(self, root_id: int):
         """ Get conversation with a specific tweet_id """
@@ -198,22 +206,22 @@ class Database(object):
             session.commit()
 
 
-    def get_root_seven(self, root_id):
+    def get_root_twelve(self, root_id):
         """ gets root_ids with value of 7 """
         with self.Sessionmaker() as session:
             query = (select(Conversations).
-            filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 7)))
+            filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 12)))
             check_data = session.execute(query)
 
         return check_data.fetchall()
 
 
-    def get_sevens(self):
+    def get_twelves(self):
         """ get all conversations with value of 7 and corresponding data from force_ranks """
         with self.Sessionmaker() as session:
             query = (select(Conversations, ForceRanks).
             join(ForceRanks,
-                and_(Conversations.tweet_id == ForceRanks.tweet_id, Conversations.conversation_status == 7)))
+                and_(Conversations.tweet_id == ForceRanks.tweet_id, Conversations.conversation_status == 12)))
             data = session.execute(query).fetchall()
 
         out = []
@@ -232,10 +240,16 @@ class Database(object):
             record['incident_id'] = i['ForceRanks'].incident_id
             record['lat'] = i['Conversations'].root_tweet_lat
             record['long'] = i['Conversations'].root_tweet_long
-            record['src'] = {e:i for (e,i) in enumerate(i['ForceRanks'].src.replace('"', '',).replace('[','').replace(']','').split(','))}
+            try:
+                record['src'] = {e:i for (e,i) in enumerate(i['ForceRanks'].src.replace('"', '',).replace('[','').replace(']','').split(','))}
+            except (KeyError, AttributeError):
+                pass
             record['state'] = i['Conversations'].root_tweet_state
             record['status'] = i['ForceRanks'].status
-            record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+            try:
+                record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+            except (KeyError, AttributeError):
+                pass
             print(i['ForceRanks'].tags)
             record['title'] = i['ForceRanks'].title
             record['user_name'] = i['ForceRanks'].user_name
@@ -306,10 +320,10 @@ class Database(object):
             clean_data['form'] = data.form
         except KeyError:
             pass
-        try:
-            clean_data['isChecked'] = True
-        except KeyError:
-            pass
+        # try:
+        #     clean_data['isChecked'] = True
+        # except KeyError:
+        #     pass
         try:
             clean_data['link'] = data.link
         except KeyError:

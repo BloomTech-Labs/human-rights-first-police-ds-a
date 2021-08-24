@@ -17,6 +17,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
 bot_name = 'RowenWitt' # Need bot name
+witt_rowen_id = 1078337070
+bot_id = 1335727237400694784
+#welcome_message_id = 1
+#welcome_message_id = 1424836133582774286
+welcome_message_id = 1430032447282958343
+dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
 	1:"Hey, we noticed that you Tweeted about police misconduct. I'm a bot working on behalf of Blue Witness to gain supplementary information about these reports in order to track these incidents for the sake of social accountability. We noticed that the location and time of this incident are missing from your Tweet, are you willing to help us gain the information we need? Please reply 'Yes' or 'No.'",
@@ -26,7 +32,11 @@ conversation_tree = {
 	5:"what is the force_rank, here are the options",
 	6:"Thanks! You're helping (align incentives)!",
 	7:"Thanks anyway!",
-	8:"Please fill out this form "
+	8:"Please fill out this form ",
+
+	10:'Click link below to start conversation ',
+	11:'Please fill out this form ',
+	13:'Thanks anyway!'
 	# fix form number
 	# fix gutter number
 	# fix all numbers
@@ -36,7 +46,7 @@ conversation_tree = {
 
 
 test_entries = [
-	{"form":1,"incident_id":1,"isChecked":False,"link":"https://a.humanrightsfirst.dev/edit/1426290795267731463","tweet_id":"1424511565932359685","user_name":"witt_rowen"}
+	{"form":1,"incident_id":1,"link":"https://a.humanrightsfirst.dev/edit/1426290795267731463","tweet_id":"1424511565932359685","user_name":"witt_rowen"}
 ]
 
 test_insert = [
@@ -48,19 +58,21 @@ def send_form(data:Dict):
 	""" Sends form to user, inserts to conversations table """
 
 	to_insert = DB.convert_invocation_conversations(data)
+	user_id_str = twitter.get_user_id_from_tweet(to_insert['tweet_id'])
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
-	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[5] + to_insert['link'] 
-	to_insert['reachout_template'] = conversation_tree[5]
+	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link 
+	to_insert['reachout_template'] = conversation_tree[10]
+	to_insert['in_reply_to_id'] = to_insert['tweeter_id']
 	del to_insert['link']
+
 
 	try:
 		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
 		to_insert['tweeter_id'] = bot_name
-		to_insert['isChecked'] = True
-		to_insert['conversation_status'] = 6
+		to_insert['conversation_status'] = 10
 		to_insert['checks_made'] = 1
-		to_insert['sent_tweet_id'] = status.id,
-
+		to_insert['sent_tweet_id'] = status.id
+		#del to_insert['dm_text']
 		DB.insert_data_conversations([to_insert])
 	except tweepy.TweepError as e:
 		logging.error("Tweepy error occured:{}".format(e))
@@ -72,8 +84,8 @@ def receive_form(data:Dict):
 	to_insert = DB.convert_form_conversations(data)
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
 	to_insert['isChecked'] = True
-	to_insert['conversation_status'] = 7
-	validation_check = DB.get_root_seven(to_insert['tweet_id'])
+	to_insert['conversation_status'] = 12
+	validation_check = DB.get_root_twelve(to_insert['tweet_id'])
 	if len(validation_check) == 0:
 		DB.insert_data_conversations([to_insert])
 
@@ -82,7 +94,7 @@ def advance_all():
 	""" Advances all conversations based on highest conversations status per tweet_id """
 	to_advance = DB.get_to_advance()
 	for threads in to_advance:
-		advance_conversation(points.tweet_id)
+		advance_conversation(threads.tweet_id)
 
 
 def reset_conversations_for_test():
@@ -121,7 +133,7 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 		pass
 
 
-def advance_conversation(root_id: int, form_link: str) -> str:
+def advance_conversation(root_id: int, form_link: str = None) -> str:
 	""" Advances conversation by root_id """
 	api = create_api()
 	root_conversation = DB.get_conversation_root(root_id)
@@ -135,9 +147,6 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 	if max_step.conversation_status == 0 and max_step.form == 0:
 		try:
 			status = twitter.respond_to_tweet(max_step.tweet_id, conversation_tree[1])
-			print(max_step.conversation_status)
-			print(max_step.tweet_text)
-			print(max_step.reachout_template)
 			to_insert = [{
 				"tweet_id":root_id,
 				"sent_tweet_id":status.id_str,
@@ -254,7 +263,37 @@ def advance_conversation(root_id: int, form_link: str) -> str:
 
 	elif max_step.conversation_status == 5:
 		DB.update_conversation_checks(root_id)
+	elif max_step.conversation_status == 10:
+		# Add params for process dms
 
+		processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id, tweet_id=max_step.tweet_id, convo_tree_txt=conversation_tree[11])
+		# Update DB -- Make sure to store link from fe (or we build ourselves)
+####DELETE#### V  V  V  V
+		# "reachout_template": dm.initiated_via['welcome_message_id'],
+  #               "tweeter_id": dm.message_create['sender_id'],
+
+  #               "quick_reply_response": dm.message_create['message_data']['quick_reply_response']['metadata']
+		to_insert = {}
+		to_insert['tweeter_id'] = processed_dms['tweeter_id']
+		to_insert['tweet_text'] = processed_dms['quick_reply_response']
+		#to_insert['reachout_template'] = processed_dms['reachout_template'] 
+		to_insert['reachout_template'] = conversation_tree[11]
+		to_insert['checks_made'] = (max_step.checks_made+1) 
+		to_insert['conversation_status'] = processed_dms['conversation_status']
+
+		# if to_insert['tweet_text'] == 'confirm_yes':
+		# 	to_insert['conversation_status'] = 12
+		# else:
+		# 	to_insert['conversation_status'] = 13
+
+		DB.insert_data_conversations([to_insert])
+
+	elif max_step.conversation_status == 12:
+		# This is where we've received a response, shouldn't do anything here, only return when asked for directly through endpoint
+		DB.update_conversation_checks(root_id)
+
+	elif max_step.conversation_status == 13:
+		DB.update_conversation_checks(root_id)
 
 def clean_query_string(string: str) -> str:
 	""" Cleans string of ' 's and 's """
