@@ -106,7 +106,15 @@ class Database(object):
         return script_data
 
 
-    def add_script(self, new_script):
+    def insert_script(self, new_script):
+        """
+        Updates the bot_scripts table with new row passing the given script
+        and indicated conversation node into their respective columns. Sets the
+        'use_count' and 'positive_count' columns for this row to the default of 0.
+        'active' column set to True by default. Generates a new 'script_ID' unique
+        to this script.
+        """
+
         with self.Sessionmaker() as session:
             BS = BotScripts()
             BS.script_id = new_script.script_id
@@ -114,6 +122,7 @@ class Database(object):
             BS.convo_node = new_script.convo_node
             BS.use_count = new_script.use_count
             BS.positive_count = new_script.positive_count
+            BS.success_rate = new_script.success_rate
             BS.active = new_script.active
             session.add(BS)
             session.commit()
@@ -131,9 +140,22 @@ class Database(object):
 
         return use_count
 
+
+    def get_counts(self, script_id):
+        """ Gets use_count and positive_count from 'bot_scripts' given script_id """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.use_count, BotScripts.positive_count).
+                where(BotScripts.script_id == script_id)
+            )
+
+            counts = session.execute(query).fetchall()
+
+        return counts
+
     
     def bump_use_count(self, script_id, new_count):
-        """ Updates the use_count for a for a script as identified by script_id """
+        """ Updates the use_count for a script as identified by script_id """
         with self.Sessionmaker() as session:
             count_dict = {"use_count": new_count}
             query = (
@@ -141,6 +163,22 @@ class Database(object):
                 where(BotScripts.script_id == script_id).
                 values(**count_dict)
             )
+
+            session.execute(query)
+            session.commit()
+
+
+    def update_pos_and_success(self, script_id, positive_count, success_rate):
+        """ Updates the positive_count and success_rate for a given script_id """
+        with self.Sessionmaker() as session:
+            data = {"positive_count": positive_count,
+                    "success_rate": success_rate
+                    }
+            query = (
+                    update(BotScripts).
+                    where(BotScripts.script_id == script_id).
+                    values(**data)
+                )
 
             session.execute(query)
             session.commit()

@@ -1,6 +1,7 @@
-"""Tools for modifying 'bot_scripts' table"""
+"""Tools for modifying 'bot_scripts' table and script selection"""
 
-from scraper import DB
+from app.scraper import DB
+
 
 # This is to be plugged in as helper function in the Class to be created here
 # def success_rate(self):
@@ -9,7 +10,7 @@ from scraper import DB
 #     else:
 #         return self.positive / self.uses
 
-def add_script(script, convo_node):
+def add_script(data): # change to convo_node
     """
     Updates the bot_scripts table with new row passing the given script
     and indicated conversation node into their respective columns. Sets the
@@ -18,10 +19,13 @@ def add_script(script, convo_node):
     to this script.
     """
 
-    # Generate a new script_id
-
+    # # Generate a new script_id
+    # if convo_node == "welcome":
+    #     # Use Brod'y auth function
+    #    pass
+ 
     # Create entry in bot_script table
-
+    DB.insert_script(data)
 
 
 def deactivate_script(script_ID):
@@ -35,27 +39,46 @@ def deactivate_script(script_ID):
     # Update 'active' to False in 'bot_script' table for script_ID
 
 
-def show_scripts(nodes=["all"]):  # discern what nomenclature is being utilized to identify conversation nodes and replace "all" appropriately
-    """
-    Gets the 'script_ID', 'script', and 'convo_node' for each script with 
-    'active' set to True in the selected node(s) for display on the Admin
-    Dashboard. Default is to show all scripts for all conversation nodes.
-    """
+""" FUTURE update: add randomized functionality to choose between path-based
+script selection based on traning from the 'script_training' and 
+path-generating options. Possibly set this up to occur automatically whence
+results from a traing session of path-based data becomes available.
 
-    # Read 'script_ID', 'script', and 'convo_node' and route to FE
+Also consider setting up testing to occur automatically whence
+sufficient training data becomes available. Also consider scheduling automatic
+training per a given number of data points received thereafter. Reccomend having
+said training take place on another optional instance (with the bot sentiment
+analysis) as memory on current instance is running low.
+"""
 
+node_dict = {1:"Intros",
+             2: "Date Request",
+             3: "",
+             4: "",
+             5: "",
+             6: "",
+             7: "",
+             8: ""
+             }
 
-### TODO re-consider functionality: compute and display additional statistics?
-def script_stats(nodes=["all"]):  # see above comment regarding nomenclature of 'convo_nodes'
-    """
-    Gets all info on all scripts for the given conversation node(s). Default
-    is all nodes.
+# Pull the list of scripts for a convo_node given
+def pull_scripts(convo_node):
+    pass
 
-    """
+# Switch between choosing a random script and choosing the better of two
 
-    # Read all entire row for all scripts at the given node(s)
+def add_to_use_count(script_id):
+    old_count = DB.get_use_count(script_id)
+    print(old_count)
+    new_count = old_count[0][0] + 1
+    DB.bump_use_count(script_id, new_count)
 
-    # Calculate the success rate  #  Keep success rate stored in another column to be updated per use?
-    success = positive_count / use_count
-    
-    # Route to Front End
+def add_to_positive_count(script_id):
+    data = DB.get_counts(script_id)
+    print(data)
+    use = data[0][0]
+    pos = data[0][1]
+
+    pos += 1
+    rate = pos / use
+    DB.update_pos_and_success(script_id, pos, rate)
