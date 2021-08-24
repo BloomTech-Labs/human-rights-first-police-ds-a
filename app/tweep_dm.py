@@ -22,8 +22,6 @@ manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("ACCESS_KEY"),
                                     os.getenv("ACCESS_SECRET"))
 
-# Just my own for now
-blue_witness_recipient_id = 271825982
 
 # This will change and instead pull the welcome messages from twitter but for now storing locally for ease of use
 list_of_welcome_messages = [
