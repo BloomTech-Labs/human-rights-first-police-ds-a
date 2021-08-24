@@ -50,23 +50,6 @@ class ForceRanks(Base):
         )
 
 
-class RequestedFormData(BaseModel):
-    tweet_source: str
-    information_requested: str
-
-
-class DirectMessages(Base):
-
-    __tablename__ = 'direct_messages'
-
-    id = Column(Integer, primary_key=True)
-    created_timestamp = Column(Date, nullable=False)
-    welcome_message_id = Column(String, nullable=False)
-    sender_id = Column(String, nullable=False)
-    dm_text = Column(String)
-    quick_reply_response = Column(String)
-
-
 class Conversations(Base):
 
     __tablename__ = "conversations"
@@ -90,17 +73,9 @@ class Conversations(Base):
     checks_made = Column(Integer)
     reachout_template = Column(String)
     isChecked = Column(Boolean)
+    dm_text = Column(String)
+    quick_reply_response = Column(String)
     parent = relationship("ForceRanks", back_populates="children")
-    id = Column(Integer, primary_key=True)
-    root_tweet_id = Column(String)
-    sent_tweet_id = Column(String)
-    received_tweet_id = Column(String)
-    in_reply_to_id = Column(String)
-    tweeter_id = Column(String)
-    conversation_status = Column(Integer)
-    tweet_text = Column(String)
-    checks_made = Column(Integer)
-    reachout_template = Column(String)
 
     def __repr__(self):
         return(
