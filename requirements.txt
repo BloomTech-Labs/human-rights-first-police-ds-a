@@ -13,3 +13,4 @@ tweepy==3.10.0
 uvicorn[standard]==0.14.0
 SQLAlchemy==1.4.22
 Alembic=1.6.5
+requests_oauthlib=2.0

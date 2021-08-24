@@ -41,13 +41,13 @@ def user_tweets(user_id: str) -> List[Dict]:
 		include_rts = False,
 		tweet_mode = 'extended')
 	tweets = []
-	for tweet in temp:
-		tweets.append({
-			"tweet_id":tweet.id,
-			"full_text":tweet.full_text,
-			"author":tweet.author.screen_name
-			})
-	return tweets
+	# for tweet in temp:
+	# 	tweets.append({
+	# 		"tweet_id":tweet.id,
+	# 		"full_text":tweet.full_text,
+	# 		"author":tweet.author.screen_name
+	# 		})
+	return temp
 
 
 def get_user_id(screen_name: str) -> List[Dict]:

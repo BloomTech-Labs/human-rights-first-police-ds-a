@@ -159,3 +159,6 @@ saved_model/
 
 # scraper.log
 scraper.log
+
+# Alembic Stuff
+*.sql

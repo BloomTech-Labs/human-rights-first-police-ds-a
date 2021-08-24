@@ -81,7 +81,7 @@ async def approve(data: check):
     data = {}
     data['city'] = for_update[0]['Conversations'].root_tweet_city
     data['state'] = for_update[0]['Conversations'].root_tweet_state
-    data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
+    # data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
     data['incident_date'] = for_update[0]['Conversations'].root_tweet_date
     data['status'] = 'approved'
     data['lat'] = for_update[0]['Conversations'].root_tweet_lat
