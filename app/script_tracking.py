@@ -75,7 +75,6 @@ def add_to_use_count(script_id):
 
 def add_to_positive_count(script_id):
     data = DB.get_counts(script_id)
-    print(data)
     use = data[0][0]
     pos = data[0][1]
 
