@@ -1,15 +1,13 @@
+from app.twitter import create_api
+from app.franken_bert import FrankenBert
+from app.db import Database
+import tweepy
+from typing import Tuple, List, Dict
+import datetime as dt
+import os
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 
-import os
-import datetime as dt
-from typing import Tuple, List, Dict
-
-import tweepy
-
-from app.db import Database
-from app.franken_bert import FrankenBert
-from app.twitter import create_api
 
 DB = Database()
 
