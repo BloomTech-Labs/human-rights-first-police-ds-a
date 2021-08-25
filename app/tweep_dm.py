@@ -232,8 +232,3 @@ def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
 
     pass
 
-
-# dms_to_check = ["204178035", "1424579675645378561"]
-# print(get_initial_dms(dms_to_check))
-# tweet = form_tweet('https://twitter.com/BrodyOsterbuhr/status/1386536629280468996', 'location')
-# print(tweet.id)

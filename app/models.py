@@ -133,17 +133,19 @@ class BotScripts(Base):
 	convo_node = Column(Integer)
 	use_count = Column(Integer)
 	positive_count = Column(Integer)
+	success_rate = Column(Float)
 	active = Column(Boolean)
 
 	
 	def __repr__(self):
 		return (
-			"script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, active:{}").format(
+			"script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, success_rate{}, active:{}").format(
 			self.script_id,
 			self.script,
 			self.convo_node,
 			self.use_count,
 			self.positive_count,
+			self.success_rate,
 			self.active
 			)
 
@@ -239,5 +241,6 @@ class new_script(BaseModel):
 	convo_node: int
 	use_count: Optional[int] = 0
 	positive_count: Optional[int] = 0
+	success_rate: Optional[float] = 0.0
 	active: Optional[bool] = True
 
