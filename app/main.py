@@ -1,5 +1,5 @@
 from random import choice
-from typing import List, Dict
+from typing import Dict, List
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +9,8 @@ from pydantic import BaseModel
 
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
-from app.models import form_out, form_in, check
+from app.models import form_out, form_in, check, RequestedFormData
+from app.tweep_dm import form_tweet
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -33,6 +34,29 @@ app = FastAPI(
     docs_url='/',
     version="0.37.1",
 )
+
+
+@app.post("/form/send")
+async def send_form_tweet(data: RequestedFormData):
+    '''
+    Sends a reply tweet with a linked form to gather additional information on an incident.
+
+    Args:
+        data (RequestedFormData):  JSON containing information required to send reply tweet with form link
+            data.tweet_source (str): Full URL to source tweet
+            data.information_requested (str): One of a pre-defined set of information requests:
+                                            - location or date (for now)
+
+            e.g.{
+                    "tweet_source": "https://twitter.com/elonmusk/status/1423830326665650179",
+                    "information_requested": "location"
+                }
+
+    Returns:
+        tweet.id (int): ID of the tweet that was sent
+    '''
+    tweet = form_tweet(data.tweet_source, data.information_requested)
+    return tweet.id
 
 
 
@@ -115,6 +139,7 @@ async def to_approve():
     """ get all rows of Conversations that are form responses that have not been approved """
     needs_approval = DB.get_sevens()
     return needs_approval
+
 
 
 @app.on_event("startup")

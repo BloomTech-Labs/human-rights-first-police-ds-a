@@ -39,6 +39,14 @@ class Database(object):
 
         return data
 
+    def get_conversation_root(self, root_id: int):
+        """ Get conversation with a specific root_tweet_id """
+        with self.Sessionmaker() as session:
+            query = select(Conversations).where(Conversations.root_tweet_id == root_id)
+            conversations_data = session.execute(query)
+
+        return [i[0] for i in conversations_data.fetchall()]
+
 
     def get_conversation_root(self, root_id: int):
         """ Get conversation with a specific tweet_id """
@@ -186,7 +194,7 @@ class Database(object):
                 func.max(Conversations.conversation_status).label("status"),
                 Conversations.tweet_id
             ).group_by(
-                Converstaions.tweet_id
+                Conversations.tweet_id
             ).cte('wow')
 
             query2 = select(
