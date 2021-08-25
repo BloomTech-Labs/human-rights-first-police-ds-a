@@ -7,11 +7,13 @@ from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
 from sqlalchemy.orm import sessionmaker, scoped_session
 
-from app.models import ForceRanks, Conversations
+from app.models import ForceRanks, Conversations, BotScripts, ScriptTesting, Tags, Sources
 
-db_url = os.getenv('DB_URL2')
+db_url = os.getenv('DB_URL')
+
 
 class Database(object):
+
 
     def __init__(self):
         self.engine = create_engine(
@@ -30,6 +32,14 @@ class Database(object):
             )
         )
 
+        self.TABLE_NAMES = {"force_ranks": ForceRanks,
+                            "conversations": Conversations,
+                            "bot_scripts": BotScripts,
+                            "script_testing": ScriptTesting,
+                            "tags": Tags,
+                            "sources": Sources
+                            }
+
 
     def model_to_dict(self, obj):
         """ removes _sa_instance_state from .__dict__ representation of data model object """
@@ -41,15 +51,6 @@ class Database(object):
 
     def get_conversation_root(self, root_id: int):
         """ Get conversation with a specific root_tweet_id """
-        with self.Sessionmaker() as session:
-            query = select(Conversations).where(Conversations.root_tweet_id == root_id)
-            conversations_data = session.execute(query)
-
-        return [i[0] for i in conversations_data.fetchall()]
-
-
-    def get_conversation_root(self, root_id: int):
-        """ Get conversation with a specific tweet_id """
         with self.Sessionmaker() as session:
             query = select(Conversations).where(Conversations.tweet_id == root_id)
             conversations_data = session.execute(query)
@@ -73,6 +74,116 @@ class Database(object):
             force_ranks_data = session.execute(query).fetchall()
 
         return force_ranks_data
+
+
+    """
+    These functions are specific to the Twitter bot script selection and testing and
+    will need to be moved and adapted into the apropriate table class later on.
+    """
+
+    def get_script_ids(self, convo_node):
+        """ Gets the script_ids associated with the given convo_node """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.script_id).
+                where(BotScripts.convo_node == convo_node))
+            script_ids_data = session.execute(query).fetchall()
+
+        return script_ids_data
+
+
+    def get_script(self, script_id):
+        """ Gets a script from 'bot_scripts' table for given script_id(s) """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.script).
+                where(BotScripts.script_id == script_id)
+                )
+
+            script_data = session.execute(query).fetchall()
+
+        return script_data
+
+
+    def insert_script(self, new_script):
+        """
+        Updates the bot_scripts table with new row passing the given script
+        and indicated conversation node into their respective columns. Sets the
+        'use_count' and 'positive_count' columns for this row to the default of 0.
+        'active' column set to True by default. Generates a new 'script_ID' unique
+        to this script.
+        """
+
+        with self.Sessionmaker() as session:
+            BS = BotScripts()
+            BS.script_id = new_script.script_id
+            BS.script = new_script.script
+            BS.convo_node = new_script.convo_node
+            BS.use_count = new_script.use_count
+            BS.positive_count = new_script.positive_count
+            BS.success_rate = new_script.success_rate
+            BS.active = new_script.active
+            session.add(BS)
+            session.commit()
+
+
+    def get_use_count(self, script_id):
+        """ Gets the use_count from 'bot_scripts' for given script_id """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.use_count).
+                where(BotScripts.script_id == script_id)
+            )
+
+            use_count = session.execute(query).fetchall()
+
+        return use_count
+
+
+    def get_counts(self, script_id):
+        """ Gets use_count and positive_count from 'bot_scripts' given script_id """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.use_count, BotScripts.positive_count).
+                where(BotScripts.script_id == script_id)
+            )
+
+            counts = session.execute(query).fetchall()
+
+        return counts
+
+    
+    def bump_use_count(self, script_id, new_count):
+        """ Updates the use_count for a script as identified by script_id """
+        with self.Sessionmaker() as session:
+            count_dict = {"use_count": new_count}
+            query = (
+                update(BotScripts).
+                where(BotScripts.script_id == script_id).
+                values(**count_dict)
+            )
+
+            session.execute(query)
+            session.commit()
+
+
+    def update_pos_and_success(self, script_id, positive_count, success_rate):
+        """ Updates the positive_count and success_rate for a given script_id """
+        with self.Sessionmaker() as session:
+            data = {"positive_count": positive_count,
+                    "success_rate": success_rate
+                    }
+            query = (
+                    update(BotScripts).
+                    where(BotScripts.script_id == script_id).
+                    values(**data)
+                )
+
+            session.execute(query)
+            session.commit()
+
+
+    """--------------------------------------------------------------------------------"""
 
 
     def insert_data_force_ranks(self, data: List[Dict]):
@@ -124,32 +235,28 @@ class Database(object):
             session.commit()
 
 
-    def get_root_seven(self, root_id):
-        """ gets root_ids with value of 7 """
+    def get_root_twelve(self, root_id):
+        """ gets root_ids with value of 12 """
         with self.Sessionmaker() as session:
             query = (select(Conversations).
-            filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 7)))
+            filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 12)))
             check_data = session.execute(query)
 
         return check_data.fetchall()
 
 
-    def get_sevens(self):
-        """ get all conversations with value of 7 """
+    def get_twelves(self):
+        """ get all conversations with value of 12 and corresponding data from force_ranks """
         with self.Sessionmaker() as session:
             query = (select(Conversations, ForceRanks).
             join(ForceRanks,
-                and_(Conversations.tweet_id == ForceRanks.tweet_id, Conversations.conversation_status == 7)))
+                and_(Conversations.tweet_id == ForceRanks.tweet_id, Conversations.conversation_status == 12)))
             data = session.execute(query).fetchall()
 
         out = []
         for i in data:
             record = {}
             record['tweet_id'] = i['Conversations'].tweet_id
-            with self.Sessionmaker() as session:
-                query = (select(ForceRanks).
-                filter(ForceRanks.tweet_id == record['tweet_id']))
-                point = session.execute(query).fetchall()
             record['city'] = i['Conversations'].root_tweet_city
             record['confidence'] = None
             record['description'] = i['ForceRanks'].description
@@ -158,10 +265,17 @@ class Database(object):
             record['incident_id'] = i['ForceRanks'].incident_id
             record['lat'] = i['Conversations'].root_tweet_lat
             record['long'] = i['Conversations'].root_tweet_long
-            record['src'] = {e:i for (e,i) in enumerate(i['ForceRanks'].src.replace('"', '',).replace('[','').replace(']','').split(','))}
+            try:
+                record['src'] = {e:i for (e,i) in enumerate(i['ForceRanks'].src.replace('"', '',).replace('[','').replace(']','').split(','))}
+            except (KeyError, AttributeError):
+                pass
             record['state'] = i['Conversations'].root_tweet_state
             record['status'] = i['ForceRanks'].status
-            record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+            try:
+                record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+            except (KeyError, AttributeError):
+                pass
+            print(i['ForceRanks'].tags)
             record['title'] = i['ForceRanks'].title
             record['user_name'] = i['ForceRanks'].user_name
             out.append(record)
@@ -228,11 +342,11 @@ class Database(object):
         """ converts invocation dict to correct column names """
         clean_data = {}
         try:
-            clean_data['form'] = data.form
+            clean_data['incident_id'] = data.incident_id
         except KeyError:
             pass
         try:
-            clean_data['isChecked'] = True
+            clean_data['form'] = data.form
         except KeyError:
             pass
         try:
@@ -297,10 +411,9 @@ class Database(object):
 
     def initialize_table(self, tablename):
         """ creates table if not exists and table model exists """
-        if tablename == 'force_ranks':
-            table = ForceRanks
-        elif tablename == 'conversations':
-            table = Conversations
+        
+        if tablename in self.TABLE_NAMES:
+            table = self.TABLE_NAMES[tablename]
         else:
             return "Table model not found"
 
@@ -311,10 +424,9 @@ class Database(object):
 
     def reset_table(self, tablename):
         """ DANGER! this will delete all data in the table!!! """
-        if tablename == 'force_ranks':
-            table = ForceRanks
-        elif tablename == 'conversations':
-            table = Conversations
+        
+        if tablename in self.TABLE_NAMES:
+            table = self.TABLE_NAMES[tablename]
         else:
             return "Table model not found"
 
@@ -327,4 +439,23 @@ class Database(object):
         elif check == 'N':
             pass
         else:
-            print('Please answer Y or N')
+            print('You must answer Y or N to complete this function.')
+
+
+    def drop_table(self, tablename):
+        """ DANGER! this will delete the table!!! """
+        
+        if tablename in self.TABLE_NAMES:
+            table = self.TABLE_NAMES[tablename]
+        else:
+            return "Table model not found"
+
+        check = input('Are you sure? This will delete all table data (Y/N):')
+        if check == 'Y':
+            insp = inspect(self.engine)
+            if insp.has_table(tablename) == True:
+                table.__table__.drop(self.engine)
+        elif check == 'N':
+            pass
+        else:
+            print('You must answer Y or N to complete this function.')

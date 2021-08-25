@@ -8,7 +8,7 @@ import tweepy
 from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session
 
-from app.scrap_paper import confirmation_reply, quick_reply_use_of_force
+
 
 load_dotenv()
 
@@ -21,6 +21,10 @@ manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("CONSUMER_SECRET"),
                                     os.getenv("ACCESS_KEY"),
                                     os.getenv("ACCESS_SECRET"))
+
+
+# witt_rowen welcome message = 1424836133582774286
+
 
 
 # This will change and instead pull the welcome messages from twitter but for now storing locally for ease of use
@@ -36,15 +40,31 @@ list_of_welcome_messages = [
                     'symbols': [],
                     'user_mentions': [],
                     'urls': []
+                },
+                "quick_reply": {
+                    "type": "options",
+                    "options": [
+                        {
+                            "label": "Yes",
+                            "metadata": "Yes",
+                            #"description": "Yes"
+                        },
+                        {
+                            "label": "No",
+                            "metadata": "No",
+                            #"description": "Open Handed (Arm Holds & Pushing)"
+                        }
+                    ]
                 }
             },
-            'source_app_id': '21602950',
+            'source_app_id': '1335727237400694784',
             'name': 'new name'
         },
         'apps': {
             '21602950': {
-                'id': '21602950',
-                'name': 'bluewitness1'
+                #'id': '21602950',
+                'id': '1335727237400694784',
+                'name': 'RowenWitt'
             }
         }
     },
@@ -100,7 +120,7 @@ list_of_A_B_txts = [
     'Hi! I am a bot for Blue Witness, a project by @humanrights1st. We noticed your tweet may involve police misconduct, please confirm the location of this incident here: ',
 ]
 
-list_of_quick_replies = [quick_reply_use_of_force, confirmation_reply]
+
 
 
 def get_tweet_id(tweet_url):
@@ -154,9 +174,10 @@ def create_welcome_message(name: str,
     }
 
     response = manual_twitter_auth.post(url, headers=headers, data=payload)
-
+    print(response)
     welcome_response = json.loads(response.text)
     list_of_welcome_messages.append(welcome_response)
+    return list_of_welcome_messages
 
 
 # Can take out for loop for welcome_message by just using welcome_message_id
@@ -176,11 +197,6 @@ def reply_to_tweet(tweet_id,
     api.update_status(reply_message, in_reply_to_status_id=tweet_id,
                       auto_populate_reply_metadata=True)
 
-
-def get_user_id_from_tweet(tweet_id):
-    tweet = api.get_status(tweet_id)
-    user_id = tweet.user.id
-    return user_id
 
 
 def get_initial_dms(user_id: List[str]) -> List[Dict]:
@@ -214,8 +230,3 @@ def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
 
     pass
 
-
-# dms_to_check = ["204178035", "1424579675645378561"]
-# print(get_initial_dms(dms_to_check))
-# tweet = form_tweet('https://twitter.com/BrodyOsterbuhr/status/1386536629280468996', 'location')
-# print(tweet.id)

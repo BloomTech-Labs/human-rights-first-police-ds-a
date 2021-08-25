@@ -1,3 +1,10 @@
+Labs 37 Notes
+
+Production force_ranks data:
+All PB2020 entries have been run through BERT, there are no more null-confidence rows, there are some minor issues in which BERT is not classifying incidents correctly, I'm estimating the frequency of those innacurate classifications to be somewhere just under 10% of the 1327 entries.  The upside is that more than 10% of the entries were misclassified in the first place so this is an improvements.  I'll make a note of it in the documentation, but the PB2020 entries are those incident_ids between (6 < incident_id < 1333).
+There are still a few data points from sources other than Twitter, something should be done to manage that.
+The src and tags columns should be made into relational tables, this would alter the way the BE interacts with the DB, and is likely not a small change.  Alembic migrations setup is now in repo.
+
 Labs 36 Notes
 - no known defects known right now
 

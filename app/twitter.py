@@ -35,7 +35,6 @@ def create_api():
     consumer_secret = os.getenv("CONSUMER_SECRET")
     access_key = os.getenv("ACCESS_KEY")
     access_secret = os.getenv("ACCESS_SECRET")
-
     auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
     auth.set_access_token(access_key, access_secret)
     api = tweepy.API(auth, wait_on_rate_limit=True,
@@ -87,7 +86,7 @@ def get_user_id_from_tweet(tweet_id):
 def get_user_id(screen_name: str) -> List[Dict]:
     """ Get user id from screenname """
     name_id_pairs = []
-    api = create_api
+    api = create_api()
     resp = api.lookup_users(screen_name=screen_name)
     for user in resp:
         name_id_pairs.append({
@@ -184,22 +183,29 @@ def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
     """Function to get response DMs sent from button in tweet"""
     api = create_api()
     dms = api.list_direct_messages()
+    screen_name = str(get_user_id(user_id)[0]['user_id'])
+
     dm_list = []
     for dm in dms:
-        if dm.message_create['sender_id'] == user_id:
-            # Get response preform if
+
+        if dm.message_create['sender_id'] == screen_name:
+            data = {}
+
             if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
-                # Make the form link using the user_id
+
                 form_link = f'https://a.humanrightsfirst.dev/edit/{tweet_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
-                # Send form link to user
-                api.send_direct_message(user_id, response_txt)
+
+                api.send_direct_message(screen_name, response_txt)
+                data['conversation_status'] = 11
             else:
-                # Send final response to user
-                api.send_direct_message(user_id, convo_tree_txt)
-            return {
-                "reachout_template": dm.initiated_via['welcome_message_id'],
-                "tweeter_id": dm.message_create['sender_id'],
-                "dm_text": dm.message_create['message_data']['text'],
-                "quick_reply_response": dm.message_create['message_data']['quick_reply_response']['metadata']
-            }
+                api.send_direct_message(screen_name, convo_tree_txt)
+                data['conversation_status'] = 13
+
+            data['tweet_id'] = tweet_id
+            data["reachout_template"] = dm.initiated_via['welcome_message_id'],
+            data["tweeter_id"] = dm.message_create['sender_id'],
+            data["dm_text"] = dm.message_create['message_data']['text'],
+            data["quick_reply_response"] = dm.message_create['message_data']['quick_reply_response']['metadata']
+
+            return data
