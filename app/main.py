@@ -137,14 +137,14 @@ async def to_approve():
     return needs_approval
 
 
-@app.get("advance-all/")
+@app.get("/advance-all/")
 async def advance_all():
     """ advances all conversations """
     bot.advance_all()
-    return "advanced"
+    
 
 
-@app.on_event("startup")
+#@app.on_event("startup")
 @repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force

@@ -9,7 +9,7 @@ from sqlalchemy.orm import sessionmaker, scoped_session
 
 from app.models import ForceRanks, Conversations, BotScripts, ScriptTesting, Tags, Sources
 
-db_url = os.getenv('DB_URL2')
+db_url = os.getenv('DB_URL')
 
 
 class Database(object):
@@ -52,7 +52,7 @@ class Database(object):
     def get_conversation_root(self, root_id: int):
         """ Get conversation with a specific root_tweet_id """
         with self.Sessionmaker() as session:
-            query = select(Conversations).where(Conversations.root_tweet_id == root_id)
+            query = select(Conversations).where(Conversations.tweet_id == root_id)
             conversations_data = session.execute(query)
 
         return [i[0] for i in conversations_data.fetchall()]
@@ -341,6 +341,10 @@ class Database(object):
     def convert_invocation_conversations(self, data):
         """ converts invocation dict to correct column names """
         clean_data = {}
+        try:
+            clean_data['incident_id'] = data.incident_id
+        except KeyError:
+            pass
         try:
             clean_data['form'] = data.form
         except KeyError:

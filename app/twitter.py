@@ -192,6 +192,7 @@ def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
             data = {}
 
             if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
+
                 form_link = f'https://a.humanrightsfirst.dev/edit/{tweet_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
 
@@ -201,6 +202,7 @@ def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
                 api.send_direct_message(screen_name, convo_tree_txt)
                 data['conversation_status'] = 13
 
+            data['tweet_id'] = tweet_id
             data["reachout_template"] = dm.initiated_via['welcome_message_id'],
             data["tweeter_id"] = dm.message_create['sender_id'],
             data["dm_text"] = dm.message_create['message_data']['text'],

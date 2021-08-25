@@ -250,15 +250,17 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 	elif max_step.conversation_status == 10:
 
 		processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id, tweet_id=max_step.tweet_id, convo_tree_txt=conversation_tree[11])
-		to_insert = {}
-		to_insert['tweeter_id'] = processed_dms['tweeter_id']
-		to_insert['tweet_text'] = processed_dms['quick_reply_response']
+		if processed_dms is not None:
 
-		to_insert['reachout_template'] = conversation_tree[11]
-		to_insert['checks_made'] = (max_step.checks_made+1) 
-		to_insert['conversation_status'] = processed_dms['conversation_status']
+			to_insert = {}
+			to_insert['tweeter_id'] = processed_dms['tweeter_id']
+			to_insert['tweet_text'] = processed_dms['quick_reply_response']
+			to_insert['tweet_id'] = max_step.tweet_id
+			to_insert['reachout_template'] = conversation_tree[11]
+			to_insert['checks_made'] = (max_step.checks_made+1) 
+			to_insert['conversation_status'] = processed_dms['conversation_status']
 
-		DB.insert_data_conversations([to_insert])
+			DB.insert_data_conversations([to_insert])
 
 	elif max_step.conversation_status == 12:
 		# This is where we've received a response, shouldn't do anything here, only return when asked for directly through endpoint
