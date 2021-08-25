@@ -8,7 +8,7 @@ import tweepy
 from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session
 
-from app.scrap_paper import confirmation_reply, quick_reply_use_of_force
+
 
 load_dotenv()
 
@@ -122,7 +122,7 @@ list_of_A_B_txts = [
     'Hi! I am a bot for Blue Witness, a project by @humanrights1st. We noticed your tweet may involve police misconduct, please confirm the location of this incident here: ',
 ]
 
-list_of_quick_replies = [quick_reply_use_of_force, confirmation_reply]
+
 
 
 def get_tweet_id(tweet_url):

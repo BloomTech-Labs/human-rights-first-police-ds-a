@@ -11,12 +11,11 @@ from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 
 from app.models import form_out, form_in, check, new_script
-<<<<<<< HEAD
+
 from app.tweep_dm import form_tweet
 
-=======
 from app.script_tracking import add_script
->>>>>>> fdf7ed971b2dafdf4c5640837f790772fa615f4f
+
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -138,8 +137,14 @@ async def to_approve():
     return needs_approval
 
 
+@app.get("advance-all/")
+async def advance_all():
+    """ advances all conversations """
+    bot.advance_all()
+    return "advanced"
 
-#@app.on_event("startup")
+
+@app.on_event("startup")
 @repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force
