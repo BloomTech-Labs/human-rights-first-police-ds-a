@@ -6,9 +6,9 @@
 from app.scraper import DB
 
 """ FUTURE update: add randomized functionality to choose between path-based
-script selection based on traning from the 'script_training' and 
+script selection based on training from the 'script_training' and 
 path-generating options. Possibly set this up to occur automatically whence
-results from a traing session of path-based data becomes available.
+results from a training session of path-based data becomes available.
 """
 
 node_dict = {1:"Intros",

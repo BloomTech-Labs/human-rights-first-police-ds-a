@@ -58,15 +58,6 @@ class Database(object):
         return [i[0] for i in conversations_data.fetchall()]
 
 
-    def get_conversation_root(self, root_id: int):
-        """ Get conversation with a specific tweet_id """
-        with self.Sessionmaker() as session:
-            query = select(Conversations).where(Conversations.tweet_id == root_id)
-            conversations_data = session.execute(query)
-
-        return [i[0] for i in conversations_data.fetchall()]
-
-
     def load_data_force_ranks(self):
         """ gets all data from force_ranks"""
         with self.Sessionmaker() as session:
@@ -207,7 +198,7 @@ class Database(object):
 
 
     def get_root_twelve(self, root_id):
-        """ gets root_ids with value of 7 """
+        """ gets root_ids with value of 12 """
         with self.Sessionmaker() as session:
             query = (select(Conversations).
             filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 12)))
@@ -217,7 +208,7 @@ class Database(object):
 
 
     def get_twelves(self):
-        """ get all conversations with value of 7 and corresponding data from force_ranks """
+        """ get all conversations with value of 12 and corresponding data from force_ranks """
         with self.Sessionmaker() as session:
             query = (select(Conversations, ForceRanks).
             join(ForceRanks,
@@ -228,10 +219,6 @@ class Database(object):
         for i in data:
             record = {}
             record['tweet_id'] = i['Conversations'].tweet_id
-            # with self.Sessionmaker() as session:
-            #     query = (select(ForceRanks).
-            #     filter(ForceRanks.tweet_id == record['tweet_id']))
-            #     point = session.execute(query).fetchall()
             record['city'] = i['Conversations'].root_tweet_city
             record['confidence'] = None
             record['description'] = i['ForceRanks'].description
@@ -320,10 +307,6 @@ class Database(object):
             clean_data['form'] = data.form
         except KeyError:
             pass
-        # try:
-        #     clean_data['isChecked'] = True
-        # except KeyError:
-        #     pass
         try:
             clean_data['link'] = data.link
         except KeyError:

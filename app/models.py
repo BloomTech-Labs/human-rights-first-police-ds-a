@@ -9,6 +9,7 @@ from sqlalchemy.sql.sqltypes import ARRAY
 
 Base = declarative_base()
 
+# Declarative Base SQLAlchemy models
 
 class ForceRanks(Base):
 
@@ -201,10 +202,11 @@ class Tags(Base):
 			)
 
 
+# FastAPI Models
+
 class form_out(BaseModel):
     form: int
     incident_id: int
-    # isChecked: bool
     link: str
     tweet_id: str
     user_name: str

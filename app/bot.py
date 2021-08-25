@@ -16,42 +16,27 @@ MAP_API = os.getenv("MAP_API")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger()
 
-bot_name = 'RowenWitt' # Need bot name
-witt_rowen_id = 1078337070
+bot_name = os.getenv("BOT_NAME") # Need bot name
+
 bot_id = 1335727237400694784
-#welcome_message_id = 1
-#welcome_message_id = 1424836133582774286
+
 welcome_message_id = 1430032447282958343
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
-	1:"Hey, we noticed that you Tweeted about police misconduct. I'm a bot working on behalf of Blue Witness to gain supplementary information about these reports in order to track these incidents for the sake of social accountability. We noticed that the location and time of this incident are missing from your Tweet, are you willing to help us gain the information we need? Please reply 'Yes' or 'No.'",
-	2:"Do you want to fill out a form or talk with the bot",
-	3:"What is the location where this incident took place?",
-	4:"What is the date",
-	5:"what is the force_rank, here are the options",
-	6:"Thanks! You're helping (align incentives)!",
-	7:"Thanks anyway!",
-	8:"Please fill out this form ",
+	# 1:"Hey, we noticed that you Tweeted about police misconduct. I'm a bot working on behalf of Blue Witness to gain supplementary information about these reports in order to track these incidents for the sake of social accountability. We noticed that the location and time of this incident are missing from your Tweet, are you willing to help us gain the information we need? Please reply 'Yes' or 'No.'",
+	# 2:"Do you want to fill out a form or talk with the bot",
+	# 3:"What is the location where this incident took place?",
+	# 4:"What is the date",
+	# 5:"what is the force_rank, here are the options",
+	# 6:"Thanks! You're helping (align incentives)!",
+	# 7:"Thanks anyway!",
+	# 8:"Please fill out this form ",
 
 	10:'Click link below to start conversation ',
 	11:'Please fill out this form ',
 	13:'Thanks anyway!'
-	# fix form number
-	# fix gutter number
-	# fix all numbers
-	# make all numbers call to Ryan's script
-	# make end of conversation gigantic number to leave ample spots to increase conversation steps
 }
-
-
-test_entries = [
-	{"form":1,"incident_id":1,"link":"https://a.humanrightsfirst.dev/edit/1426290795267731463","tweet_id":"1424511565932359685","user_name":"witt_rowen"}
-]
-
-test_insert = [
-	{"city":"TestTown","confidence":None,"dsecription":"testtest","force_rank":"Rank - 1 Police Presence","incident_date":"2021-04-22T00:00:00.000Z","incident_id":1,"lat":42.64249,"long":-73.7576,"src":[],"tags":["police","bacon","general_pork_products"],"title":"testers","tweet_id":"1424511565932359685","user_name":"witt_rowen"}
-]
 
 
 def send_form(data:Dict):
@@ -72,7 +57,6 @@ def send_form(data:Dict):
 		to_insert['conversation_status'] = 10
 		to_insert['checks_made'] = 1
 		to_insert['sent_tweet_id'] = status.id
-		#del to_insert['dm_text']
 		DB.insert_data_conversations([to_insert])
 	except tweepy.TweepError as e:
 		logging.error("Tweepy error occured:{}".format(e))
@@ -264,27 +248,15 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 	elif max_step.conversation_status == 5:
 		DB.update_conversation_checks(root_id)
 	elif max_step.conversation_status == 10:
-		# Add params for process dms
 
 		processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id, tweet_id=max_step.tweet_id, convo_tree_txt=conversation_tree[11])
-		# Update DB -- Make sure to store link from fe (or we build ourselves)
-####DELETE#### V  V  V  V
-		# "reachout_template": dm.initiated_via['welcome_message_id'],
-  #               "tweeter_id": dm.message_create['sender_id'],
-
-  #               "quick_reply_response": dm.message_create['message_data']['quick_reply_response']['metadata']
 		to_insert = {}
 		to_insert['tweeter_id'] = processed_dms['tweeter_id']
 		to_insert['tweet_text'] = processed_dms['quick_reply_response']
-		#to_insert['reachout_template'] = processed_dms['reachout_template'] 
+
 		to_insert['reachout_template'] = conversation_tree[11]
 		to_insert['checks_made'] = (max_step.checks_made+1) 
 		to_insert['conversation_status'] = processed_dms['conversation_status']
-
-		# if to_insert['tweet_text'] == 'confirm_yes':
-		# 	to_insert['conversation_status'] = 12
-		# else:
-		# 	to_insert['conversation_status'] = 13
 
 		DB.insert_data_conversations([to_insert])
 

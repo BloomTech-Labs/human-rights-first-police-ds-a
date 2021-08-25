@@ -38,30 +38,6 @@ app = FastAPI(
 )
 
 
-# @app.post("/form/send")
-# async def send_form_tweet(data: RequestedFormData):
-#     '''
-#     Sends a reply tweet with a linked form to gather additional information on an incident.
-
-#     Args:
-#         data (RequestedFormData):  JSON containing information required to send reply tweet with form link
-#             data.tweet_source (str): Full URL to source tweet
-#             data.information_requested (str): One of a pre-defined set of information requests:
-#                                             - location or date (for now)
-
-#             e.g.{
-#                     "tweet_source": "https://twitter.com/elonmusk/status/1423830326665650179",
-#                     "information_requested": "location"
-#                 }
-
-#     Returns:
-#         tweet.id (int): ID of the tweet that was sent
-#     '''
-#     tweet = form_tweet(data.tweet_source, data.information_requested)
-#     return tweet.id
-
-
-
 @app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
     """ replies to a given tweet with a link, prompting a Twitter user to send a dm to our bot """
@@ -107,7 +83,7 @@ async def approve(data: check):
     data = {}
     data['city'] = for_update[0]['Conversations'].root_tweet_city
     data['state'] = for_update[0]['Conversations'].root_tweet_state
-    # data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
+    data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
     data['incident_date'] = for_update[0]['Conversations'].root_tweet_date
     data['status'] = 'approved'
     data['lat'] = for_update[0]['Conversations'].root_tweet_lat
