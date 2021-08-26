@@ -16,6 +16,8 @@ from app.tweep_dm import form_tweet
 
 from app.script_tracking import add_script
 
+import app.dist_lock as lock
+
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -140,7 +142,8 @@ async def to_approve():
 @app.get("/advance-all/")
 async def advance_all():
     """ advances all conversations """
-    bot.advance_all()
+    #bot.advance_all()
+    lock.ping()
     
 
 
