@@ -22,8 +22,6 @@ manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("ACCESS_KEY"),
                                     os.getenv("ACCESS_SECRET"))
 
-# Just my own for now
-blue_witness_recipient_id = 271825982
 
 # witt_rowen welcome message = 1424836133582774286
 

@@ -167,6 +167,7 @@ async def update():
         2. deduplicate data based on tweet id
         3. insert data into database
         4. repeat every 4 hours """
+<<<<<<< HEAD
 # possible additions 'police', 'cop', 'policeman', 'cop', 'officer', 'cop', 'officers', 'officer', 'officers',
     if lock.lock("db_update", 30) == True:
         logger.info('lock "db_update" created')
@@ -196,6 +197,29 @@ async def update():
     else:
         logger.info('lock "db_update" in use')
 
+=======
+    search = choice((
+        'police', 'pigs',
+        'cops', 'ACAB', 'arrested',
+        'police brutality',
+        'police violence',
+        'police abuse',
+        'beaten', 'killed by police', 
+        'taser', 'baton', 'use of force',
+        'shot', 'lethal', 'non-lethal', 
+        'pepper spray', 'oc', 'tear gas', 
+        'rubber bullets', 'push', 
+        'non-violent', 'tased', 'clashed with police',
+        '#policebrutality', '#pig', '#pigs', 
+        '#5-0', '#policeofficer', '#ACAB', 
+        '#1312', '#fuckthepolice', 
+        '#BlackLivesMatter', '#policeaccountability'
+    ))
+    data: List[Dict] = scrape_twitter(search)
+    clean_data: List[Dict] = deduplicate(data)
+
+    DB.insert_data_force_ranks(clean_data)
+>>>>>>> 77aaa3b8b9c068269e0f493952d7c1ee53232f39
 
 
 

@@ -39,9 +39,3 @@ class DistributedLock(object):
         return False
 
 lock = DistributedLock()
-# print("unlocking", lock.unlock("rowentest"))
-# print("locking", lock.lock("rowentest", 5))
-# print("locking", lock.lock("rowentest", 5))
-# print("unlocking", lock.unlock("rowentest"))
-# print("locking", lock.lock("rowentest", 5))
-# print("locking", lock.lock("rowentest", 5))
