@@ -11,6 +11,7 @@ torch==1.9.0+cpu
 tweepy==3.10.0
 uvicorn[standard]==0.15.0
 SQLAlchemy==1.4.22
+redis==3.*
 
 Alembic=1.6.5
 requests_oauthlib=2.0

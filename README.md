@@ -20,6 +20,17 @@ This project has been worked on by many Lambda labs teams over the past 10 month
 
 </br>  
 
+## Twitter Bot
+- Invoked through ```main.py.form_out```
+- Needs to run ```main.py.advance_all``` to advance each conversation 1 step
+- Code fragments left to allow Twitter conversational bot to be updated
+
+</br>
+
+## Redis Cache
+- Manages distributed lock for scheduled Twitter jobs
+- Needs keys in .env file (obviously not in repo)
+
 ## BERT Model
 [BERT is an open-source, pre-trained, natural language processing (NLP) model from Google](https://ai.googleblog.com/2018/11/open-sourcing-bert-state-of-art-pre.html). The role of BERT in our project is to take the tweets collected from our Twitter scraper and predict whether or not the tweet discusses police use-of-force and what type of force they used. BERT uses a 6-rank classification system as follows:
 - Rank 0: No police presence.
