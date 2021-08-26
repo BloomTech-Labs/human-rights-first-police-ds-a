@@ -77,8 +77,7 @@ class Database(object):
 
 
     """
-    These functions are specific to the Twitter bot script selection and testing and
-    will need to be moved and adapted into the apropriate table class later on.
+    The following functions are for Twitter bot script selection and testing.
     """
 
     def get_script_ids(self, convo_node):
@@ -151,6 +150,26 @@ class Database(object):
             counts = session.execute(query).fetchall()
 
         return counts
+    
+
+    def get_sripts_per_node(self, convo_node):
+        """
+        Gets scripts and their ids, use counts and success rates for a given
+        conversation node all for the use of the script selection process.
+        """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.script_id,
+                       BotScripts.script,
+                       BotScripts.use_count,
+                       BotScripts.success_rate
+                       ).
+                where(BotScripts.convo_node == convo_node)
+            )
+
+            scripts = session.execute(query).fetchall()
+
+        return scripts
 
     
     def bump_use_count(self, script_id, new_count):
@@ -183,7 +202,7 @@ class Database(object):
             session.commit()
 
 
-    """--------------------------------------------------------------------------------"""
+    """-----------------------------------------------------------------------"""
 
 
     def insert_data_force_ranks(self, data: List[Dict]):

@@ -14,7 +14,7 @@ from app.models import form_out, form_in, check, new_script
 
 from app.tweep_dm import form_tweet
 
-from app.script_tracking import add_script
+from app.script_tracking import ScriptMaster
 
 
 description = """
@@ -28,6 +28,7 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
+script_master = ScriptMaster()
 
 class InputString(BaseModel):
     text: str
@@ -101,17 +102,37 @@ async def approve(data: check):
 
 @app.post("/add-script/", response_model=new_script)
 async def post_script(data: new_script):
-    """ This endpoint allows the Admin to put a new script into the bot_scripts table """
-    add_script(data)
+    """
+    This endpoint allows the Admin to put a new script into the bot_scripts
+    table. If the conversation node for this script is "welcome" then either
+    the capability to authorize a welcome message with twitter needs to be
+    implemented or the Administrator needs to have the option to input the ID
+    given by Twitter when authorizing a welcome script for the Blue Witness
+    Twitter Account outside of this API
+    """
+    script_master.add_script(data)
+
+
+@app.post("/deactivate-script/")
+async def deactivate(script_id):
+    script_master.deactivate_script(script_id)
+
+
+@app.post("/activate-script/")
+async def activate(script_id):
+    script_master.activate_script(script_id)
+
 
 # Testing endpoint 
 @app.post("/bump-use-count/")
 async def add_one_to_use_count(script_id):
-    add_to_use_count(script_id)
+    script_master.add_to_use_count(script_id)
 
+
+# Testing endpoint 
 @app.post("/update-pos-count/")
 async def bump_pos_and_success_rate(script_id):
-    add_to_positive_count (script_id)
+    script_master.add_to_positive_count(script_id)
 
 
 @app.get("/frankenbert/{user_input}")

@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 from app.scraper import DB
 import app.twitter as twitter
 from app.twitter import create_api
+# from app.main import script_master
 
 
 MAP_API = os.getenv("MAP_API")
