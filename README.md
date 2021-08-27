@@ -25,6 +25,7 @@ This project has been worked on by many Lambda labs teams over the past 10 month
 - Needs to run ```main.py.advance_all``` to advance each conversation 1 step
 - ```main.py.advance_all``` runs every hour automatically, distributed lock means only one worker runs at a time
 - Code fragments left to allow Twitter conversational bot to be updated
+- Checks made is being updated for each check, there should be an implementation for exponential backoff on check frequency. Look up exponential backoff.
 
 </br>
 

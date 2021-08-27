@@ -33,4 +33,12 @@ View data loads a ton of data in memory, a great implementation would be to stor
 
 MOAR logging would be nice, and a scheduled searchable logging dump, though that is a tricky problem.
 
+- BERT API
+
+It would be a great call to make a separate API to hold the BERT model, freeing up a ton of space within the main API and isolating the location of a likely crash to a separate EB instance.  Terraform anyone?
+
+- Distributed Lock
+
+video here https://youtu.be/ZSIFVX415dU
+
 
