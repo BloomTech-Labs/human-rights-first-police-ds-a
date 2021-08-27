@@ -8,6 +8,7 @@ from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, 
 from app.scraper import DB
 import app.twitter as twitter
 from app.twitter import create_api
+# from app.main import script_master
 
 
 MAP_API = os.getenv("MAP_API")
@@ -20,7 +21,7 @@ bot_name = os.getenv("BOT_NAME") # Need bot name
 
 bot_id = 1335727237400694784
 
-welcome_message_id = 1430032447282958343
+welcome_message_id = 1430032447282958343  #ScriptMaster.choose_script("welcome")
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {

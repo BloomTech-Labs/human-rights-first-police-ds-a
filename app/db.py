@@ -77,8 +77,11 @@ class Database(object):
 
 
     """
-    These functions are specific to the Twitter bot script selection and testing and
-    will need to be moved and adapted into the apropriate table class later on.
+    The following functions are for Twitter bot script selection and testing.
+
+    ---Labs 38-----
+    You may have some clean up to do here
+    ---------------
     """
 
     def get_script_ids(self, convo_node):
@@ -103,6 +106,22 @@ class Database(object):
             script_data = session.execute(query).fetchall()
 
         return script_data
+
+
+    def get_all_script_data(self):
+        """
+        Selects all from 'bot_scripts'
+        
+        ---Labs 38 ---> you may need to tailor the output type here for populating
+        the Script Management modal, consult you front end peeps
+
+        https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+        """
+        with self.Sessionmaker() as session:
+            query = select(BotScripts)
+            bot_scripts_data = session.execute(query).fetchall()
+
+        return bot_scripts_data
 
 
     def insert_script(self, new_script):
@@ -151,6 +170,26 @@ class Database(object):
             counts = session.execute(query).fetchall()
 
         return counts
+    
+
+    def get_sripts_per_node(self, convo_node):
+        """
+        Gets scripts and their ids, use counts and success rates for a given
+        conversation node all for the use of the script selection process.
+        """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.script_id,
+                       BotScripts.script,
+                       BotScripts.use_count,
+                       BotScripts.success_rate
+                       ).
+                where(BotScripts.convo_node == convo_node)
+            )
+
+            scripts = session.execute(query).fetchall()
+
+        return scripts
 
     
     def bump_use_count(self, script_id, new_count):
@@ -183,7 +222,7 @@ class Database(object):
             session.commit()
 
 
-    """--------------------------------------------------------------------------------"""
+    """-----------------------------------------------------------------------"""
 
 
     def insert_data_force_ranks(self, data: List[Dict]):

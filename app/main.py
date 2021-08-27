@@ -6,7 +6,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi_utils.tasks import repeat_every
 from pydantic import BaseModel
 
-from app.script_tracking import add_to_use_count, add_to_positive_count
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 
@@ -14,7 +13,7 @@ from app.models import form_out, form_in, check, new_script
 
 from app.tweep_dm import form_tweet
 
-from app.script_tracking import add_script
+from app.script_tracking import ScriptMaster
 
 import app.dist_lock as dist_lock
 import logging
@@ -36,6 +35,7 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
+script_master = ScriptMaster()
 
 class InputString(BaseModel):
     text: str
@@ -109,17 +109,75 @@ async def approve(data: check):
 
 @app.post("/add-script/", response_model=new_script)
 async def post_script(data: new_script):
-    """ This endpoint allows the Admin to put a new script into the bot_scripts table """
-    add_script(data)
+    """
+    This endpoint allows the Admin to put a new script into the bot_scripts
+    table. If the conversation node for this script is "welcome" then either
+    the capability to authorize a welcome message with twitter needs to be
+    implemented or the Administrator needs to have the option to input the ID
+    given by Twitter when authorizing a welcome script for the Blue Witness
+    Twitter Account outside of this API
+
+    https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+    """
+    script_master.add_script(data)
+
+
+@app.post("/deactivate-script/")
+async def deactivate(script_id):
+    """
+    Endpoint for the front end to utilize in the toggle funtion on the
+    Script Management modal see:
+
+    https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+    """
+    script_master.deactivate_script(script_id)
+
+
+@app.post("/activate-script/")
+async def activate(script_id):
+    """
+    Endpoint for the front end to utilize in the toggle funtion on the
+    Script Management modal see:
+
+    https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+    """
+    script_master.activate_script(script_id)
+
 
 # Testing endpoint 
 @app.post("/bump-use-count/")
 async def add_one_to_use_count(script_id):
-    add_to_use_count(script_id)
+    """
+    This is a testing endpoint used to ensure that the functions for
+    incrementing use counts in the 'bot_scripts' table work properly. No one 
+    will need to grab these endpoints for anything else. The scriptmaster
+    function called below will actually be called as a helper function within
+    bot.py when the Twitter bot has selected a script for use and sent a
+    tweet out.
+    """
+    script_master.add_to_use_count(script_id)
 
+
+# Testing endpoint 
 @app.post("/update-pos-count/")
 async def bump_pos_and_success_rate(script_id):
-    add_to_positive_count (script_id)
+    """
+    This is a testing endpoint used to ensure that the functions for
+    incrementing positive counts in the 'bot_scripts' table work properly. No
+    one will need to grab these endpoints for anything else. The scriptmaster
+    function called below will actually be called as a helper function within
+    bot.py when the Twitter bot has received feedback from a Twitter user and
+    use this to bump the positve_count for the last script used.
+    """
+    script_master.add_to_positive_count(script_id)
+
+
+@app.get("/select-all-from-bot-scripts/")
+async def get_all_from_bot_scripts():
+    """
+    Selects all from 'bot_scripts' table to populate Script Management modal.
+    """
+    return DB.get_all_script_data()
 
 
 @app.get("/frankenbert/{user_input}")
