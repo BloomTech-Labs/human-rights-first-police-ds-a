@@ -24,14 +24,14 @@ class ScriptMaster():
         a different ID.
         """
 
-        if data.convo_node == self.convo_node_dict[0]:
+        if data.script_id != 0:
             # data['script_id'] =  # Use id from Twitter auth function (to be written or grabbed from Brody O.)
             pass
         else:
             # data['script_id'] = # Auto generate the next incremental id
             pass
 
-        DB.insert_script(data)
+        # DB.insert_script(data)
 
 
     def deactivate_script(script_ID):
@@ -42,16 +42,27 @@ class ScriptMaster():
         function being employed instead.
         """
 
-        # Update 'active' to False in 'bot_script' table for script_ID
+        # Update 'active' to False in 'bot_script' table for 'script_id'
+        pass
+
+    def activate_script(script_ID):
+        # Update 'active' to True in 'bot_script' table for 'script_id'
+        pass
 
 
     def add_to_use_count(script_id):
+        """
+        Uses functions from db.py as helper to increment the use_count
+        """
         old_count = DB.get_use_count(script_id)
         print(old_count)
         new_count = old_count[0][0] + 1
         DB.bump_use_count(script_id, new_count)
 
     def add_to_positive_count(script_id):
+        """
+        Uses functions from db.py as helper to increment the positive_count
+        """
         data = DB.get_counts(script_id)
         use = data[0][0]
         pos = data[0][1]
@@ -87,7 +98,7 @@ class ScriptMaster():
         In a future implementation try switching between choosing a random script and 
         choosing the better of two as originally coded.
         -----
-        
+
         """
 
         # Pull the list of scripts for a convo_node given
@@ -113,6 +124,3 @@ class ScriptMaster():
                 use = b
         
         return (script_data[use][0], script_data[use][1])
-
-
-

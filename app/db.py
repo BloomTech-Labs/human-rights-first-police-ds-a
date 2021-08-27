@@ -78,6 +78,10 @@ class Database(object):
 
     """
     The following functions are for Twitter bot script selection and testing.
+
+    ---Labs 38-----
+    You may have some clean up to do here
+    ---------------
     """
 
     def get_script_ids(self, convo_node):
@@ -102,6 +106,22 @@ class Database(object):
             script_data = session.execute(query).fetchall()
 
         return script_data
+
+
+    def get_all_script_data(self):
+        """
+        Selects all from 'bot_scripts'
+        
+        ---Labs 38 ---> you may need to tailor the output type here for populating
+        the Script Management modal
+
+        https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+        """
+        with self.Sessionmaker() as session:
+            query = select(BotScripts)
+            bot_scripts_data = session.execute(query).fetchall()
+
+        return bot_scripts_data
 
 
     def insert_script(self, new_script):
