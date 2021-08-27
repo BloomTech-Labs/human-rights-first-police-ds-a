@@ -1,20 +1,41 @@
-Naming: feature/description-name
+# Pull Request Template
 
-Reviewers: Minimum 2 (Ryan, Josh, and/or Imani and/or 2 from WEB or DS respectively and not the person who submitted the PR)
+## Description
 
-Description: 
-  What is the motivation for these changes?
-  What specific changes were made?
+Please include a summary of the change and which issue is fixed. Please also include relevant motivation and context. List any dependencies that are required for this change.
 
-Submitter Checklist: 
-  - [ ] Small scope (1-2 components/code cells/functions)
-  - [ ] Not too many concerns in a single commit
-  - [ ] Removed extraneous comments (DB_URL, code in comments, print statements, to-dos, console.logs, extra fluff)
-  - [ ] Atomic, descriptive commit messages
-  - [ ] Consistent formatting
+Fixes # (issue)
 
-Reviewer Checklist:
-  - [ ] Small scope (1-2 components/code cells/functions)
-  - [ ] DB_URL, comments, print statements, to-dos, console.logs, extra fluff were removed
-  - [ ] Give feedback no matter what conversations happened elsewhere, make sure to document here
-  - [ ] Comment on the line of code itself (blue plus box) in files changed tab
+## Type of change
+
+Please delete options that are not relevant.
+
+- [ ] Bug fix (non-breaking change which fixes an issue)
+- [ ] New feature (non-breaking change which adds functionality)
+- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] This change requires a documentation update
+
+## How Has This Been Tested?
+
+Please describe the tests that you ran to verify your changes. Provide instructions so we can reproduce. Please also list any relevant details for your test configuration
+
+- [ ] Test A
+- [ ] Test B
+
+**Test Configuration**:
+* Firmware version:
+* Hardware:
+* Toolchain:
+* SDK:
+
+## Checklist:
+
+- [ ] My code follows the style guidelines of this project
+- [ ] I have performed a self-review of my own code
+- [ ] I have commented my code, particularly in hard-to-understand areas
+- [ ] I have made corresponding changes to the documentation
+- [ ] My changes generate no new warnings
+- [ ] I have added tests that prove my fix is effective or that my feature works
+- [ ] New and existing unit tests pass locally with my changes
+- [ ] Any dependent changes have been merged and published in downstream modules
+- [ ] I have checked my code and corrected any misspellings
