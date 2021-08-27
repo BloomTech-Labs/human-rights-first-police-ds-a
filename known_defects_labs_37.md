@@ -38,7 +38,7 @@ Hierarchy of importance / Likelihood of report being verifiable:
 Adding some new ways to visualize the data: 
 	Web would like some more graphics. Still thinking about how that could look and whether or not it would come from the AWS or the heroku / how much that matters. Labs35 could consider applying something like seaborn or matplotlib to verified data. 
 
-Import Note for Twitter Bot:
+Import Note for Twitter Bot: **(Labs37: not sure this is relevant anoymore due to how the scraper now works, suggest researching this, but it is believed that in Labs 34 the Twitter "bot" actually referred to the scraper...)**
 	There is a special row within the database that keeps track of the largest id that the bot has seen
 	when calling get_mentions()
 	The specifics can be changed but currently this sprecial row uses the tweet_id column as a key - 'update id'
@@ -47,10 +47,3 @@ Import Note for Twitter Bot:
 	not re-process tweet replies more than once
 	The replies column is stored as a string in the database but is actually a list with elements seperated by :.:.:
 	Two helper functions are used to convert the string into a list and append a new item then convert back into string
-
-
-Known Errors and Breaks:
-	Inclusion of “/” or “\” in the text of the BERT model will break it / force the wrong category to be predicted. 
-	Within SQL Queries, if a string is used for comparison it is important to put single quotes around the variable
-	for example: f"UPDATE table WHERE id = '{string_variable}';"
-	Twitter scraper gets a certain amount of calls per 15 minutes therefore it cannot scrape indefinitely 
