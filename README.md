@@ -9,7 +9,7 @@ This project has been worked on by many Lambda labs teams over the past 10 month
 # Features
 ## Deployed Product
 [Front End Dashboard](https://a.humanrightsfirst.dev/) |
-[Data Science API](http://hrf-bw-labs36-dev.us-east-1.elasticbeanstalk.com/#/)
+[Data Science API](http://hrf-bw-labs37-dev.eba-hz3uh94j.us-east-1.elasticbeanstalk.com/)
 
 </br>  
 
@@ -19,6 +19,34 @@ This project has been worked on by many Lambda labs teams over the past 10 month
 - Relevant functions for the scraper feature can be found in ```scraper.py```
 
 </br>  
+
+## Twitter Bot
+- Invoked through ```main.py.form_out```
+- Needs to run ```main.py.advance_all``` to advance each conversation 1 step
+- ```main.py.advance_all``` runs every hour automatically, distributed lock means only one worker runs at a time
+- Code fragments left to allow Twitter conversational bot to be updated
+- Checks made is being updated for each check, there should be an implementation for exponential backoff on check frequency. Look up exponential backoff.
+
+</br>
+
+## Redis Cache
+- Manages distributed lock for scheduled Twitter jobs
+- Needs keys in .env file (obviously not in repo)
+- Ensures only one worker completes twitter based jobs at a time
+- Could be expanded to admin DB updates
+
+</br>
+
+## Alembic
+- Allows developers to manage migrations safely
+- Connected to models.py through declarative_base import
+- Connected to production DB through .env file (obviously not in repo)
+- in CLI, after generating virtual environment from requirements.txt:
+- to generate a revision file run: ```alembic revision --autogenerate``` then spot check revision file for errors
+- to run that revision, run ```alembic upgrade head```
+- to undo a revison run ```alembic downgrade```
+- bear in mind that revisions won't store data if you drop a row, so keep a ```pg_dump``` file on hand to ```psql``` recreate db
+
 
 ## BERT Model
 [BERT is an open-source, pre-trained, natural language processing (NLP) model from Google](https://ai.googleblog.com/2018/11/open-sourcing-bert-state-of-art-pre.html). The role of BERT in our project is to take the tweets collected from our Twitter scraper and predict whether or not the tweet discusses police use-of-force and what type of force they used. BERT uses a 6-rank classification system as follows:
@@ -35,8 +63,11 @@ The BERT model does not currently live in the GitHub repository due to its large
 
 ## Notebooks
 There are two notebooks pertaining to the model:
- - `BertModel.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our `postgres` AWS database 
- - `BertPerformance.ipynb`: used for statistical analysis and to calculate model performance metrics (i.e. binary and multi-classification confusion matrices, accuracy, etc.)
+ - `FrankenBERT_Training.ipynb`: trains a BERT instance based on the data given to it from the `training` table in our `postgres` AWS EB database and our generated tweets
+ - `FrankenBERT_Performance.ipynb`: used for statistical analysis and to calculate model performance metrics (i.e. binary and multi-classification confusion matrices, accuracy, etc.)
+
+There is a supplementary notebook for generating synthetic tweets with GPT-2:
+ - `Training_GPT_2_w_GPU.ipynb`: trains GPT-2 to on force rank classes based on the data given to it from our `postgres` AWS database before generating batches of synthetic tweets
  
 These notebooks can be accessed from your virtual environment once all dependencies are installed within it.  Two additional libraries, Transformers and psycopg2-binary, are both installed after running the first cell in the notebooks.
 
@@ -56,7 +87,6 @@ Old and currently undeployed code is stored in the `archive` folder of the repo.
 For those interested in improving upon the data science codebase, here are some recommendations: 
 - Explore the efficacy of separating the AWS 'postgres' database into two different databases. The first database would be the primary database for the Twitter scraper outputs and DS would redesign the schema to fit their needs. The second database would be the primary database for backend and they could extract data from the DS database and fit the schema to their needs. Currently, the primary AWS data table 'force_ranks' is accessible in both the data science and backend codebases.
 - Develop an evidence-based strategy to maximize the effectiveness of our Twitter queries in the scraper feature. Currently, the Twitter API has a 500 tweet limit per scraping. This would include developing metrics to compare querying methods. Metrics would allow us to determine which methods return a greater percentage of tweets describing police use-of-force in the United States.
-- Continue to improve BERT model performance. There is a deactivated labeler web application created by Robert Sharp that is connected to a repository of nearly 300,000 unlabeled tweets. The model was retrained at the end of July with roughly 6,000 manually labeled tweets. Labeling about 4,000 more to retrain the model and assess performance improvements may be worthwhile. Alternatively, the model has greater difficulty identifying use-of-force rankings 2, 3, and 4. Implementing a strategy to increase the number of tweets the model sees regarding these classifications could improve the model in a more targeted way. 
 
 </br>
 </br>
@@ -135,7 +165,9 @@ In order for the app to function correctly, the user must set up their own envir
 
 ## Installation Instructions and running API locally
 
-For AWS deployment we used requirement.txt to store our dependencies. Here are steps to create a virtual environment and install dependencies from our requirements.txt to run the app locally. Alternative instructions for creating a pipfile with pipenv follow. All code is for Unix/macOS. Here are the [Windows equivalents](https://packaging.python.org/guides/installing-using-pip-and-virtual-environments/) for creating a virtual environment with pip. 
+For AWS deployment we used requirement.txt to store our dependencies. Here are steps to create a virtual environment and install dependencies from our requirements.txt to run the app locally. Alternative instructions for creating a pipfile with pipenv follow.
+
+# MacOS:
 
 1. clone the repo
 2. cd into repo
@@ -189,6 +221,61 @@ $ pipenv shell
 $ gunicorn app.main:app -w 1 -k uvicorn.workers.UvicornWorker
 ```
 Or
+```terminal
+uvicorn app.main:app --reload
+```
+6. close the app with control+c in terminal
+7. deactivate environment:
+```terminal
+$ exit
+```
+
+# Windows:
+
+1. clone the repo
+2. cd into repo
+3. create virtual environment:
+```terminal
+$ py -m venv env
+```
+4. activate virtual environment:
+```terminal
+$ .\env\Scripts\activate
+```
+5. check activation:
+```terminal
+$ which python
+# should return:
+#   name_for_env/bin/python
+```
+
+6. install all dependencies with requirements.txt:
+```terminal
+$ py -m pip install -r requirements.txt
+```
+7. run the API locally on your machine
+```terminal
+uvicorn app.main:app --reload
+```
+8. close the app with control+c in terminal
+9. deactivate environment:
+```terminal
+$ deactivate
+```
+
+If you prefer to use pipenv and create a pipfile from our requirements.txt:
+1. clone the repo
+2. cd into repo
+3. install pip environment
+```terminal
+$ pipenv install
+```
+will create a pipfile for you
+4. activate the environment
+```terminal
+$ pipenv shell
+```
+5. run the API locally on your machine
 ```terminal
 uvicorn app.main:app --reload
 ```
