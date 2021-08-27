@@ -15,6 +15,14 @@ from app.tweep_dm import form_tweet
 
 from app.script_tracking import ScriptMaster
 
+import app.dist_lock as dist_lock
+import logging
+
+# importing distributed lock class
+lock = dist_lock.lock
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger()
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -195,42 +203,53 @@ async def to_approve():
     return needs_approval
 
 
+@repeat_every(seconds=60 * 60)
 @app.get("/advance-all/")
 async def advance_all():
-    """ advances all conversations """
-    bot.advance_all()
-    
+    """ advances all conversations, repeats every hour, only one worker at a time """
+    if lock.lock("advance_all", 30) == True:
+        logger.info('lock "advance_all" created')
+        bot.advance_all()
+        lock.unlock("advance_all")
+        logger.info('lock "advance_all" unlocked')
+    else:
+        logger.info('lock "advance_all" in use')
 
 
-#@app.on_event("startup")
+@app.on_event("startup")
 @repeat_every(seconds=60 * 60 * 4)
 async def update():
     """ 1. scrape twitter for police use of force
         2. deduplicate data based on tweet id
         3. insert data into database
         4. repeat every 4 hours """
-    search = choice((
-        'police', 'pigs',
-        'cops', 'ACAB', 'arrested',
-        'police brutality',
-        'police violence',
-        'police abuse',
-        'beaten', 'killed by police', 
-        'taser', 'baton', 'use of force',
-        'shot', 'lethal', 'non-lethal', 
-        'pepper spray', 'oc', 'tear gas', 
-        'rubber bullets', 'push', 
-        'non-violent', 'tased', 'clashed with police',
-        '#policebrutality', '#pig', '#pigs', 
-        '#5-0', '#policeofficer', '#ACAB', 
-        '#1312', '#fuckthepolice', 
-        '#BlackLivesMatter', '#policeaccountability'
-    ))
-    data: List[Dict] = scrape_twitter(search)
-    clean_data: List[Dict] = deduplicate(data)
+    if lock.lock("db_update", 30) == True:
+        logger.info('lock "db_update" created')
+        search = choice((
+            'police', 'pigs',
+            'cops', 'ACAB', 'arrested',
+            'police brutality',
+            'police violence',
+            'police abuse',
+            'beaten', 'killed by police', 
+            'taser', 'baton', 'use of force',
+            'shot', 'lethal', 'non-lethal', 
+            'pepper spray', 'oc', 'tear gas', 
+            'rubber bullets', 'push', 
+            'non-violent', 'tased', 'clashed with police',
+            '#policebrutality', '#pig', '#pigs', 
+            '#5-0', '#policeofficer', '#ACAB', 
+            '#1312', '#fuckthepolice', 
+            '#BlackLivesMatter', '#policeaccountability'
+        ))
+        data: List[Dict] = scrape_twitter(search)
+        clean_data: List[Dict] = deduplicate(data)
 
-    DB.insert_data_force_ranks(clean_data)
-
+        DB.insert_data_force_ranks(clean_data)
+        lock.unlock("db_update")
+        logger.info('lock "db_update" unlocked')
+    else:
+        logger.info('lock "db_update" in use')
 
 
 app.add_middleware(

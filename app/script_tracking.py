@@ -84,6 +84,7 @@ class ScriptMaster():
     said training take place on another optional instance (with the bot sentiment
     analysis) as memory on current instance is running low.
     """
+    pass
 
     def choose_script(self, status):
         """
