@@ -35,6 +35,7 @@ def deactivate_script(script_ID):
     the potential need for more data on past script testing led to this
     function being employed instead.
     """
+    pass
 
     # Update 'active' to False in 'bot_script' table for script_ID
 
