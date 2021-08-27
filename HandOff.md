@@ -48,6 +48,7 @@ https://youtu.be/zO4hseH8mjc
 
 As of now, the Twitter bot's sole job is to open a conversation then deliver a form if the anwer is 'yes' to our initial question.  The Twitter bot is linked to RowenWitt, my testing Twitter Account so that's not ideal, would love to switch that over whenever the HRF account becomes available.  The Twitter bot does it's job well, one thing to be aware of is that after sending out the initial opening tweet, the conversation needs to be advanced.  Right now the advance all function is being run once every hour.  Not sure how frequently that could be run until we hit the Tweepy rate limit.  The good news is that the distributed lock reduces our likelihood of hitting the rate limit to a quarter of it's previous chance.  The Twitter bot is entirely managed through the admin portal, all the admin does is invoke the bot by requesting more information, then wait for the information to roll back into the Conversations table, which is checked using the /to-approve/ endpoint.  
 
+video here https://youtu.be/dRBYRQ5QpoI
 
 - /view-data/ endpoint
 
@@ -67,3 +68,6 @@ It would be a great call to make a separate API to hold the BERT model, freeing 
 - Distributed Lock
 
 video here https://youtu.be/ZSIFVX415dU
+
+(PSSSST, over here......)
+The fixed Twitter bot can be found on my forked repo https://github.com/RowenWitt/human-rights-first-police-ds-a
