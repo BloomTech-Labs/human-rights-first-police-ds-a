@@ -68,7 +68,6 @@ def receive_form(data:Dict):
 
 	to_insert = DB.convert_form_conversations(data)
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
-	to_insert['isChecked'] = True
 	to_insert['conversation_status'] = 12
 	validation_check = DB.get_root_twelve(to_insert['tweet_id'])
 	if len(validation_check) == 0:
