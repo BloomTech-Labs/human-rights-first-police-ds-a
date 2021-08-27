@@ -113,7 +113,7 @@ class Database(object):
         Selects all from 'bot_scripts'
         
         ---Labs 38 ---> you may need to tailor the output type here for populating
-        the Script Management modal
+        the Script Management modal, consult you front end peeps
 
         https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
         """

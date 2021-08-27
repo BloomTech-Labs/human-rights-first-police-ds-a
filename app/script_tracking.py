@@ -12,6 +12,7 @@ class ScriptMaster():
                                 11: "form invitation"
                                 } 
 
+
     def add_script(self, data):
         """
         Updates the bot_scripts table with new row passing the given script
@@ -40,10 +41,17 @@ class ScriptMaster():
         from future use. Originally a "delete_script" function was conceived, but
         the potential need for more data on past script testing led to this
         function being employed instead.
+
+        ----Labs 38 ---
+        I suggest following our flow of creating helper function(s) in db.py to 
+        update 'bot_scripts' for the activate and deactivate functions.
+        Then check endpoints in main.py to test this and set up the FE for connecting
+        the modal in Admin dashboard.
         """
 
         # Update 'active' to False in 'bot_script' table for 'script_id'
         pass
+
 
     def activate_script(script_ID):
         # Update 'active' to True in 'bot_script' table for 'script_id'
@@ -58,6 +66,7 @@ class ScriptMaster():
         print(old_count)
         new_count = old_count[0][0] + 1
         DB.bump_use_count(script_id, new_count)
+
 
     def add_to_positive_count(script_id):
         """
@@ -75,8 +84,8 @@ class ScriptMaster():
     ### Functions for selection of scripts
     """ FUTURE update: add randomized functionality to choose between path-based
     script selection based on traning from the 'script_training' and 
-    path-generating options. Possibly set this up to occur automatically whence
-    results from a traing session of path-based data becomes available.
+    path-generating options (the latter exist below). Possibly set this up to occur
+    automatically whence results from traing sessions of path-based data are available.
 
     Also consider setting up testing to occur automatically whence
     sufficient training data becomes available. Also consider scheduling automatic
@@ -84,7 +93,7 @@ class ScriptMaster():
     said training take place on another optional instance (with the bot sentiment
     analysis) as memory on current instance is running low.
     """
-    pass
+
 
     def choose_script(self, status):
         """
