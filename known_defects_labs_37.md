@@ -8,6 +8,16 @@ The src and tags columns should be made into relational tables, this would alter
 Distributed Lock
 Redis Cache is unsecured, should probably throw a password on that.  Currently will not allow users to connect from outside of VPC.
 
+- Remove is_checked from the conversations Base class in models.py and remove that column from the table in the database (use alembic)
+
+- There are functions in bot.py that are ot currently in use. Tests will need to be written and some functions re-written to achieve full functionality
+
+- Twitter bot currently requires multiple executions of 'advance_all' to send the form
+
+- Welcome message is sending out twice, unbundle steps 10 & 11 in bot.py
+
+- Twitter bot is using Rowen Witt's twitter acount and needs to use HRF Blue Witness account
+
 Labs 36 Notes
 - no known defects known right now
 

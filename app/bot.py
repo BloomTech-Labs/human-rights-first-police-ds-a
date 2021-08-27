@@ -82,11 +82,6 @@ def advance_all():
 		advance_conversation(threads.tweet_id)
 
 
-def reset_conversations_for_test():
-	DB.reset_table("conversations")
-	DB.insert_data_conversations(test_entries) 
-
-
 def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 	""" Ends conversation of given root, sets conversation_status to 5 """
 	api = create_api()
@@ -102,7 +97,7 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 			status = twitter.respond_to_tweet(test.id_str, conversation_tree[4])
 			to_insert = [{
 				"tweet_id":root_id,
-				"sent_tweet_id":status_id,
+				"sent_tweet_id":max_step.sent_tweet_id,
 				"received_tweet_id":test.id_str,
 				"in_reply_to_id":test.in_reply_to_status_id,
 				"tweeter_id":test.in_reply_to_screen_name,
@@ -175,7 +170,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 					status = twitter.respond_to_tweet(test.id_str,conversation_tree[2])
 					to_insert = [{
 						"tweet_id":root_id,
-						"sent_tweet_id":status_id,
+						"sent_tweet_id":max_step.sent_tweet_id,
 						"received_tweet_id":test.id_str,
 						"in_reply_to_id":test.in_reply_to_status_id,
 						"tweeter_id":test.in_reply_to_screen_name,
@@ -223,10 +218,10 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 					update_data = {"city":city,"state":state,"lat":latitude,"long":longitude}
 					DB.update_force_rank_location(update_data, root_id)
 					try:
-						status = twitter.respond_to_tweet(test_id, conversation_tree[3])
+						status = twitter.respond_to_tweet(max_step.tweeter_id, conversation_tree[3])
 						to_insert = [{
 							"tweet_id":root_id,
-							"sent_tweet_id":status_id,
+							"sent_tweet_id":max_step.sent_tweet_id,
 							"received_tweet_id":test.id_str,
 							"in_reply_to_id":test.in_reply_to_status_id,
 							"tweeter_id":test.in_reply_to_screen_name,
