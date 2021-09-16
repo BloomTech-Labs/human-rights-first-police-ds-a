@@ -60,10 +60,6 @@ This project has been worked on by many Lambda labs teams over the past 10 month
 The BERT model does not currently live in the GitHub repository due to its large file size. When running the app locally, it is best to manually store the `saved_model` file in the `app` directory.
 
 ## BERT rankings
-After incident reports are scraped from twitter they are run through the BERT model. Incident reports are then grouped by level of police force. These rankings are rated one through five with the graph legend below.
-
-![Screenshot (11)](https://user-images.githubusercontent.com/81334768/133356403-2ce5d120-6a61-458d-beae-09f01ef34419.png)
-
 Taking a deeper dive we can turn our eyes to the black box of our model. For this task we will use LIME. LIME is an acronym for local interpretable model-agnostic explanations. Local is refers to local fidelity, meaning we want the explanation to really reflect the behaviour of the classifier "around" the instance being predicted. Interpretable refers to making sense of these explanations. Lastly,  model-agnostic refers to giving explanations without needing to ‘peak’ into it.  
 
 How does LIME work? For our problem we will utilize the LIME TextExplainer. The TextExplainer generates a lot of texts similar to the document(by removing some words), then trains a white-box classifier which predicts the output of the black-box classifier. This process can be broken down into three simple steps. First, generate text second, predict probabilities for these generated texts third, train another classifier to predict the output of the black box classifier. While black boxes are hard to approximate, this algorithm works by approximating it in a small neighbourhood near the given text in a white-box classifier. Finally, let's look at some visualizations! Below LimeTextExplainer is showing us the weights for each word in an incident report.
