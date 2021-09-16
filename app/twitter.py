@@ -164,7 +164,7 @@ def send_dm(user_id: str, dm_body: str) -> str:
     return dm
 
 
-def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
+def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: str) -> Dict:
     """Function to get response DMs sent from button in tweet"""
     api = create_api()
     dms = api.list_direct_messages()
@@ -178,7 +178,7 @@ def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
 
             if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
 
-                form_link = f'https://a.humanrightsfirst.dev/edit/{tweet_id}'
+                form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
 
                 api.send_direct_message(screen_name, response_txt)
