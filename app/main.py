@@ -18,12 +18,6 @@ from app.script_tracking import ScriptMaster
 import app.dist_lock as dist_lock
 import logging
 
-# importing distributed lock class
-lock = dist_lock.lock
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
-
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
 
