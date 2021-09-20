@@ -1,7 +1,7 @@
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 import requests, time, json, re
-import os,logging, tweepy
+import os, tweepy
 from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, select, insert, update, func
 
@@ -11,13 +11,14 @@ from app.twitter import create_api
 # from app.main import script_master
 
 
-MAP_API = os.getenv("MAP_API") # Google API needs this map
+MAP_API = os.getenv("MAP_API")
+
 
 bot_name = os.getenv("BOT_NAME") # Need bot name
 
-bot_id = 1335727237400694784
+bot_id = 1404832664348094466
 
-welcome_message_id = 1430032447282958343  #ScriptMaster.choose_script("welcome")
+welcome_message_id = 1436028845941923862  #ScriptMaster.choose_script("welcome")
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
@@ -37,26 +38,36 @@ conversation_tree = {
 
 
 def send_form(data:Dict):
-	""" Sends form to user, inserts to conversations table """
+	""" Sends form to user in tweet or starts bot conversation based on form,
+	inserts to conversations table """
 
 	to_insert = DB.convert_invocation_conversations(data)
+	incident_id = to_insert['incident_id']
 	user_id_str = twitter.get_user_id_from_tweet(to_insert['tweet_id'])
+	form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
-	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link 
-	to_insert['reachout_template'] = conversation_tree[10]
 	to_insert['in_reply_to_id'] = to_insert['tweeter_id']
 	del to_insert['link']
+	to_insert['checks_made'] = 1
+	
 
-
-	try:
+	if to_insert['form'] == 0:
+		to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[1] + '\n' + form_link
+		to_insert['reachout_template'] = conversation_tree[1]
 		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
+		to_insert['conversation_status'] = 0
 		to_insert['tweeter_id'] = bot_name
-		to_insert['conversation_status'] = 10
-		to_insert['checks_made'] = 1
 		to_insert['sent_tweet_id'] = status.id
 		DB.insert_data_conversations([to_insert])
-	except tweepy.TweepError as e:
-		logging.error("Tweepy error occured:{}".format(e))
+
+	else:
+		to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link
+		to_insert['reachout_template'] = conversation_tree[10]
+		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
+		to_insert['conversation_status'] = 10
+		to_insert['tweeter_id'] = bot_name
+		to_insert['sent_tweet_id'] = status.id
+		DB.insert_data_conversations([to_insert])
 
 
 def receive_form(data:Dict):
@@ -88,22 +99,20 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 	other_person = other_person.screen_name
 	test = twitter.get_replies(bot_name, max_step.sent_tweet_id, other_person)
 	if test:
-		try:
-			status = twitter.respond_to_tweet(test.id_str, conversation_tree[4])
-			to_insert = [{
-				"tweet_id":root_id,
-				"sent_tweet_id":max_step.sent_tweet_id,
-				"received_tweet_id":test.id_str,
-				"in_reply_to_id":test.in_reply_to_status_id,
-				"tweeter_id":test.in_reply_to_screen_name,
-				"conversation_status":5,
-				"tweet_text":test.full_text,
-				"checks_made":(max_step.checks_made+1),
-				"reachout_template":conversation_tree[4]
-			}]
-			DB.insert_data_conversations(to_insert)
-		except tweepy.TweepError as e:
-			logging.error("Tweepy error occured:{}".format(e))
+
+		status = twitter.respond_to_tweet(test.id_str, conversation_tree[4])
+		to_insert = [{
+			"tweet_id":root_id,
+			"sent_tweet_id":max_step.sent_tweet_id,
+			"received_tweet_id":test.id_str,
+			"in_reply_to_id":test.in_reply_to_status_id,
+			"tweeter_id":test.in_reply_to_screen_name,
+			"conversation_status":5,
+			"tweet_text":test.full_text,
+			"checks_made":(max_step.checks_made+1),
+			"reachout_template":conversation_tree[4]
+		}]
+		DB.insert_data_conversations(to_insert)
 	else:
 		pass
 
@@ -120,66 +129,57 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 			max = steps.conversation_status
 			max_step = steps
 	if max_step.conversation_status == 0 and max_step.form == 0:
-		try:
-			status = twitter.respond_to_tweet(max_step.tweet_id, conversation_tree[1])
-			to_insert = [{
-				"tweet_id":root_id,
-				"sent_tweet_id":status.id_str,
-				"in_reply_to_id":status.in_reply_to_status_id,
-				"tweeter_id":max_step.tweeter_id,
-				"conversation_status":(max_step.conversation_status+1),
-				"tweet_text":max_step.tweet_text,
-				"checks_made":(max_step.checks_made+1),
-				"reachout_template":conversation_tree[1],
-				"form":0
-			}]
+		status = twitter.respond_to_tweet(max_step.tweet_id, conversation_tree[1])
+		to_insert = [{
+			"tweet_id":root_id,
+			"sent_tweet_id":status.id_str,
+			"in_reply_to_id":status.in_reply_to_status_id,
+			"tweeter_id":max_step.tweeter_id,
+			"conversation_status":(max_step.conversation_status+1),
+			"tweet_text":max_step.tweet_text,
+			"checks_made":(max_step.checks_made+1),
+			"reachout_template":conversation_tree[1],
+			"form":0
+		}]
 
-			DB.insert_data_conversations(to_insert)
-		except tweepy.TweepError as e:
-			logging.error("Tweepy error occured:{}".format(e))
+		DB.insert_data_conversations(to_insert)
 	elif max_step.conversation_status == 0 and max_step.form == 1:
-		try:
-			status = twitter.respond_to_tweet(max_step.tweet_id, max_step.form_link)
+		status = twitter.respond_to_tweet(max_step.tweet_id, max_step.form_link)
 
-			to_insert = [{
-				"tweet_id":root_id,
-				"sent_tweet_id":status.id_str,
-				"in_reply_to_id":status.in_reply_to_status_id,
-				"tweeter_id":max_step.tweeter_id,
-				"conversation_status":4,
-				"tweet_text":max_step.tweet_text,
-				"checks_made":(max_step.checks_made+1),
-				"reachout_template":form_link,
-				"form":1
-			}]
+		to_insert = [{
+			"tweet_id":root_id,
+			"sent_tweet_id":status.id_str,
+			"in_reply_to_id":status.in_reply_to_status_id,
+			"tweeter_id":max_step.tweeter_id,
+			"conversation_status":4,
+			"tweet_text":max_step.tweet_text,
+			"checks_made":(max_step.checks_made+1),
+			"reachout_template":form_link,
+			"form":1
+		}]
 
-			DB.insert_data_conversations(to_insert)
-		except tweepy.TweepError as e:
-			logging.error("Tweepy error occured:{}".format(e))
+		DB.insert_data_conversations(to_insert)
 	elif max_step.conversation_status == 1 and max_step.form == 0:
 
 		test = twitter.get_replies(bot_name, max_step.sent_tweet_id, max_step.tweeter_id)
 		if test:
 			if test.full_text == '@' + bot_name + 'Yes': ### INSERT CLASSIFICATION MODEL CALL HERE ####
-				try:
-					status = twitter.respond_to_tweet(test.id_str,conversation_tree[2])
-					to_insert = [{
-						"tweet_id":root_id,
-						"sent_tweet_id":max_step.sent_tweet_id,
-						"received_tweet_id":test.id_str,
-						"in_reply_to_id":test.in_reply_to_status_id,
-						"tweeter_id":test.in_reply_to_screen_name,
-						"conversation_status":(max_step.conversation_status+1),
-						"tweet_text":test.full_text,
-						"checks_made":(max_step.checks_made+1),
-						"reachout_template":conversation_tree[2],
-						"form":0
-					}]
+				status = twitter.respond_to_tweet(test.id_str,conversation_tree[2])
+				to_insert = [{
+					"tweet_id":root_id,
+					"sent_tweet_id":max_step.sent_tweet_id,
+					"received_tweet_id":test.id_str,
+					"in_reply_to_id":test.in_reply_to_status_id,
+					"tweeter_id":test.in_reply_to_screen_name,
+					"conversation_status":(max_step.conversation_status+1),
+					"tweet_text":test.full_text,
+					"checks_made":(max_step.checks_made+1),
+					"reachout_template":conversation_tree[2],
+					"form":0
+				}]
 
-					DB.insert_data_conversations(to_insert)
-					return test
-				except tweepy.TweepError as e:
-					logging.error("Tweepy error occured:{}".format(e))
+				DB.insert_data_conversations(to_insert)
+				return test
 			elif test.full_text == "@" + bot_name + 'No':                           ### INSERT CLASSIFICATION MODEL CALL HERE ####
 				end_conversation(root_id, max_step, received_tweet_id=test.id_str)
 			else:                                                                   ### INSERT CLASSIFICATION MODEL HERE (MAYBE CASE)
@@ -212,24 +212,21 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 					longitude = location['candidates'][0]['geometry']['location']['lng']
 					update_data = {"city":city,"state":state,"lat":latitude,"long":longitude}
 					DB.update_force_rank_location(update_data, root_id)
-					try:
-						status = twitter.respond_to_tweet(max_step.tweeter_id, conversation_tree[3])
-						to_insert = [{
-							"tweet_id":root_id,
-							"sent_tweet_id":max_step.sent_tweet_id,
-							"received_tweet_id":test.id_str,
-							"in_reply_to_id":test.in_reply_to_status_id,
-							"tweeter_id":test.in_reply_to_screen_name,
-							"conversation_status":5,
-							"tweet_text":test.full_text,
-							"checks_made":(max_step.checks_made+1),
-							"reachout_template":conversation_tree[3],
-							"form":0
-						}]
+					status = twitter.respond_to_tweet(max_step.tweeter_id, conversation_tree[3])
+					to_insert = [{
+						"tweet_id":root_id,
+						"sent_tweet_id":max_step.sent_tweet_id,
+						"received_tweet_id":test.id_str,
+						"in_reply_to_id":test.in_reply_to_status_id,
+						"tweeter_id":test.in_reply_to_screen_name,
+						"conversation_status":5,
+						"tweet_text":test.full_text,
+						"checks_made":(max_step.checks_made+1),
+						"reachout_template":conversation_tree[3],
+						"form":0
+					}]
 
-						DB.insert_data_conversations(to_insert)
-					except tweepy.TweepError as e:
-						logging.error("Tweepy error occured:{}".format(e))
+					DB.insert_data_conversations(to_insert)
 				elif location['status'] == "ZERO_RESULTS":
 					pass
 					return end_conversation(root_id, max_step)
@@ -240,15 +237,17 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 		DB.update_conversation_checks(root_id)
 	elif max_step.conversation_status == 10:
 
-		processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id, tweet_id=max_step.tweet_id, convo_tree_txt=conversation_tree[11])
+		processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id, tweet_id=max_step.tweet_id, incident_id=max_step.incident_id, convo_tree_txt=conversation_tree[11])
 		if processed_dms is not None:
 
 			to_insert = {}
+			to_insert["incident_id"] = max_step.incident_id
+			to_insert["form"] = max_step.form
 			to_insert['tweeter_id'] = processed_dms['tweeter_id']
 			to_insert['tweet_text'] = processed_dms['quick_reply_response']
 			to_insert['tweet_id'] = max_step.tweet_id
 			to_insert['reachout_template'] = conversation_tree[11]
-			to_insert['checks_made'] = (max_step.checks_made+1) 
+			to_insert['checks_made'] = (max_step.checks_made+1)
 			to_insert['conversation_status'] = processed_dms['conversation_status']
 
 			DB.insert_data_conversations([to_insert])

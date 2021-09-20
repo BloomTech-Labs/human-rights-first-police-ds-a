@@ -7,15 +7,12 @@ from sqlalchemy.orm.relationships import foreign
 
 from sqlalchemy.sql.sqltypes import ARRAY
 
-Base = declarative_base() # describes db tables and then defines classes that will be mapped to those tables
+Base = declarative_base()
+
+# Declarative Base SQLAlchemy models
 
 class ForceRanks(Base):
-	"""
-    Describe the Postgres tables 
-    AND
-    Maps a path to those tables
-    Documentation for Base: https://tinyurl.com/ac5tf34w
-    """
+
 
 	__tablename__ = "force_ranks"
 

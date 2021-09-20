@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 from typing import Dict, List, Tuple
 
@@ -7,11 +6,8 @@ import tweepy
 from dotenv import find_dotenv, load_dotenv
 from requests_oauthlib import OAuth1Session
 
-load_dotenv(find_dotenv())
+find_dotenv()
 
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
 
 quick_reply_option = [
     {
@@ -40,11 +36,9 @@ def create_api():
     api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
 
-    try:
-        api.verify_credentials()
-    except Exception as e:
-        logger.error("Error creating API", exc_info=True)
-    logger.info("API created")
+
+    api.verify_credentials()
+
     return api
 
 
@@ -53,7 +47,6 @@ def manual_twitter_api():
                                         os.getenv("CONSUMER_SECRET"),
                                         os.getenv("ACCESS_KEY"),
                                         os.getenv("ACCESS_SECRET"))
-    logger.info("Manual API created")
     return manual_twitter_auth
 
 
@@ -112,18 +105,10 @@ def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
                 continue
             if reply.in_reply_to_status_id == int(tweet_id) and reply.user.screen_name == replier_id:
                 return reply
-        except tweepy.RateLimitError as e:
-            logging.error("Twitter api rate limit reached".format(e))
-            break
-        except tweepy.TweepError as e:
-            logging.error("Tweepy error occured:{}".format(e))
-            break
         except StopIteration:
             print('StopIteration')
             break
-        except Exception as e:
-            logger.error("Failed while fetching replies {}".format(e))
-            break
+
 
 
 def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
@@ -179,7 +164,7 @@ def send_dm(user_id: str, dm_body: str) -> str:
     return dm
 
 
-def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
+def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: str) -> Dict:
     """Function to get response DMs sent from button in tweet"""
     api = create_api()
     dms = api.list_direct_messages()
@@ -193,7 +178,7 @@ def process_dms(user_id: str, tweet_id: str, convo_tree_txt: str) -> Dict:
 
             if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
 
-                form_link = f'https://a.humanrightsfirst.dev/edit/{tweet_id}'
+                form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
 
                 api.send_direct_message(screen_name, response_txt)
