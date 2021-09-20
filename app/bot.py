@@ -1,7 +1,7 @@
 from dotenv import load_dotenv, find_dotenv
 load_dotenv(find_dotenv())
 import requests, time, json, re
-import os, logging, tweepy
+import os,logging, tweepy
 from typing import Tuple, List, Dict
 from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, select, insert, update, func
 
@@ -11,11 +11,7 @@ from app.twitter import create_api
 # from app.main import script_master
 
 
-MAP_API = os.getenv("MAP_API")
-
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger()
+MAP_API = os.getenv("MAP_API") # Google API needs this map
 
 bot_name = os.getenv("BOT_NAME") # Need bot name
 

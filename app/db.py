@@ -22,7 +22,7 @@ class Database(object):
             pool_size=10,
             echo=False,
             pool_pre_ping=True
-        )
+        ) # create connection to the database to perform SQL operations, echo will generate the activity log 
 
         self.Sessionmaker = scoped_session(
             sessionmaker(

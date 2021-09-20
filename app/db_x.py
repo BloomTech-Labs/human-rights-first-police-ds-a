@@ -1,23 +1,32 @@
-from sqlalchemy import Table, Column, Integer, String, Date, Float, Boolean, ForeignKey, UniqueConstraint
-from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-from pydantic import BaseModel
-from typing import Optional, List, Dict
-from sqlalchemy.orm.relationships import foreign
+"""
+This module should should hold everything related to the database including:
+- Connections
+- Queries
+"""
 
-from sqlalchemy.sql.sqltypes import ARRAY
+import os
+from sqlalchemy import create_engine, select, table # connects to the Postgres database thats holds the scraped tweets
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import Table, Column, Integer, String, Date, Float, Boolean, ForeignKey, UniqueConstraint
+from sqlalchemy.orm import relationship # used to reference parent child relationships for collecting items from the parent class
+from dotenv import load_dotenv, find_dotenv
+
+load_dotenv(find_dotenv())
+
+db_url = os.getenv("DB_URL")
+engine = create_engine(db_url, echo = True) # create connection to the database to perform SQL operations, echo will generate the activity log 
 
 Base = declarative_base() # describes db tables and then defines classes that will be mapped to those tables
 
 class ForceRanks(Base):
-	"""
-    Describe the Postgres tables 
-    AND
-    Maps a path to those tables
-    Documentation for Base: https://tinyurl.com/ac5tf34w
-    """
+        """
+        Describe the Postgres tables 
+        AND
+        Map a path to those tables
+        Documentation for Base: https://tinyurl.com/ac5tf34w
+        """
 
-	__tablename__ = "force_ranks"
+	__tablename__ = "force_ranks" # name formatting has to be this way
 
 	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
 	incident_date = Column(Date, nullable=False)
@@ -35,8 +44,7 @@ class ForceRanks(Base):
 	tags = Column(String(255))
 	src = Column(String(8000))
 	children = relationship("Conversations", back_populates="parent")
-
-
+	
 	def __repr__(self):
 		return (
 			"incident_id:{}, incident_date:{}, tweet_id:{}, user_name:{}, description:{}, city:{}, state:{}, lat:{}, long:{}, title:{}, force_rank:{}, status:{}, confidence:{}, tags:{}, src:{}").format(
@@ -56,7 +64,6 @@ class ForceRanks(Base):
 			self.tags,
 			self.src
 			)
-
 
 
 class Conversations(Base):
@@ -82,8 +89,6 @@ class Conversations(Base):
     checks_made = Column(Integer)
     reachout_template = Column(String)
     isChecked = Column(Boolean)
-    #dm_text = Column(String)
-    #quick_reply_response = Column(String)
     parent = relationship("ForceRanks", back_populates="children")
 
     def __repr__(self):
@@ -205,45 +210,3 @@ class Tags(Base):
 			self.incident_id,
 			self.tag
 			)
-
-
-# FastAPI Models
-
-class form_out(BaseModel):
-    form: int
-    incident_id: int
-    link: str
-    tweet_id: str
-    user_name: str
-
-
-class form_in(BaseModel):
-    city: str
-    state: str
-    confidence: Optional[float] = 0
-    description: str
-    force_rank: str
-    incident_date: str
-    incident_id: int
-    lat: Optional[float] = None
-    long: Optional[float] = None
-    src: List[str] = []
-    status: str
-    title: str
-    tweet_id: str
-    user_name: str
-
-
-class check(BaseModel):
-    tweet_id: str
-
-
-class new_script(BaseModel):
-	script_id: int
-	script: str
-	convo_node: int
-	use_count: Optional[int] = 0
-	positive_count: Optional[int] = 0
-	success_rate: Optional[float] = 0.0
-	active: Optional[bool] = True
-
