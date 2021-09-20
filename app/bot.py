@@ -38,23 +38,36 @@ conversation_tree = {
 
 
 def send_form(data:Dict):
-	""" Sends form to user, inserts to conversations table """
+	""" Sends form to user in tweet or starts bot conversation based on form,
+	inserts to conversations table """
 
 	to_insert = DB.convert_invocation_conversations(data)
+	incident_id = to_insert['incident_id']
 	user_id_str = twitter.get_user_id_from_tweet(to_insert['tweet_id'])
+	form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
-	to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link 
-	to_insert['reachout_template'] = conversation_tree[10]
 	to_insert['in_reply_to_id'] = to_insert['tweeter_id']
 	del to_insert['link']
-
-
-	status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
-	to_insert['tweeter_id'] = bot_name
-	to_insert['conversation_status'] = 10
 	to_insert['checks_made'] = 1
-	to_insert['sent_tweet_id'] = status.id
-	DB.insert_data_conversations([to_insert])
+	
+
+	if to_insert['form'] == 0:
+		to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[1] + '\n' + form_link
+		to_insert['reachout_template'] = conversation_tree[1]
+		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
+		to_insert['conversation_status'] = 0
+		to_insert['tweeter_id'] = bot_name
+		to_insert['sent_tweet_id'] = status.id
+		DB.insert_data_conversations([to_insert])
+
+	else:
+		to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link
+		to_insert['reachout_template'] = conversation_tree[10]
+		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
+		to_insert['conversation_status'] = 10
+		to_insert['tweeter_id'] = bot_name
+		to_insert['sent_tweet_id'] = status.id
+		DB.insert_data_conversations([to_insert])
 
 
 def receive_form(data:Dict):
