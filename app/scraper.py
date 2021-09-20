@@ -7,7 +7,7 @@ from dotenv import find_dotenv, load_dotenv
 
 from app.db import Database
 from app.franken_bert import FrankenBert
-from app.twitter import create_api, logger
+from app.twitter import create_api
 
 
 load_dotenv(find_dotenv())
@@ -79,5 +79,4 @@ def scrape_twitter(query: str) -> List[Dict]:
                     "tags": "[]",
                     "src": f'["https://twitter.com/{status.user.screen_name}/status/{status.id_str}"]',
                 })
-    logger.info("Scraped {} valid tweets".format(len(tweets)))
     return tweets
