@@ -79,8 +79,6 @@ class Conversations(Base):
     checks_made = Column(Integer)
     reachout_template = Column(String)
     isChecked = Column(Boolean)
-    #dm_text = Column(String)
-    #quick_reply_response = Column(String)
     parent = relationship("ForceRanks", back_populates="children")
 
     def __repr__(self):
@@ -243,4 +241,3 @@ class new_script(BaseModel):
 	positive_count: Optional[int] = 0
 	success_rate: Optional[float] = 0.0
 	active: Optional[bool] = True
-

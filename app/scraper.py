@@ -1,5 +1,5 @@
 import datetime as dt
-import os
+
 from typing import Dict, List, Tuple
 
 import tweepy
@@ -9,9 +9,7 @@ from app.db import Database
 from app.franken_bert import FrankenBert
 from app.twitter import create_api
 
-
 load_dotenv(find_dotenv())
-
 
 DB = Database()
 

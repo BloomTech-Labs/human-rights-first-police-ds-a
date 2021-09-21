@@ -1,28 +1,29 @@
+""" This module should hold everything related to the twitterbot """
+
 from dotenv import load_dotenv, find_dotenv
-load_dotenv(find_dotenv())
-import requests, time, json, re
-import os, tweepy
-from typing import Tuple, List, Dict
-from sqlalchemy import create_engine, Table, Column, Integer, String, MetaData, select, insert, update, func
+
+import requests, json, os
+
+from typing import List, Dict
 
 from app.scraper import DB
 import app.twitter as twitter
 from app.twitter import create_api
-# from app.main import script_master
 
+load_dotenv(find_dotenv())
 
 MAP_API = os.getenv("MAP_API")
 
+bot_name = os.getenv("BOT_NAME")  # Need bot name
 
-bot_name = os.getenv("BOT_NAME") # Need bot name
+bot_id = 1436057566807674897
 
-bot_id = 1404832664348094466
+welcome_message_id = 1440023048313131014
 
-welcome_message_id = 1436028845941923862  #ScriptMaster.choose_script("welcome")
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
-	# 1:"Hey, we noticed that you Tweeted about police misconduct. I'm a bot working on behalf of Blue Witness to gain supplementary information about these reports in order to track these incidents for the sake of social accountability. We noticed that the location and time of this incident are missing from your Tweet, are you willing to help us gain the information we need? Please reply 'Yes' or 'No.'",
+	1: "Hey, This is a test.",
 	# 2:"Do you want to fill out a form or talk with the bot",
 	# 3:"What is the location where this incident took place?",
 	# 4:"What is the date",
@@ -31,15 +32,17 @@ conversation_tree = {
 	# 7:"Thanks anyway!",
 	# 8:"Please fill out this form ",
 
-	10:'Click link below to start conversation ',
-	11:'Please fill out this form ',
-	13:'Thanks anyway!'
+	10: 'Click link below to start conversation ',
+	11: 'Please fill out this form ',
+	13: 'Thanks anyway!'
 }
 
 
-def send_form(data:Dict):
-	""" Sends form to user in tweet or starts bot conversation based on form,
-	inserts to conversations table """
+def send_form(data: Dict):
+	"""
+	Sends form to user in tweet or starts bot conversation based on form,
+	inserts to conversations table
+	"""
 
 	to_insert = DB.convert_invocation_conversations(data)
 	incident_id = to_insert['incident_id']
@@ -70,7 +73,7 @@ def send_form(data:Dict):
 		DB.insert_data_conversations([to_insert])
 
 
-def receive_form(data:Dict):
+def receive_form(data: Dict):
 	""" Takes input from user/POST inputs into conversations if no root_id with conversation_status 7 """
 
 	to_insert = DB.convert_form_conversations(data)
@@ -258,6 +261,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 
 	elif max_step.conversation_status == 13:
 		DB.update_conversation_checks(root_id)
+
 
 def clean_query_string(string: str) -> str:
 	""" Cleans string of ' 's and 's """
