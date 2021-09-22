@@ -6,11 +6,12 @@ import requests, json, os
 
 from typing import List, Dict
 
-from app.scraper import DB
+from app.db import Database
 import app.twitter as twitter
 from app.twitter import create_api
 
 load_dotenv(find_dotenv())
+DB = Database
 
 MAP_API = os.getenv("MAP_API")
 

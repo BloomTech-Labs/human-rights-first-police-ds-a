@@ -1,5 +1,8 @@
+""" This Module Holds the Fast API to Launch the DS APP and API Calls"""
+
+from app.db import ForceRanks
 from random import choice
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,10 +25,15 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
-script_master = ScriptMaster()
+script_master = ScriptMaster()  # Scripts for the bot to pick from
 
 
 class InputString(BaseModel):
+    """
+    guarantees that the fields of the resultant model 
+    instance will conform to the field types defined on the model.
+    Documentation Here: https://pydantic-docs.helpmanual.io/usage/models/
+    """
     text: str
 
 
@@ -223,7 +231,7 @@ async def view_data():
     """ update and get first 5000 observations dump endpoint """
     await update()
 
-    first_5000 = DB.load_data_force_ranks()[:5000]
+    first_5000 = DB.get_table(ForceRanks)[:5000]
     return first_5000
 
 

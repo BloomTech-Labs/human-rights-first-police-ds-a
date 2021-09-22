@@ -1,9 +1,9 @@
 """Tools for modifying 'bot_scripts' table and script selection"""
 
-from app.scraper import DB
+from app.db import Database, BotScripts
 from random import random as rand
 
-
+DB = Database()
 class ScriptMaster():
 
     def __init__(self):
@@ -58,7 +58,7 @@ class ScriptMaster():
         """
         Uses functions from db.py as helper to increment the use_count
         """
-        old_count = DB.get_use_count(script_id)
+        old_count = DB.get_table(BotScripts.use_count,BotScripts.script_id, script_id)
         print(old_count)
         new_count = old_count[0][0] + 1
         DB.bump_use_count(script_id, new_count)

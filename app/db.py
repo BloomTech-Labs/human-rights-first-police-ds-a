@@ -5,20 +5,17 @@ This module should should hold everything related to the database including:
 
 from dotenv import load_dotenv, find_dotenv
 import os
-# connects to the Postgres database thats holds the scraped tweets
 
 from sqlalchemy.ext.declarative import declarative_base
 """ Find documentation for declaritive base here:
 https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/api.html#sqlalchemy.ext.declarative.declarative_base
 """
-from sqlalchemy import create_engine, inspect
-from sqlalchemy import select, update, func, and_
+from sqlalchemy import create_engine, inspect, select, update, func, and_
 from sqlalchemy import Column, Integer, String, Date, Float, Boolean, ForeignKey
 
 from typing import List, Dict
 
-from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 """ Find documentation for sessions here:
 https://docs.sqlalchemy.org/en/14/orm/session_basics.html#using-a-sessionmaker
 AND
@@ -132,15 +129,14 @@ class Conversations(Base):
 
 
 class Training(Base):
+    __tablename__ = "training"
 
-	__tablename__ = "training"
-
-	id = Column(Integer, primary_key=True)
-	tweets = Column(String)
-	labels = Column(Integer)
-
-	def __repr__(self):
-		return(
+    id = Column(Integer, primary_key=True)
+    tweets = Column(String)
+    labels = Column(Integer)
+    
+    def __repr__(self):
+        return(
 			"id:{}, tweets:{}, labels:{}").format(
 			self.id,
 			self.tweets,
@@ -272,70 +268,44 @@ class Database(object):
         return [i[0] for i in conversations_data.fetchall()]
 
 
-    def load_data_force_ranks(self):
-        """ gets all data from force_ranks"""
-        with self.Sessionmaker() as session:
-            query = select(ForceRanks)
-            force_ranks_data = session.execute(query).fetchall()
+    # def get_script_ids(self, convo_node):
+    #     """ Gets the script_ids associated with the given convo_node """
+    #     with self.Sessionmaker() as session:
+    #         query = (
+    #             select(BotScripts.script_id).
+    #             where(BotScripts.convo_node == convo_node))
+    #         script_ids_data = session.execute(query).fetchall()
 
-        return force_ranks_data
-
-
-    def load_tweet_ids_force_ranks(self):
-        """ gets all tweet_ids from force_ranks """
-        with self.Sessionmaker() as session:
-            query = select(ForceRanks.tweet_id)
-            force_ranks_data = session.execute(query).fetchall()
-
-        return force_ranks_data
+    #     return script_ids_data
 
 
-    """
-    The following functions are for Twitter bot script selection and testing.
+    # def get_script(self, script_id):
+    #     """ Gets a script from 'bot_scripts' table for given script_id(s) """
+    #     with self.Sessionmaker() as session:
+    #         query = (
+    #             select(BotScripts.script).
+    #             where(BotScripts.script_id == script_id)
+    #             )
 
-    ---Labs 38-----
-    You may have some clean up to do here
-    ---------------
-    """
+    #         script_data = session.execute(query).fetchall()
 
-    def get_script_ids(self, convo_node):
-        """ Gets the script_ids associated with the given convo_node """
-        with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.script_id).
-                where(BotScripts.convo_node == convo_node))
-            script_ids_data = session.execute(query).fetchall()
-
-        return script_ids_data
+    #     return script_data
 
 
-    def get_script(self, script_id):
-        """ Gets a script from 'bot_scripts' table for given script_id(s) """
-        with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.script).
-                where(BotScripts.script_id == script_id)
-                )
-
-            script_data = session.execute(query).fetchall()
-
-        return script_data
-
-
-    def get_all_script_data(self):
-        """
-        Selects all from 'bot_scripts'
+    # def get_all_script_data(self):
+    #     """
+    #     Selects all from 'bot_scripts'
         
-        ---Labs 38 ---> you may need to tailor the output type here for populating
-        the Script Management modal, consult you front end peeps
+    #     ---Labs 38 ---> you may need to tailor the output type here for populating
+    #     the Script Management modal, consult you front end peeps
 
-        https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
-        """
-        with self.Sessionmaker() as session:
-            query = select(BotScripts)
-            bot_scripts_data = session.execute(query).fetchall()
+    #     https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+    #     """
+    #     with self.Sessionmaker() as session:
+    #         query = select(BotScripts)
+    #         bot_scripts_data = session.execute(query).fetchall()
 
-        return bot_scripts_data
+    #     return bot_scripts_data
 
 
     def insert_script(self, new_script):
@@ -360,17 +330,17 @@ class Database(object):
             session.commit()
 
 
-    def get_use_count(self, script_id):
-        """ Gets the use_count from 'bot_scripts' for given script_id """
-        with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.use_count).
-                where(BotScripts.script_id == script_id)
-            )
+    # def get_use_count(self, script_id):
+    #     """ Gets the use_count from 'bot_scripts' for given script_id """
+    #     with self.Sessionmaker() as session:
+    #         query = (
+    #             select(BotScripts.use_count).
+    #             where(BotScripts.script_id == script_id)
+    #         )
 
-            use_count = session.execute(query).fetchall()
+    #         use_count = session.execute(query).fetchall()
 
-        return use_count
+    #     return use_count
 
 
     def get_counts(self, script_id):
@@ -411,9 +381,8 @@ class Database(object):
         with self.Sessionmaker() as session:
             count_dict = {"use_count": new_count}
             query = (
-                update(BotScripts).
-                where(BotScripts.script_id == script_id).
-                values(**count_dict)
+                update(BotScripts).where(
+                    BotScripts.script_id == script_id).values(**count_dict)
             )
 
             session.execute(query)
@@ -434,9 +403,6 @@ class Database(object):
 
             session.execute(query)
             session.commit()
-
-
-    """-----------------------------------------------------------------------"""
 
 
     def insert_data_force_ranks(self, data: List[Dict]):
@@ -591,29 +557,19 @@ class Database(object):
             session.commit()
 
 
-    def convert_invocation_conversations(self, data):
+    def convert_invocation_conversations(self, data):  # TODO Refactor 
         """ converts invocation dict to correct column names """
         clean_data = {}
-        try:
-            clean_data['incident_id'] = data.incident_id
-        except KeyError:
-            pass
-        try:
-            clean_data['form'] = data.form
-        except KeyError:
-            pass
-        try:
-            clean_data['link'] = data.link
-        except KeyError:
-            pass
-        try:
-            clean_data['tweet_id'] = data.tweet_id
-        except KeyError:
-            pass
-        try:
-            clean_data['tweeter_id'] = data.user_name
-        except KeyError:
-            pass
+
+        clean_data['incident_id'] = data.incident_id
+        
+        clean_data['form'] = data.form
+
+        clean_data['link'] = data.link
+
+        clean_data['tweet_id'] = data.tweet_id
+
+        clean_data['tweeter_id'] = data.user_name
 
         return clean_data
 
@@ -622,42 +578,24 @@ class Database(object):
         """ Converts form dict to correct column names """
         clean_data = {}
         clean_data['form'] = 1
-        try:
-            clean_data['incident_id'] = data.incident_id
-        except KeyError:
-            pass
-        try:
-            clean_data['tweet_id'] = data.tweet_id
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_city'] = data.city
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_state'] = data.state
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_lat'] = data.lat
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_long'] = data.long
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_date'] = data.incident_date
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_force_rank'] = data.force_rank
-        except KeyError:
-            pass
-        try:
-            clean_data['tweeter_id'] = data.user_name
-        except KeyError:
-            pass
+
+        clean_data['incident_id'] = data.incident_id
+
+        clean_data['tweet_id'] = data.tweet_id
+
+        clean_data['root_tweet_city'] = data.city
+ 
+        clean_data['root_tweet_state'] = data.state
+
+        clean_data['root_tweet_lat'] = data.lat
+
+        clean_data['root_tweet_long'] = data.long
+
+        clean_data['root_tweet_date'] = data.incident_date
+
+        clean_data['root_tweet_force_rank'] = data.force_rank
+
+        clean_data['tweeter_id'] = data.user_name
 
         return clean_data
 
@@ -712,3 +650,22 @@ class Database(object):
             pass
         else:
             print('You must answer Y or N to complete this function.')
+            
+
+    def get_table(self, table_name, table_col_name = None, column_value = None):
+        """ 
+        This function will select tables based on the table name.
+        This function is a helper function used to help in 
+        SQLAlchemy queries. 
+        """
+        with self.Sessionmaker() as session:
+            if column_value is not None:
+                query = (select(table_name).where(
+                    table_col_name == column_value))
+                data = session.execute(query).fetchall()
+                return data
+
+            else:
+                query = (select(table_name))
+                data = session.execute(query).fetchall()
+                return data
