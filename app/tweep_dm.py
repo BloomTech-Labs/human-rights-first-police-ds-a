@@ -1,3 +1,5 @@
+""" The purpose of this module is to set up tweepy for dms"""
+
 import json
 import os
 import re
