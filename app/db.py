@@ -270,44 +270,54 @@ class Database(object):
         return [i[0] for i in conversations_data.fetchall()]
 
 
-    # def get_script_ids(self, convo_node):
-    #     """ Gets the script_ids associated with the given convo_node """
-    #     with self.Sessionmaker() as session:
-    #         query = (
-    #             select(BotScripts.script_id).
-    #             where(BotScripts.convo_node == convo_node))
-    #         script_ids_data = session.execute(query).fetchall()
+    def get_script_ids(self, convo_node):
+        """
+        Gets the script_ids associated with the given convo_node 
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table().
+        """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.script_id).
+                where(BotScripts.convo_node == convo_node))
+            script_ids_data = session.execute(query).fetchall()
 
-    #     return script_ids_data
-
-
-    # def get_script(self, script_id):
-    #     """ Gets a script from 'bot_scripts' table for given script_id(s) """
-    #     with self.Sessionmaker() as session:
-    #         query = (
-    #             select(BotScripts.script).
-    #             where(BotScripts.script_id == script_id)
-    #             )
-
-    #         script_data = session.execute(query).fetchall()
-
-    #     return script_data
+        return script_ids_data
 
 
-    # def get_all_script_data(self):
-    #     """
-    #     Selects all from 'bot_scripts'
+    def get_script(self, script_id):
+        """ 
+        Gets a script from 'bot_scripts' table for given script_id(s)
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table(). 
+        """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.script).
+                where(BotScripts.script_id == script_id)
+                )
+
+            script_data = session.execute(query).fetchall()
+
+        return script_data
+
+
+    def get_all_script_data(self):
+        """
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table().
+        Selects all from 'bot_scripts'
         
-    #     ---Labs 38 ---> you may need to tailor the output type here for populating
-    #     the Script Management modal, consult you front end peeps
+        ---Labs 38 ---> you may need to tailor the output type here for populating
+        the Script Management modal, consult you front end peeps
 
-    #     https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
-    #     """
-    #     with self.Sessionmaker() as session:
-    #         query = select(BotScripts)
-    #         bot_scripts_data = session.execute(query).fetchall()
+        https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
+        """
+        with self.Sessionmaker() as session:
+            query = select(BotScripts)
+            bot_scripts_data = session.execute(query).fetchall()
 
-    #     return bot_scripts_data
+        return bot_scripts_data
 
 
     def insert_script(self, new_script):
@@ -332,21 +342,27 @@ class Database(object):
             session.commit()
 
 
-    # def get_use_count(self, script_id):
-    #     """ Gets the use_count from 'bot_scripts' for given script_id """
-    #     with self.Sessionmaker() as session:
-    #         query = (
-    #             select(BotScripts.use_count).
-    #             where(BotScripts.script_id == script_id)
-    #         )
+    def get_use_count(self, script_id):
+        """ 
+        Gets the use_count from 'bot_scripts' for given script_id
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table(). 
+        """
+        with self.Sessionmaker() as session:
+            query = (
+                select(BotScripts.use_count).
+                where(BotScripts.script_id == script_id)
+            )
 
-    #         use_count = session.execute(query).fetchall()
+            use_count = session.execute(query).fetchall()
 
-    #     return use_count
+        return use_count
 
 
     def get_counts(self, script_id):
-        """ Gets use_count and positive_count from 'bot_scripts' given script_id """
+        """
+        Gets use_count and positive_count from 'bot_scripts' given script_id 
+        """
         with self.Sessionmaker() as session:
             query = (
                 select(BotScripts.use_count, BotScripts.positive_count).

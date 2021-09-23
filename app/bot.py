@@ -1,4 +1,4 @@
-""" This module should hold everything related to the twitterbot """
+""" This module holds everything related to the twitterbot """
 
 from dotenv import load_dotenv, find_dotenv
 
@@ -24,11 +24,11 @@ welcome_message_id = 1440023048313131014
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
-	1: "Hey, This is a test.",
-	10: 'Click link below to start conversation ',
-	11: 'Please fill out this form ',
-	13: 'Thanks anyway!'
-} # These are the conversation statements the bot executes based on the number
+	1: "Hey, I'm working on the behalf of Blue Witness, can you give me more information regarding the incident you tweeted?",
+	10: "Click link below to start conversation.",
+	11: "Thank you for your contribution. Please fill out this form.",
+	13: "Thanks anyway!"
+} # These are the conversation statements the bot executes based on the max step of the conversation
 
 
 def send_form(data: Dict):
@@ -49,7 +49,7 @@ def send_form(data: Dict):
 	to_insert['checks_made'] = 1
 	
 
-	if to_insert['form'] == 0:
+	if to_insert['form'] == 0:  # if the form request is 0; send tweet w/ form link and updates conversations table
 		to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[1] + '\n' + form_link
 		to_insert['reachout_template'] = conversation_tree[1]
 		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
@@ -58,7 +58,7 @@ def send_form(data: Dict):
 		to_insert['sent_tweet_id'] = status.id
 		DB.insert_data_conversations([to_insert])
 
-	else:
+	else: # If the form is 1; Twitter bot sends dm request to start conversation to gather info. 
 		to_insert['tweet_text'] = '@' + to_insert['tweeter_id'] + ' ' + conversation_tree[10] + '\n' + dm_link
 		to_insert['reachout_template'] = conversation_tree[10]
 		status = twitter.respond_to_tweet(to_insert['tweet_id'], to_insert['tweet_text'])
@@ -71,7 +71,7 @@ def send_form(data: Dict):
 def receive_form(data: Dict):
 	""" 
 	Takes input from user/POST
-	AND inputs into conversations 
+	AND inputs into conversations table
 	if no root_id with conversation_status 7 
 	"""
 
@@ -84,7 +84,10 @@ def receive_form(data: Dict):
 
 
 def advance_all():
-	""" Advances all conversations based on highest conversations status per tweet_id """
+	"""
+	Advances all conversations based on highest 
+	conversations status per tweet_id in Conversations Table
+	"""
 	to_advance = DB.get_to_advance()
 	for threads in to_advance:
 		advance_conversation(threads.tweet_id)
@@ -124,13 +127,17 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 	api = create_api()
 	root_conversation = DB.get_conversation_root(root_id)
 	max = -1
+	
 
-	for steps in root_conversation:
+	for steps in root_conversation: # This checks every item in Conversations Table by tweet id
 
 		if steps.conversation_status > max:
+			# TODO Refactor so table doesn't have multiple database inputs for one conversation
 			max = steps.conversation_status
 			max_step = steps
 	if max_step.conversation_status == 0 and max_step.form == 0:
+		# Technically our form handles this with quick replies
+		# This is really for conversation processing 
 		status = twitter.respond_to_tweet(max_step.tweet_id, conversation_tree[1])
 		to_insert = [{
 			"tweet_id":root_id,
@@ -161,11 +168,12 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 		}]
 
 		DB.insert_data_conversations(to_insert)
+	# Possible TODO Classification or NLP Model can be implemented here for tweet responses	
 	elif max_step.conversation_status == 1 and max_step.form == 0:
 
 		test = twitter.get_replies(bot_name, max_step.sent_tweet_id, max_step.tweeter_id)
 		if test:
-			if test.full_text == '@' + bot_name + 'Yes': ### INSERT CLASSIFICATION MODEL CALL HERE ####
+			if test.full_text == '@' + bot_name + 'Yes':
 				status = twitter.respond_to_tweet(test.id_str,conversation_tree[2])
 				to_insert = [{
 					"tweet_id":root_id,
@@ -188,55 +196,10 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 				end_conversation(root_id, max_step, received_tweet_id=test.id_str)
 		else:
 			pass
-	elif max_step.conversation_status == 2 and max_step.form == 0:
-
-		other_person = api.get_status(max_step.received_tweet_id)
-		other_person = other_person.user.screen_name
-		test = twitter.get_replies(bot_name, max_step.sent_tweet_id, other_person)
-
-		if test is not None:
-
-			if test.full_text:
-				location = find_location(test.fill_text.lstrip("@" + bot_name + " "))
-
-				if location['status'] == "OK":
-					loc_list = location['candidates'][0]['formatted_address'].split(',')
-
-					if len(loc_list) == 4:
-						city = loc_list[1]
-						state = loc_list[2].split()[0]
-
-					if len(loc_list) == 3:
-						city = loc_list[0]
-						state = loc_list[1].split()[0]
-
-					latitude = location['candidates'][0]['geometry']['location']['lat']
-					longitude = location['candidates'][0]['geometry']['location']['lng']
-					update_data = {"city":city,"state":state,"lat":latitude,"long":longitude}
-					DB.update_force_rank_location(update_data, root_id)
-					status = twitter.respond_to_tweet(max_step.tweeter_id, conversation_tree[3])
-					to_insert = [{
-						"tweet_id":root_id,
-						"sent_tweet_id":max_step.sent_tweet_id,
-						"received_tweet_id":test.id_str,
-						"in_reply_to_id":test.in_reply_to_status_id,
-						"tweeter_id":test.in_reply_to_screen_name,
-						"conversation_status":5,
-						"tweet_text":test.full_text,
-						"checks_made":(max_step.checks_made+1),
-						"reachout_template":conversation_tree[3],
-						"form":0
-					}]
-
-					DB.insert_data_conversations(to_insert)
-				elif location['status'] == "ZERO_RESULTS":
-					pass
-					return end_conversation(root_id, max_step)
-		else:
-			pass
-
+	
 	elif max_step.conversation_status == 5:
 		DB.update_conversation_checks(root_id)
+	# Begins Conversation Flow 
 	elif max_step.conversation_status == 10:
 
 		processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id, tweet_id=max_step.tweet_id, incident_id=max_step.incident_id, convo_tree_txt=conversation_tree[11])
@@ -255,7 +218,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 			DB.insert_data_conversations([to_insert])
 
 	elif max_step.conversation_status == 12:
-		# This is where we've received a response, shouldn't do anything here, only return when asked for directly through endpoint
+		# This is a holder for approvals on the admin end
 		DB.update_conversation_checks(root_id)
 
 	elif max_step.conversation_status == 13:

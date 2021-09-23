@@ -2,7 +2,7 @@
 
 import json
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import tweepy
 from dotenv import find_dotenv, load_dotenv
@@ -13,13 +13,13 @@ find_dotenv()
 
 quick_reply_option = [
     {
-        'label': 'Yes',
+        'label': 'Yes, I can assist further.',
         'description': 'Yes I can provide more information',
         'metadata': 'confirm_yes'
     },
     {
-        'label': 'No',
-        'description': 'No I can\'t provide more information',
+        'label': 'No, I can not assist further.',
+        'description': 'No I am unable to provide more information',
         'metadata': 'confirm_no'
     }
 ]
@@ -178,7 +178,6 @@ def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: s
     dms = api.list_direct_messages()
     screen_name = str(get_user_id(user_id)[0]['user_id'])
 
-    dm_list = []
     for dm in dms:
 
         if dm.message_create['sender_id'] == screen_name:
