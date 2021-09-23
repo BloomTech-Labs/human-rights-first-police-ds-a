@@ -1,6 +1,6 @@
 """ This Module Holds the Fast API to Launch the DS APP and API Calls"""
 
-from app.db import ForceRanks
+from app.db import ForceRanks, ScriptMaster
 from random import choice
 from typing import Dict, List, Optional
 
@@ -12,7 +12,6 @@ from pydantic import BaseModel
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 
-from app.script_tracking import ScriptMaster
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard

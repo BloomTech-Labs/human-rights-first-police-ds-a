@@ -1,3 +1,5 @@
+""" This module is responsible for Tweepy API Calls """
+
 import json
 import os
 from typing import Dict, List, Tuple
@@ -22,38 +24,44 @@ quick_reply_option = [
     }
 ]
 
-# Tweepy setup
-
 
 def create_api():
-    """ Creates tweepy api """
-    consumer_key = os.getenv("CONSUMER_KEY")
-    consumer_secret = os.getenv("CONSUMER_SECRET")
-    access_key = os.getenv("ACCESS_KEY")
-    access_secret = os.getenv("ACCESS_SECRET")
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_key, access_secret)
+    """ 
+    Creates tweepy api 
+    Documentation Here:
+    https://docs.tweepy.org/en/stable/api.html
+    """
+    auth = tweepy.OAuthHandler(
+        os.getenv("CONSUMER_KEY"),
+        os.getenv("CONSUMER_SECRET")
+        )
+    auth.set_access_token(
+        os.getenv("ACCESS_KEY"), 
+        os.getenv("ACCESS_SECRET")
+        )
     api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
 
-
     api.verify_credentials()
-
     return api
 
 
 def manual_twitter_api():
+    """ This function creates a manual connection to Tweepy"""
     manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                         os.getenv("CONSUMER_SECRET"),
                                         os.getenv("ACCESS_KEY"),
-                                        os.getenv("ACCESS_SECRET"))
+                                        os.getenv("ACCESS_SECRET")
+                                        )
     return manual_twitter_auth
 
 
-# Users
 
 def user_tweets(user_id: str) -> List[Dict]:
-    """ FOR TESTING, get one user's tweets for tweet_ids to test response """
+    """ 
+    Returns the 20 most recent statuses posted from the 
+    authenticating user or the user specified. 
+    """
     api = create_api()
     temp = api.user_timeline(screen_name=('{}').format(user_id),
                              count=200,

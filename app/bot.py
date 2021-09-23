@@ -11,9 +11,9 @@ import app.twitter as twitter
 from app.twitter import create_api
 
 load_dotenv(find_dotenv())
-DB = Database
+DB = Database()
 
-MAP_API = os.getenv("MAP_API")
+MAP_API = os.getenv("MAP_API") # Maps to Google Places API
 
 bot_name = os.getenv("BOT_NAME")  # Need bot name
 
@@ -25,24 +25,18 @@ dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_m
 
 conversation_tree = {
 	1: "Hey, This is a test.",
-	# 2:"Do you want to fill out a form or talk with the bot",
-	# 3:"What is the location where this incident took place?",
-	# 4:"What is the date",
-	# 5:"what is the force_rank, here are the options",
-	# 6:"Thanks! You're helping (align incentives)!",
-	# 7:"Thanks anyway!",
-	# 8:"Please fill out this form ",
-
 	10: 'Click link below to start conversation ',
 	11: 'Please fill out this form ',
 	13: 'Thanks anyway!'
-}
+} # These are the conversation statements the bot executes based on the number
 
 
 def send_form(data: Dict):
 	"""
-	Sends form to user in tweet or starts bot conversation based on form,
-	inserts to conversations table
+	Sends additional information form to user in tweet 
+	OR starts a conversation with user using bot
+	AND Progresses through conversation based on the
+	step counted by the Postgres Table
 	"""
 
 	to_insert = DB.convert_invocation_conversations(data)
@@ -75,7 +69,11 @@ def send_form(data: Dict):
 
 
 def receive_form(data: Dict):
-	""" Takes input from user/POST inputs into conversations if no root_id with conversation_status 7 """
+	""" 
+	Takes input from user/POST
+	AND inputs into conversations 
+	if no root_id with conversation_status 7 
+	"""
 
 	to_insert = DB.convert_form_conversations(data)
 	to_insert['tweet_id'] = int(to_insert['tweet_id'])
