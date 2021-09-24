@@ -17,7 +17,6 @@ from app.script_tracking import ScriptMaster
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
-
 To use these interactive docs:
 - Click on an endpoint below
 - Click the **Try it out** button
@@ -107,7 +106,6 @@ async def post_script(data: new_script):
     implemented or the Administrator needs to have the option to input the ID
     given by Twitter when authorizing a welcome script for the Blue Witness
     Twitter Account outside of this API
-
     https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
     """
     script_master.add_script(data)
@@ -118,7 +116,6 @@ async def deactivate(script_id):
     """
     Endpoint for the front end to utilize in the toggle funtion on the
     Script Management modal see:
-
     https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
     """
     script_master.deactivate_script(script_id)
@@ -129,7 +126,6 @@ async def activate(script_id):
     """
     Endpoint for the front end to utilize in the toggle funtion on the
     Script Management modal see:
-
     https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
     """
     script_master.activate_script(script_id)
@@ -194,7 +190,8 @@ async def to_approve():
     return needs_approval
 
 
-@repeat_every(seconds=60 * 60)
+@app.on_event("startup")
+@repeat_every(seconds=60 * 4)
 @app.get("/advance-all/")
 async def advance_all():
     """ advances all conversations, repeats every hour, only one worker at a time """
