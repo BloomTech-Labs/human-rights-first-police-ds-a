@@ -440,19 +440,18 @@ class Database(object):
                 session.commit()
 
 
-    def insert_data_conversations(self, data: List[Dict]):
+    def insert_data_conversations(self, data):
         """ inserts data into conversations """
         with self.Sessionmaker() as session:
             last = select(func.max(Conversations.id))
             last_value = session.execute(last).fetchall()[0][0]
-            for i in range(len(data)):
-                if last_value is None:
-                    last_value = 0
+            if last_value is None:
+                last_value = 0
+            if data.id is None:
                 last_value += 1
-                data[i]['id'] = last_value
-                obj = Conversations(**data[i])
-                session.add(obj)
-                session.commit()
+            data.id = last_value
+            session.add(data)
+            session.commit()
 
 
     def update_tables(self, data, tweet_id, tablename):
@@ -577,43 +576,30 @@ class Database(object):
 
     def convert_invocation_conversations(self, data):  # TODO Refactor 
         """ converts invocation dict to correct column names """
-        clean_data = {}
+        clean_data = Conversations()
 
-        clean_data['incident_id'] = data.incident_id
-        
-        clean_data['form'] = data.form
-
-        clean_data['link'] = data.link
-
-        clean_data['tweet_id'] = data.tweet_id
-
-        clean_data['tweeter_id'] = data.user_name
+        clean_data.incident_id = data.incident_id
+        clean_data.form = data.form
+        clean_data.tweet_id = int(data.tweet_id)
+        clean_data.in_reply_to_id = data.user_name
 
         return clean_data
 
 
     def convert_form_conversations(self, data):
         """ Converts form dict to correct column names """
-        clean_data = {}
-        clean_data['form'] = 1
-
-        clean_data['incident_id'] = data.incident_id
-
-        clean_data['tweet_id'] = data.tweet_id
-
-        clean_data['root_tweet_city'] = data.city
- 
-        clean_data['root_tweet_state'] = data.state
-
-        clean_data['root_tweet_lat'] = data.lat
-
-        clean_data['root_tweet_long'] = data.long
-
-        clean_data['root_tweet_date'] = data.incident_date
-
-        clean_data['root_tweet_force_rank'] = data.force_rank
-
-        clean_data['tweeter_id'] = data.user_name
+        clean_data = Conversations()
+        
+        clean_data.form = 1
+        clean_data.incident_id = data.incident_id
+        clean_data.tweet_id = int(data.tweet_id)
+        clean_data.root_tweet_city = data.city
+        clean_data.root_tweet_state = data.state
+        clean_data.root_tweet_lat = data.lat
+        clean_data.root_tweet_long = data.long
+        clean_data.root_tweet_date = data.incident_date
+        clean_data.root_tweet_force_rank = data.force_rank
+        clean_data.tweeter_id = data.user_name
 
         return clean_data
 

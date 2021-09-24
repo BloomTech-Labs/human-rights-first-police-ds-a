@@ -56,7 +56,6 @@ def manual_twitter_api():
     return manual_twitter_auth
 
 
-
 def user_tweets(user_id: str) -> List[Dict]:
     """ 
     Returns the 20 most recent statuses posted from the 
