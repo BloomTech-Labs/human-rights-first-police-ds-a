@@ -1,5 +1,8 @@
+""" This Module Holds the Fast API to Launch the DS APP and API Calls"""
+
+from app.db import ForceRanks, ScriptMaster
 from random import choice
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,12 +11,6 @@ from pydantic import BaseModel
 
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
-
-from app.models import form_out, form_in, check, new_script
-
-from app.tweep_dm import form_tweet
-
-from app.script_tracking import ScriptMaster
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
@@ -26,9 +23,15 @@ To use these interactive docs:
 - Scroll down to see the Server response Code & Details
 """
 
-script_master = ScriptMaster()
+script_master = ScriptMaster()  # Scripts for the bot to pick from
+
 
 class InputString(BaseModel):
+    """
+    guarantees that the fields of the resultant model 
+    instance will conform to the field types defined on the model.
+    Documentation Here: https://pydantic-docs.helpmanual.io/usage/models/
+    """
     text: str
 
 
@@ -39,13 +42,57 @@ app = FastAPI(
     version="0.37.1",
 )
 
+# FastAPI Models
+
+
+class form_out(BaseModel):
+    form: int
+    incident_id: int
+    link: str
+    tweet_id: str
+    user_name: str
+
+
+class form_in(BaseModel):
+    city: str
+    state: str
+    confidence: Optional[float] = 0
+    description: str
+    force_rank: str
+    incident_date: str
+    incident_id: int
+    lat: Optional[float] = None
+    long: Optional[float] = None
+    src: List[str] = []
+    status: str
+    title: str
+    tweet_id: str
+    user_name: str
+
+
+class check(BaseModel):
+    tweet_id: str
+
+
+class new_script(BaseModel):
+	script_id: int
+	script: str
+	convo_node: int
+	use_count: Optional[int] = 0
+	positive_count: Optional[int] = 0
+	success_rate: Optional[float] = 0.0
+	active: Optional[bool] = True
+
 
 @app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
-    """ replies to a given tweet with a link, prompting a Twitter user to send a dm to our bot """
-    DB.update_tables({"status":"awaiting response"}, data.tweet_id, "ForceRanks")
+    """
+    replies to a given tweet with a link,
+    prompting a Twitter user to send a dm to our bot
+    """
+    DB.update_tables(
+        {"status":"awaiting response"}, data.tweet_id, "ForceRanks")
     bot.send_form(data)
-
 
 
 @app.post("/form-in/")
@@ -68,7 +115,6 @@ async def create_form_in(data: form_in):
     else:
         print(location['status'])
     bot.receive_form(data)
-
 
 
 @app.post("/approval-check/")
@@ -135,7 +181,7 @@ async def activate(script_id):
     script_master.activate_script(script_id)
 
 
-# Testing endpoint 
+# Testing endpoint
 @app.post("/bump-use-count/")
 async def add_one_to_use_count(script_id):
     """
@@ -149,7 +195,7 @@ async def add_one_to_use_count(script_id):
     script_master.add_to_use_count(script_id)
 
 
-# Testing endpoint 
+# Testing endpoint
 @app.post("/update-pos-count/")
 async def bump_pos_and_success_rate(script_id):
     """
@@ -183,7 +229,7 @@ async def view_data():
     """ update and get first 5000 observations dump endpoint """
     await update()
 
-    first_5000 = DB.load_data_force_ranks()[:5000]
+    first_5000 = DB.get_table(ForceRanks)[:5000]
     return first_5000
 
 
@@ -199,7 +245,6 @@ async def to_approve():
 async def advance_all():
     """ advances all conversations, repeats every hour, only one worker at a time """
     bot.advance_all()
-
 
 
 @app.on_event("startup")

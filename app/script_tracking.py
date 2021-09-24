@@ -1,17 +1,16 @@
 """Tools for modifying 'bot_scripts' table and script selection"""
 
-from app.scraper import DB
+from app.db import Database, BotScripts
 from random import random as rand
 
-
+DB = Database()
 class ScriptMaster():
 
     def __init__(self):
         self.convo_node_dict = {0: "welcome",  #needs revision when nodes are reworked
                                 10: "DM permission",
                                 11: "form invitation"
-                                } 
-
+                                }
 
     def add_script(self, data):
         """
@@ -34,7 +33,6 @@ class ScriptMaster():
 
         # DB.insert_script(data)
 
-
     def deactivate_script(script_ID):
         """
         Sets the active column for the given script_ID to False to deter the script
@@ -52,21 +50,18 @@ class ScriptMaster():
         # Update 'active' to False in 'bot_script' table for 'script_id'
         pass
 
-
     def activate_script(script_ID):
         # Update 'active' to True in 'bot_script' table for 'script_id'
         pass
-
 
     def add_to_use_count(script_id):
         """
         Uses functions from db.py as helper to increment the use_count
         """
-        old_count = DB.get_use_count(script_id)
+        old_count = DB.get_table(BotScripts.use_count,BotScripts.script_id, script_id)
         print(old_count)
         new_count = old_count[0][0] + 1
         DB.bump_use_count(script_id, new_count)
-
 
     def add_to_positive_count(script_id):
         """
@@ -80,8 +75,7 @@ class ScriptMaster():
         rate = pos / use
         DB.update_pos_and_success(script_id, pos, rate)
 
-
-    ### Functions for selection of scripts
+    # Functions for selection of scripts
     """ FUTURE update: add randomized functionality to choose between path-based
     script selection based on traning from the 'script_training' and 
     path-generating options (the latter exist below). Possibly set this up to occur
@@ -93,7 +87,6 @@ class ScriptMaster():
     said training take place on another optional instance (with the bot sentiment
     analysis) as memory on current instance is running low.
     """
-
 
     def choose_script(self, status):
         """

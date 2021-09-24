@@ -1,3 +1,5 @@
+""" The purpose of this module is to set up tweepy for dms"""
+
 import json
 import os
 import re
@@ -8,14 +10,14 @@ import tweepy
 from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session
 
-
-
 load_dotenv()
+
 
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"),
                            os.getenv("CONSUMER_SECRET"))
 auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
 api = tweepy.API(auth, wait_on_rate_limit=True)
+
 
 manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("CONSUMER_SECRET"),
@@ -24,7 +26,6 @@ manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
 
 
 # witt_rowen welcome message = 1424836133582774286
-
 
 
 # This will change and instead pull the welcome messages from twitter but for now storing locally for ease of use
@@ -121,8 +122,6 @@ list_of_A_B_txts = [
 ]
 
 
-
-
 def get_tweet_id(tweet_url):
     """Get the tweet ID from the tweet URL"""
     tweet_id = re.search(r'\d+$', tweet_url)
@@ -198,7 +197,6 @@ def reply_to_tweet(tweet_id,
                       auto_populate_reply_metadata=True)
 
 
-
 def get_initial_dms(user_id: List[str]) -> List[Dict]:
     """Function to get DMs sent from button in tweet"""
     dms = api.list_direct_messages()
@@ -229,4 +227,3 @@ def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
     # Need to get a list of dm_ids from database to then check for responses
 
     pass
-

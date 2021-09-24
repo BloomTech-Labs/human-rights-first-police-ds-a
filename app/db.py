@@ -1,15 +1,227 @@
+"""
+This module should should hold everything related to the database including:
+- Connections
+- Queries
+And now Bot Scripts
+"""
+
 from dotenv import load_dotenv, find_dotenv
+from random import random as rand
+import os
+
+from sqlalchemy.ext.declarative import declarative_base
+""" Find documentation for declaritive base here:
+https://docs.sqlalchemy.org/en/13/orm/extensions/declarative/api.html#sqlalchemy.ext.declarative.declarative_base
+"""
+from sqlalchemy import create_engine, inspect, select, update, func, and_
+from sqlalchemy import Column, Integer, String, Date, Float, Boolean, ForeignKey
+
+from typing import List, Dict
+
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session
+""" Find documentation for sessions here:
+https://docs.sqlalchemy.org/en/14/orm/session_basics.html#using-a-sessionmaker
+AND
+https://docs.sqlalchemy.org/en/14/orm/contextual.html
+"""
+
 load_dotenv(find_dotenv())
 
-import json, os
-from typing import Tuple, List, Dict
+db_url = os.getenv("DB_URL")
 
-from sqlalchemy import create_engine, select, insert, update, func, inspect, and_
-from sqlalchemy.orm import sessionmaker, scoped_session
+engine = create_engine(db_url, echo=True)  # create connection to the database to perform SQL operations, echo will generate the activity log
 
-from app.models import ForceRanks, Conversations, BotScripts, ScriptTesting, Tags, Sources
+Base = declarative_base()  # describes db tables and then defines classes that will be mapped to those tables
 
-db_url = os.getenv('DB_URL')
+
+class ForceRanks(Base):
+    """
+    Describe the Postgres tables AND
+    Map a path to those tables
+    Documentation for Base:
+    https://tinyurl.com/ac5tf34w
+    """
+    __tablename__ = "force_ranks"  # name formatting has to be this way
+
+    incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    incident_date = Column(Date, nullable=False)
+    tweet_id = Column(String(255))
+    user_name = Column(String(255))
+    description = Column(String(10000), nullable=False)
+    city = Column(String(255), default=None)
+    state = Column(String(255), default=None)
+    lat = Column(Float)
+    long = Column(Float)
+    title = Column(String(255), default=None)
+    force_rank = Column(String(255), default=None)
+    status = Column(String(255), default='pending', nullable=False)
+    confidence = Column(Float)
+    tags = Column(String(255))
+    src = Column(String(8000))
+    children = relationship("Conversations", back_populates="parent")
+
+    def __repr__(self):
+        return "incident_id:{}, incident_date:{}, tweet_id:{}, user_name:{}, description:{}, city:{}, state:{}, lat:{}, long:{}, title:{}, force_rank:{}, status:{}, confidence:{}, tags:{}, src:{}".format(
+            self.incident_id,
+            self.incident_date,
+            self.tweet_id,
+            self.user_name,
+            self.description,
+            self.city,
+            self.state,
+            self.lat,
+            self.long,
+            self.title,
+            self.force_rank,
+            self.status,
+            self.confidence,
+            self.tags,
+            self.src
+            )
+
+
+class Conversations(Base):
+
+    __tablename__ = "conversations"
+
+    id = Column(Integer, primary_key=True)
+    incident_id = Column(Integer, ForeignKey('force_ranks.incident_id'))
+    tweet_id = Column(String(255))
+    form = Column(Integer)
+    root_tweet_city = Column(String(255))
+    root_tweet_state = Column(String(255))
+    root_tweet_lat = Column(Float)
+    root_tweet_long = Column(Float)
+    root_tweet_date = Column(Date)
+    root_tweet_force_rank = Column(String(255), default=None)
+    sent_tweet_id = Column(String)
+    received_tweet_id = Column(String)
+    in_reply_to_id = Column(String)
+    tweeter_id = Column(String)
+    conversation_status = Column(Integer)
+    tweet_text = Column(String)
+    checks_made = Column(Integer)
+    reachout_template = Column(String)
+    isChecked = Column(Boolean)
+    parent = relationship("ForceRanks", back_populates="children")
+
+    def __repr__(self):
+        return(
+            "id:{}, tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
+            self.id,
+            self.tweet_id,
+            self.form,
+            self.root_tweet_city,
+            self.root_tweet_state,
+            self.root_tweet_lat,
+            self.root_tweet_long,
+            self.root_tweet_date,
+            self.root_tweet_force_rank,
+            self.sent_tweet_id,
+            self.received_tweet_id,
+            self.in_reply_to_id,
+            self.tweeter_id,
+            self.conversation_status,
+            self.tweet_text,
+            self.checks_made,
+            self.reachout_template,
+            self.isChecked
+        )
+
+
+class Training(Base):
+    __tablename__ = "training"
+
+    id = Column(Integer, primary_key=True)
+    tweets = Column(String)
+    labels = Column(Integer)
+    
+    def __repr__(self):
+        return(
+			"id:{}, tweets:{}, labels:{}").format(
+			self.id,
+			self.tweets,
+			self.labels
+			)
+
+
+class BotScripts(Base):
+
+    __tablename__ = "bot_scripts"
+
+    script_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+    script = Column(String(255))
+    convo_node = Column(Integer)
+    use_count = Column(Integer)
+    positive_count = Column(Integer)
+    success_rate = Column(Float)
+    active = Column(Boolean)
+
+    def __repr__(self):
+        return (
+            "script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, success_rate{}, active:{}").format(
+            self.script_id,
+            self.script,
+            self.convo_node,
+            self.use_count,
+            self.positive_count,
+            self.success_rate,
+            self.active
+            )
+
+
+class ScriptTesting(Base):
+
+	__tablename__ = "script_testing"
+
+	incident_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	script_path = Column(String(100))
+	success = Column(Boolean)
+
+	
+	def __repr__(self):
+		return (
+			"incident_id:{}, script_path:{}, success:{}").format(
+			self.incident_id,
+			self.script_path,
+			self.success
+			)
+
+
+class Sources(Base):
+
+	__tablename__ = "sources"
+
+	source_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	incident_id = Column(Integer, ForeignKey("force_ranks.incident_id"))
+	source = Column(String(255))
+
+	
+	def __repr__(self):
+		return (
+			"source_id:{}, incident_id:{}, sources:{}").format(
+			self.source_id,
+			self.incident_id,
+			self.source
+			)
+
+
+class Tags(Base):
+
+	__tablename__ = "tags"
+
+	tags_id = Column(Integer, primary_key=True, nullable=False, unique=True)
+	incident_id = Column(Integer, ForeignKey("force_ranks.incident_id"))
+	tag = Column(String(40))
+
+	
+	def __repr__(self):
+		return (
+			"tags_id:{}, incident_id:{}, sources:{}").format(
+			self.tags_id,
+			self.incident_id,
+			self.tag
+			)
 
 
 class Database(object):
@@ -58,34 +270,12 @@ class Database(object):
         return [i[0] for i in conversations_data.fetchall()]
 
 
-    def load_data_force_ranks(self):
-        """ gets all data from force_ranks"""
-        with self.Sessionmaker() as session:
-            query = select(ForceRanks)
-            force_ranks_data = session.execute(query).fetchall()
-
-        return force_ranks_data
-
-
-    def load_tweet_ids_force_ranks(self):
-        """ gets all tweet_ids from force_ranks """
-        with self.Sessionmaker() as session:
-            query = select(ForceRanks.tweet_id)
-            force_ranks_data = session.execute(query).fetchall()
-
-        return force_ranks_data
-
-
-    """
-    The following functions are for Twitter bot script selection and testing.
-
-    ---Labs 38-----
-    You may have some clean up to do here
-    ---------------
-    """
-
     def get_script_ids(self, convo_node):
-        """ Gets the script_ids associated with the given convo_node """
+        """
+        Gets the script_ids associated with the given convo_node 
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table().
+        """
         with self.Sessionmaker() as session:
             query = (
                 select(BotScripts.script_id).
@@ -96,7 +286,11 @@ class Database(object):
 
 
     def get_script(self, script_id):
-        """ Gets a script from 'bot_scripts' table for given script_id(s) """
+        """ 
+        Gets a script from 'bot_scripts' table for given script_id(s)
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table(). 
+        """
         with self.Sessionmaker() as session:
             query = (
                 select(BotScripts.script).
@@ -110,6 +304,8 @@ class Database(object):
 
     def get_all_script_data(self):
         """
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table().
         Selects all from 'bot_scripts'
         
         ---Labs 38 ---> you may need to tailor the output type here for populating
@@ -147,7 +343,11 @@ class Database(object):
 
 
     def get_use_count(self, script_id):
-        """ Gets the use_count from 'bot_scripts' for given script_id """
+        """ 
+        Gets the use_count from 'bot_scripts' for given script_id
+        ONLY KEPT FOR FUTURE USE.
+        This funtion can be replaced with get_table(). 
+        """
         with self.Sessionmaker() as session:
             query = (
                 select(BotScripts.use_count).
@@ -160,7 +360,9 @@ class Database(object):
 
 
     def get_counts(self, script_id):
-        """ Gets use_count and positive_count from 'bot_scripts' given script_id """
+        """
+        Gets use_count and positive_count from 'bot_scripts' given script_id 
+        """
         with self.Sessionmaker() as session:
             query = (
                 select(BotScripts.use_count, BotScripts.positive_count).
@@ -197,9 +399,8 @@ class Database(object):
         with self.Sessionmaker() as session:
             count_dict = {"use_count": new_count}
             query = (
-                update(BotScripts).
-                where(BotScripts.script_id == script_id).
-                values(**count_dict)
+                update(BotScripts).where(
+                    BotScripts.script_id == script_id).values(**count_dict)
             )
 
             session.execute(query)
@@ -222,9 +423,6 @@ class Database(object):
             session.commit()
 
 
-    """-----------------------------------------------------------------------"""
-
-
     def insert_data_force_ranks(self, data: List[Dict]):
         """ inserts data into force_ranks """
         with self.Sessionmaker() as session:
@@ -242,19 +440,18 @@ class Database(object):
                 session.commit()
 
 
-    def insert_data_conversations(self, data: List[Dict]):
+    def insert_data_conversations(self, data):
         """ inserts data into conversations """
         with self.Sessionmaker() as session:
             last = select(func.max(Conversations.id))
             last_value = session.execute(last).fetchall()[0][0]
-            for i in range(len(data)):
-                if last_value is None:
-                    last_value = 0
+            if last_value is None:
+                last_value = 0
+            if data.id is None:
                 last_value += 1
-                data[i]['id'] = last_value
-                obj = Conversations(**data[i])
-                session.add(obj)
-                session.commit()
+            data.id = last_value
+            session.add(data)
+            session.commit()
 
 
     def update_tables(self, data, tweet_id, tablename):
@@ -377,73 +574,32 @@ class Database(object):
             session.commit()
 
 
-    def convert_invocation_conversations(self, data):
+    def convert_invocation_conversations(self, data):  # TODO Refactor 
         """ converts invocation dict to correct column names """
-        clean_data = {}
-        try:
-            clean_data['incident_id'] = data.incident_id
-        except KeyError:
-            pass
-        try:
-            clean_data['form'] = data.form
-        except KeyError:
-            pass
-        try:
-            clean_data['link'] = data.link
-        except KeyError:
-            pass
-        try:
-            clean_data['tweet_id'] = data.tweet_id
-        except KeyError:
-            pass
-        try:
-            clean_data['tweeter_id'] = data.user_name
-        except KeyError:
-            pass
+        clean_data = Conversations()
+
+        clean_data.incident_id = data.incident_id
+        clean_data.form = data.form
+        clean_data.tweet_id = int(data.tweet_id)
+        clean_data.in_reply_to_id = data.user_name
 
         return clean_data
 
 
     def convert_form_conversations(self, data):
         """ Converts form dict to correct column names """
-        clean_data = {}
-        clean_data['form'] = 1
-        try:
-            clean_data['incident_id'] = data.incident_id
-        except KeyError:
-            pass
-        try:
-            clean_data['tweet_id'] = data.tweet_id
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_city'] = data.city
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_state'] = data.state
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_lat'] = data.lat
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_long'] = data.long
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_date'] = data.incident_date
-        except KeyError:
-            pass
-        try:
-            clean_data['root_tweet_force_rank'] = data.force_rank
-        except KeyError:
-            pass
-        try:
-            clean_data['tweeter_id'] = data.user_name
-        except KeyError:
-            pass
+        clean_data = Conversations()
+        
+        clean_data.form = 1
+        clean_data.incident_id = data.incident_id
+        clean_data.tweet_id = int(data.tweet_id)
+        clean_data.root_tweet_city = data.city
+        clean_data.root_tweet_state = data.state
+        clean_data.root_tweet_lat = data.lat
+        clean_data.root_tweet_long = data.long
+        clean_data.root_tweet_date = data.incident_date
+        clean_data.root_tweet_force_rank = data.force_rank
+        clean_data.tweeter_id = data.user_name
 
         return clean_data
 
@@ -498,3 +654,148 @@ class Database(object):
             pass
         else:
             print('You must answer Y or N to complete this function.')
+            
+
+    def get_table(self, table_name, table_col_name = None, column_value = None):
+        """ 
+        This function will select tables based on the table name.
+        This function is a helper function used to help in 
+        SQLAlchemy queries. 
+        """
+        with self.Sessionmaker() as session:
+            if column_value is not None:
+                query = (select(table_name).where(
+                    table_col_name == column_value))
+                data = session.execute(query).fetchall()
+                return data
+
+            else:
+                query = (select(table_name))
+                data = session.execute(query).fetchall()
+                return data
+
+
+class ScriptMaster():
+    """Tools for modifying 'bot_scripts' table and script selection"""
+
+    def __init__(self):
+        self.convo_node_dict = {0: "welcome",  #needs revision when nodes are reworked
+                                10: "DM permission",
+                                11: "form invitation"
+                                }
+
+    def add_script(self, data):
+        """
+        Updates the bot_scripts table with new row passing the given script
+        and indicated conversation node into their respective columns. Sets the
+        'use_count' and 'positive_count' columns for this row to the default of 0,
+        'success_rate' column defaults to 0.0, and 'active' defaults True.
+        Auto generates a new 'script_ID' incrementally for scripts all
+        conversation nodes except 'welcome' which will need to use a helper
+        function which authenticates the welcome message with Twitter and generates
+        a different ID.
+        """
+
+        if data.script_id != 0:
+            # data['script_id'] =  # Use id from Twitter auth function (to be written or grabbed from Brody O.)
+            pass
+        else:
+            # data['script_id'] = # Auto generate the next incremental id
+            pass
+
+        # Database.insert_script(data)
+
+    def deactivate_script(script_ID):
+        """
+        Sets the active column for the given script_ID to False to deter the script
+        from future use. Originally a "delete_script" function was conceived, but
+        the potential need for more data on past script testing led to this
+        function being employed instead.
+
+        ----Labs 38 ---
+        I suggest following our flow of creating helper function(s) in db.py to 
+        update 'bot_scripts' for the activate and deactivate functions.
+        Then check endpoints in main.py to test this and set up the FE for connecting
+        the modal in Admin dashboard.
+        """
+
+        # Update 'active' to False in 'bot_script' table for 'script_id'
+        pass
+
+    def activate_script(script_ID):
+        # Update 'active' to True in 'bot_script' table for 'script_id'
+        pass
+
+    def add_to_use_count(script_id):
+        """
+        Uses functions from db.py as helper to increment the use_count
+        """
+        old_count = Database.get_table(BotScripts.use_count,BotScripts.script_id, script_id)
+        print(old_count)
+        new_count = old_count[0][0] + 1
+        Database.bump_use_count(script_id, new_count)
+
+    def add_to_positive_count(script_id):
+        """
+        Uses functions from db.py as helper to increment the positive_count
+        """
+        data = Database.get_counts(script_id)
+        use = data[0][0]
+        pos = data[0][1]
+
+        pos += 1
+        rate = pos / use
+        Database.update_pos_and_success(script_id, pos, rate)
+
+    # Functions for selection of scripts
+    """ FUTURE update: add randomized functionality to choose between path-based
+    script selection based on traning from the 'script_training' and 
+    path-generating options (the latter exist below). Possibly set this up to occur
+    automatically whence results from traing sessions of path-based data are available.
+
+    Also consider setting up testing to occur automatically whence
+    sufficient training data becomes available. Also consider scheduling automatic
+    training per a given number of data points received thereafter. Reccomend having
+    said training take place on another optional instance (with the bot sentiment
+    analysis) as memory on current instance is running low.
+    """
+
+    def choose_script(self, status):
+        """
+        Used to select a script for use by the twitter bot given a conversation node.
+        Returns a tuple containing the script and its id to be used by the Twitter bot.
+        The script for the conversation and the script_id to be used in another two
+        function calls within the bot to update the use_count in 'bot_scripts' when
+        the bot send the message as well as updating the path in 'script_testing' after
+        the bot pairs this script_id with an incident_id.
+        
+        -----
+        In a future implementation try switching between choosing a random script and 
+        choosing the better of two as originally coded.
+        -----
+
+        """
+
+        # Pull the list of scripts for a convo_node given
+        script_data = Database.get_scripts_per_node(self.convo_node_dict[status])
+
+        # Randomly select two script objects
+        l = len(script_data)
+        x = int(str(rand())[-6:])
+        y = int(str(rand())[-6:])
+        a = x % l
+        b = y % l
+
+        # Make conditional for selecting the best of two if use counts are high enough
+        if script_data[a][2] > 100 and script_data[b][2] > 100:
+            if script_data[a][3] >= script_data[b][3]:
+                use = a
+            else:
+                use = b
+        else:
+            if x >= y:
+                use = a
+            else:
+                use = b
+        
+        return (script_data[use][0], script_data[use][1])
