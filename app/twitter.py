@@ -10,7 +10,6 @@ from requests_oauthlib import OAuth1Session
 
 find_dotenv()
 
-
 quick_reply_option = [
     {
         'label': 'Yes, I can assist further.',

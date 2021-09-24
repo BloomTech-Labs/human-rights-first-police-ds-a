@@ -21,6 +21,7 @@ bot_id = 1436057566807674897
 
 welcome_message_id = 1440023048313131014
 
+
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
 conversation_tree = {
@@ -29,6 +30,7 @@ conversation_tree = {
 	11: "Thank you for your contribution. Please fill out this form.",
 	13: "Thanks anyway!"
 } # These are the conversation statements the bot executes based on the max step of the conversation
+
 
 
 def send_form(data: Dict):
@@ -112,6 +114,7 @@ def end_conversation(root_id: int, max_step: List, received_tweet_id=None):
 		max_step.reachout_template = conversation_tree[4]
 
 		DB.insert_data_conversations(max_step)
+
 	else:
 		pass
 
@@ -166,14 +169,15 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 				max_step.reachout_template = conversation_tree[2]
 				
 				DB.insert_data_conversations(max_step)
+
 				return test
 			elif test.full_text == "@" + bot_name + 'No':                           ### INSERT CLASSIFICATION MODEL CALL HERE ####
 				end_conversation(root_id, max_step, received_tweet_id=test.id_str)
 			else:                                                                   ### INSERT CLASSIFICATION MODEL HERE (MAYBE CASE)
 				end_conversation(root_id, max_step, received_tweet_id=test.id_str)
 		else:
-			pass
-	
+			pass	
+
 	elif max_step.conversation_status == 5:
 		DB.update_conversation_checks(root_id)
 	# Begins Conversation Flow 
@@ -188,6 +192,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 			max_step.conversation_status = processed_dms['conversation_status']
 
 			DB.insert_data_conversations(max_step)
+
 
 	elif max_step.conversation_status == 12:
 		# This is a holder for approvals on the admin end

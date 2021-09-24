@@ -12,7 +12,6 @@ from pydantic import BaseModel
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 
-
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
 
