@@ -17,6 +17,7 @@ from app.script_tracking import ScriptMaster
 
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
+
 To use these interactive docs:
 - Click on an endpoint below
 - Click the **Try it out** button
