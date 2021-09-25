@@ -1,3 +1,5 @@
+""" The purpose of this module is to set up tweepy for dms"""
+
 import json
 import os
 import re
@@ -7,8 +9,6 @@ import requests
 import tweepy
 from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session
-
-
 
 load_dotenv()
 
@@ -22,9 +22,7 @@ manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("ACCESS_KEY"),
                                     os.getenv("ACCESS_SECRET"))
 
-
 # witt_rowen welcome message = 1424836133582774286
-
 
 
 # This will change and instead pull the welcome messages from twitter but for now storing locally for ease of use
@@ -47,12 +45,12 @@ list_of_welcome_messages = [
                         {
                             "label": "Yes",
                             "metadata": "Yes",
-                            #"description": "Yes"
+                            # "description": "Yes"
                         },
                         {
                             "label": "No",
                             "metadata": "No",
-                            #"description": "Open Handed (Arm Holds & Pushing)"
+                            # "description": "Open Handed (Arm Holds & Pushing)"
                         }
                     ]
                 }
@@ -62,7 +60,7 @@ list_of_welcome_messages = [
         },
         'apps': {
             '21602950': {
-                #'id': '21602950',
+                # 'id': '21602950',
                 'id': '1335727237400694784',
                 'name': 'RowenWitt'
             }
@@ -121,8 +119,6 @@ list_of_A_B_txts = [
 ]
 
 
-
-
 def get_tweet_id(tweet_url):
     """Get the tweet ID from the tweet URL"""
     tweet_id = re.search(r'\d+$', tweet_url)
@@ -145,7 +141,6 @@ def form_tweet(tweet_source: str, information_requested: str) -> Dict:
 def create_welcome_message(name: str,
                            msg_txt: str,
                            quick_replies: List[Dict] = None):
-
     url = "https://api.twitter.com/1.1/direct_messages/welcome_messages/new.json"
     if quick_replies:
         payload = json.dumps({
@@ -160,6 +155,7 @@ def create_welcome_message(name: str,
                 }
             }
         })
+
     else:
         payload = json.dumps({
             "welcome_message": {
@@ -198,7 +194,6 @@ def reply_to_tweet(tweet_id,
                       auto_populate_reply_metadata=True)
 
 
-
 def get_initial_dms(user_id: List[str]) -> List[Dict]:
     """Function to get DMs sent from button in tweet"""
     dms = api.list_direct_messages()
@@ -227,6 +222,4 @@ def send_clarification_dm(dm_id, A_B_txt, quick_replies: List[Dict] = None, ):
 def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
     """ Function to get DMs after initial response """
     # Need to get a list of dm_ids from database to then check for responses
-
     pass
-
