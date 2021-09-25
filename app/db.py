@@ -449,7 +449,7 @@ class Database(object):
                 last_value = 0
             if data.id is None:
                 last_value += 1
-            data.id = last_value
+                data.id = last_value
             session.add(data)
             session.commit()
 

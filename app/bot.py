@@ -125,8 +125,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 	root_conversation = DB.get_conversation_root(root_id)
 
 	for steps in root_conversation: # This checks every item in Conversations Table by tweet id
-
-		max_step = steps
+			max_step = steps
 	if max_step.conversation_status == 0 and max_step.form == 0:
 		# Technically our form handles this with quick replies
 		# This is really for conversation processing 
@@ -194,12 +193,12 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 			DB.insert_data_conversations(max_step)
 
 
-	elif max_step.conversation_status == 12:
-		# This is a holder for approvals on the admin end
-		DB.update_conversation_checks(root_id)
+		elif max_step.conversation_status == 12:
+			# This is a holder for approvals on the admin end
+			DB.update_conversation_checks(root_id)
 
-	elif max_step.conversation_status == 13:
-		DB.update_conversation_checks(root_id)
+		elif max_step.conversation_status == 13:
+			DB.update_conversation_checks(root_id)
 
 
 def clean_query_string(string: str) -> str:
