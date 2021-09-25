@@ -1,6 +1,8 @@
+""" This module is responsible for Tweepy API Calls """
+
 import json
 import os
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 import tweepy
 from dotenv import find_dotenv, load_dotenv
@@ -8,52 +10,56 @@ from requests_oauthlib import OAuth1Session
 
 find_dotenv()
 
-
 quick_reply_option = [
     {
-        'label': 'Yes',
+        'label': 'Yes, I can assist further.',
         'description': 'Yes I can provide more information',
         'metadata': 'confirm_yes'
     },
     {
-        'label': 'No',
-        'description': 'No I can\'t provide more information',
+        'label': 'No, I can not assist further.',
+        'description': 'No I am unable to provide more information',
         'metadata': 'confirm_no'
     }
 ]
 
-# Tweepy setup
-
 
 def create_api():
-    """ Creates tweepy api """
-    consumer_key = os.getenv("CONSUMER_KEY")
-    consumer_secret = os.getenv("CONSUMER_SECRET")
-    access_key = os.getenv("ACCESS_KEY")
-    access_secret = os.getenv("ACCESS_SECRET")
-    auth = tweepy.OAuthHandler(consumer_key, consumer_secret)
-    auth.set_access_token(access_key, access_secret)
+    """ 
+    Creates tweepy api 
+    Documentation Here:
+    https://docs.tweepy.org/en/stable/api.html
+    """
+    auth = tweepy.OAuthHandler(
+        os.getenv("CONSUMER_KEY"),
+        os.getenv("CONSUMER_SECRET")
+    )
+    auth.set_access_token(
+        os.getenv("ACCESS_KEY"),
+        os.getenv("ACCESS_SECRET")
+    )
     api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
 
-
     api.verify_credentials()
-
     return api
 
 
 def manual_twitter_api():
+    """ This function creates a manual connection to Tweepy"""
     manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                         os.getenv("CONSUMER_SECRET"),
                                         os.getenv("ACCESS_KEY"),
-                                        os.getenv("ACCESS_SECRET"))
+                                        os.getenv("ACCESS_SECRET")
+                                        )
     return manual_twitter_auth
 
 
-# Users
-
 def user_tweets(user_id: str) -> List[Dict]:
-    """ FOR TESTING, get one user's tweets for tweet_ids to test response """
+    """ 
+    Returns the 20 most recent statuses posted from the 
+    authenticating user or the user specified. 
+    """
     api = create_api()
     temp = api.user_timeline(screen_name=('{}').format(user_id),
                              count=200,
@@ -90,7 +96,6 @@ def get_user_id(screen_name: str) -> List[Dict]:
 
 
 # Tweets
-
 def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
     """ Gets replies to a tweet (tweet_id) originally posted by a user (user_id) replies from replier """
     api = create_api()
@@ -110,7 +115,6 @@ def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
             break
 
 
-
 def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
     """ Function to reply to a certain tweet_id """
     api = create_api()
@@ -118,8 +122,6 @@ def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
 
 
 # Direct messaging
-
-
 def create_welcome_message(name: str,
                            msg_txt: str,
                            quick_replies: List[Dict] = None):  # Use quick_reply_option
@@ -133,11 +135,12 @@ def create_welcome_message(name: str,
                     "text": msg_txt,
                     "quick_reply": {
                         "type": "options",
-                                "options": quick_replies
+                        "options": quick_replies
                     }
                 }
             }
         })
+
     else:
         payload = json.dumps({
             "welcome_message": {
@@ -152,7 +155,6 @@ def create_welcome_message(name: str,
     }
 
     response = manual_twitter_auth.post(url, headers=headers, data=payload)
-
     welcome_response = json.loads(response.text)
     print(welcome_response)
 
@@ -170,19 +172,19 @@ def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: s
     dms = api.list_direct_messages()
     screen_name = str(get_user_id(user_id)[0]['user_id'])
 
-    dm_list = []
     for dm in dms:
-
         if dm.message_create['sender_id'] == screen_name:
             data = {}
+            print(dm.message_create['message_data'])
+            print("")
+            print(dm.message_create['message_data']['quick_reply_response'])
 
             if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
-
                 form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
-
                 api.send_direct_message(screen_name, response_txt)
                 data['conversation_status'] = 11
+
             else:
                 api.send_direct_message(screen_name, convo_tree_txt)
                 data['conversation_status'] = 13
@@ -192,5 +194,4 @@ def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: s
             data["tweeter_id"] = dm.message_create['sender_id'],
             data["dm_text"] = dm.message_create['message_data']['text'],
             data["quick_reply_response"] = dm.message_create['message_data']['quick_reply_response']['metadata']
-
             return data
