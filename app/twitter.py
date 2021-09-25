@@ -10,6 +10,7 @@ from requests_oauthlib import OAuth1Session
 
 find_dotenv()
 
+# Used in creating create_welcome_message as the quick reply options
 quick_reply_option = [
     {
         'label': 'Yes, I can assist further.',
