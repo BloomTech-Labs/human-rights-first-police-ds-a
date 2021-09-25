@@ -22,18 +22,10 @@ This project has been worked on by many Lambda labs teams over the past 10 month
 
 ## Twitter Bot
 - Invoked through ```main.py.form_out```
-- Needs to run ```main.py.advance_all``` to advance each conversation 1 step
+- Needs to run ```main.py.advance_all``` to advance each conversation 1 step (This is automated to run every 4 minutes in one of the pull requests)
 - ```main.py.advance_all``` runs every hour automatically, distributed lock means only one worker runs at a time
 - Code fragments left to allow Twitter conversational bot to be updated
 - Checks made is being updated for each check, there should be an implementation for exponential backoff on check frequency. Look up exponential backoff.
-
-</br>
-
-## Redis Cache
-- Manages distributed lock for scheduled Twitter jobs
-- Needs keys in .env file (obviously not in repo)
-- Ensures only one worker completes twitter based jobs at a time
-- Could be expanded to admin DB updates
 
 </br>
 
@@ -95,10 +87,20 @@ Old and currently undeployed code is stored in the `archive` folder of the repo.
 For those interested in improving upon the data science codebase, here are some recommendations: 
 - Explore the efficacy of separating the AWS 'postgres' database into two different databases. The first database would be the primary database for the Twitter scraper outputs and DS would redesign the schema to fit their needs. The second database would be the primary database for backend and they could extract data from the DS database and fit the schema to their needs. Currently, the primary AWS data table 'force_ranks' is accessible in both the data science and backend codebases.
 - Develop an evidence-based strategy to maximize the effectiveness of our Twitter queries in the scraper feature. Currently, the Twitter API has a 500 tweet limit per scraping. This would include developing metrics to compare querying methods. Metrics would allow us to determine which methods return a greater percentage of tweets describing police use-of-force in the United States.
+- Stakeholder would like for us to filter out incidents based on location before the incident is put into the database. This means we would have to try to gather location from the initial tweet. The scraper function may need to be re-worked slightly to accomidate this.
 
 </br>
 </br>
 </br>
+
+# Labs 38 Contributors
+| [Christopher Chilton](https://github.com/ChristopherKchilton) | [Ian Knight](https://github.com/iknight7000) | [Gabriel Nosek](https://github.com/gaben3722) | [Michael Carrier](https://github.com/mikecarrier4)
+| :---: | :---: | :---: |:---: | 
+| [<img src="https://avatars.githubusercontent.com/u/81948139?v=4" width = "200" />](https://github.com/ChristopherKchilton) | [<img src="https://avatars.githubusercontent.com/u/80796830?v=4" width = "200" />](https://github.com/iknight7000) | [<img src="https://avatars.githubusercontent.com/u/81334768?v=4" width = "200" />](https://github.com/gaben3722) | [<img src="https://avatars.githubusercontent.com/u/63622826?v=4" width = "200" />](https://github.com/mikecarrier4) |
+| DS Project Manager | Data Engineer | Machine Learning Engineer | Machine Learning Ops |
+|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ChristopherKchilton) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/iknight7000) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/gaben3722) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/mikecarrier4) |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/christopher-chilton-a15aa492/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ianknight480/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/gabe-nosek/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/michael-carrier-42b4ba19b/) |
+
 
 # Labs 37 Contributors
 
@@ -110,27 +112,6 @@ For those interested in improving upon the data science codebase, here are some 
 | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ryan-fikejs/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/imanifaith/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/joshua-elamin-2b2ba9209/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/rowenwitt/) |
 
 </br>
-
-| [Brody Osterbuhr](https://github.com/BOsterbuhr) | [Rhia George](https://github.com/rhiag) | [Andrew Haney](https://github.com/Andrew-Haney) | [Murat Benbanaste](https://github.com/mbenbanaste)
-| :---: | :---: | :---: |:---: | 
-| [<img src="https://avatars.githubusercontent.com/u/34581663?v=4" width = "200" />](https://github.com/BOsterbuhr) | [<img src="https://avatars.githubusercontent.com/u/64170131?v=4" width = "200" />](https://github.com/rhiag) | [<img src="https://avatars.githubusercontent.com/u/77994575?v=4" width = "200" />](https://github.com/Andrew-Haney) | [<img src="https://avatars.githubusercontent.com/u/77026689?v=4" width = "200" />](https://github.com/mbenbanaste) |
-| Data Scientist: ML Ops | Machine Learning Engineer | Data Scientist: ML Ops | Machine Learning Engineer |
-|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/BOsterbuhr) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/rhiag) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Andrew-Haney) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/mbenbanaste) |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/bosterbuhr/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/rhia-george/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/andrew-haney1/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/murat-benbanaste/) |
-
-</br>
-</br>
-</br>
-
-# Labs 36 Contributors
-
-| [Hillary Khan](https://github.com/hillarykhan) | [Marcos Morales](https://github.com/MarcosMorales2011) | [Eric Park](https://github.com/ericyeonpark)
-| :---: | :---: | :---: |
-| [<img src="https://avatars.githubusercontent.com/u/35015753?v=4" width = "200" />](https://github.com/hillarykhan) | [<img src="https://avatars.githubusercontent.com/u/40769305?v=4" width = "200" />](https://github.com/MarcosMorales2011) | [<img src="https://avatars.githubusercontent.com/u/77295658?v=4" width = "200" />](https://github.com/ericyeonpark) |
-| Data Scientist | Data Scientist | Data Scientist |
-|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/hillarykhan) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/MarcosMorales2011) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ericyeonpark) |
-| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/hillary-khan/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/marcos-morales-bb7307181/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ericyjpark/) |
-
 </br>
 </br>
 </br>
@@ -162,12 +143,16 @@ For those interested in improving upon the data science codebase, here are some 
 In order for the app to function correctly, the user must set up their own environment variables. There should be a .env file containing the following:
 
 	1. Twitter API Connection - through tweepy - use HRF twitter developer account.
-		a. CONSUMER_KEY
-		b. CONSUMER_SECRET
-		c. ACCESS_KEY
-		d. ACCESS_SECRET
+		a. CONSUMER_KEY=
+		b. CONSUMER_SECRET=
+		c. ACCESS_KEY=
+		d. ACCESS_SECRET=
 	2. Postgres database connection 
-		a. DB_URL
+		a. DB_URL= <Currently pointing at production Database>
+	3. Map Api credentials
+		a. MAP_API= <Credentials for Google Maps API >
+	4. Bot variables
+		a. BOT_NAME= <This can be anything. Currently being stored in env but can move locations>
 
 </br>  
 
