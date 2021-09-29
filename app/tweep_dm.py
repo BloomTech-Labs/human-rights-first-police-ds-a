@@ -12,10 +12,12 @@ from requests_oauthlib import OAuth1Session
 
 load_dotenv()
 
+
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"),
                            os.getenv("CONSUMER_SECRET"))
 auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
 api = tweepy.API(auth, wait_on_rate_limit=True)
+
 
 manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("CONSUMER_SECRET"),

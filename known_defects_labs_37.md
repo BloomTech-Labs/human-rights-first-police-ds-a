@@ -57,3 +57,11 @@ Import Note for Twitter Bot: **(Labs37: not sure this is relevant anoymore due t
 	not re-process tweet replies more than once
 	The replies column is stored as a string in the database but is actually a list with elements seperated by :.:.:
 	Two helper functions are used to convert the string into a list and append a new item then convert back into string
+
+
+# Append
+## TODO
+- Refactoring efforts
+- dynamic dispatch and why it's needed for scalability
+- envioronment variables condensed into one place 
+- credentials needed for testing

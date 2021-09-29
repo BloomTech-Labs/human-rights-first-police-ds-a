@@ -1,20 +1,21 @@
+""" This module holds the Tweepy scraper that scrapes Twitter for incidents """
+
 import datetime as dt
-import os
+
 from typing import Dict, List, Tuple
 
 import tweepy
 from dotenv import find_dotenv, load_dotenv
 
-from app.db import Database
+from app.db import Database, ForceRanks
 from app.franken_bert import FrankenBert
 from app.twitter import create_api
 
-
 load_dotenv(find_dotenv())
-
 
 DB = Database()
 
+# Make sure you grab the model from the drive
 model = FrankenBert("app/saved_model")
 
 
@@ -35,7 +36,7 @@ def frankenbert_rank(user_input: str) -> Tuple[str, str, Tuple[int, float]]:
 
 def deduplicate(new_data: List[Dict]) -> List[Dict]:
     """ Checks for duplicates and omits them """
-    old_data = DB.load_tweet_ids_force_ranks()
+    old_data = DB.get_table(ForceRanks.tweet_id)
     data = []
     for new in new_data:
         if all(new['tweet_id'] != old.tweet_id for old in old_data):

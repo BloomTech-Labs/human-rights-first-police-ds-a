@@ -22,6 +22,7 @@ a conversation.
 """
 bot_id = 1436057566807674897
 welcome_message_id = 1440023048313131014
+
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
  # These are the conversation statements the bot executes based on the max step of the conversation
@@ -195,7 +196,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 
     elif max_step.conversation_status == 13:
         DB.update_conversation_checks(root_id)
-
+        
 
 def clean_query_string(string: str) -> str:
     """ Cleans string of ' 's and 's """
