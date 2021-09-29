@@ -12,6 +12,14 @@ from pydantic import BaseModel
 from app.scraper import deduplicate, frankenbert_rank, scrape_twitter, DB
 import app.bot as bot
 
+"""
+Fast API and Middleware Documentation:
+https://fastapi.tiangolo.com/tutorial/cors/
+
+Pydantic BaseModel:
+https://pydantic-docs.helpmanual.io/usage/models/
+"""
+
 description = """
 DS API for the Human Rights First Blue Witness Dashboard
 
@@ -28,7 +36,7 @@ script_master = ScriptMaster()  # Scripts for the bot to pick from
 
 class InputString(BaseModel):
     """
-    guarantees that the fields of the resultant model 
+    guarantees that the fields of the resultant model
     instance will conform to the field types defined on the model.
     Documentation Here: https://pydantic-docs.helpmanual.io/usage/models/
     """
@@ -42,9 +50,8 @@ app = FastAPI(
     version="0.37.1",
 )
 
+
 # FastAPI Models
-
-
 class form_out(BaseModel):
     form: int
     incident_id: int
@@ -165,8 +172,6 @@ async def post_script(data: new_script):
     implemented or the Administrator needs to have the option to input the ID
     given by Twitter when authorizing a welcome script for the Blue Witness
     Twitter Account outside of this API
-
-    https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
     """
     script_master.add_script(data)
 
@@ -176,8 +181,6 @@ async def deactivate(script_id):
     """
     Endpoint for the front end to utilize in the toggle funtion on the
     Script Management modal see:
-
-    https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
     """
     script_master.deactivate_script(script_id)
 
@@ -187,8 +190,6 @@ async def activate(script_id):
     """
     Endpoint for the front end to utilize in the toggle funtion on the
     Script Management modal see:
-
-    https://whimsical.com/script-selection-2xBPsVkfFyfdjMTPQVUHfQ
     """
     script_master.activate_script(script_id)
 
@@ -198,7 +199,7 @@ async def activate(script_id):
 async def add_one_to_use_count(script_id):
     """
     This is a testing endpoint used to ensure that the functions for
-    incrementing use counts in the 'bot_scripts' table work properly. No one 
+    incrementing use counts in the 'bot_scripts' table work properly. No one
     will need to grab these endpoints for anything else. The scriptmaster
     function called below will actually be called as a helper function within
     bot.py when the Twitter bot has selected a script for use and sent a

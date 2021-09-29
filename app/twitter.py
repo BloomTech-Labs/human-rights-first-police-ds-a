@@ -10,6 +10,7 @@ from requests_oauthlib import OAuth1Session
 
 find_dotenv()
 
+# Used in creating create_welcome_message as the quick reply options
 quick_reply_option = [
     {
         'label': 'Yes, I can assist further.',
@@ -33,14 +34,13 @@ def create_api():
     auth = tweepy.OAuthHandler(
         os.getenv("CONSUMER_KEY"),
         os.getenv("CONSUMER_SECRET")
-        )
+    )
     auth.set_access_token(
-        os.getenv("ACCESS_KEY"), 
+        os.getenv("ACCESS_KEY"),
         os.getenv("ACCESS_SECRET")
-        )
+    )
     api = tweepy.API(auth, wait_on_rate_limit=True,
                      wait_on_rate_limit_notify=True)
-
     api.verify_credentials()
     return api
 
@@ -96,7 +96,6 @@ def get_user_id(screen_name: str) -> List[Dict]:
 
 
 # Tweets
-
 def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
     """ Gets replies to a tweet (tweet_id) originally posted by a user (user_id) replies from replier """
     api = create_api()
@@ -116,7 +115,6 @@ def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
             break
 
 
-
 def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
     """ Function to reply to a certain tweet_id """
     api = create_api()
@@ -124,8 +122,6 @@ def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
 
 
 # Direct messaging
-
-
 def create_welcome_message(name: str,
                            msg_txt: str,
                            quick_replies: List[Dict] = None):  # Use quick_reply_option
@@ -139,11 +135,12 @@ def create_welcome_message(name: str,
                     "text": msg_txt,
                     "quick_reply": {
                         "type": "options",
-                                "options": quick_replies
+                        "options": quick_replies
                     }
                 }
             }
         })
+
     else:
         payload = json.dumps({
             "welcome_message": {
@@ -158,7 +155,6 @@ def create_welcome_message(name: str,
     }
 
     response = manual_twitter_auth.post(url, headers=headers, data=payload)
-
     welcome_response = json.loads(response.text)
     print(welcome_response)
 
@@ -177,25 +173,19 @@ def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: s
     screen_name = str(get_user_id(user_id)[0]['user_id'])
 
     for dm in dms:
-
         if dm.message_create['sender_id'] == screen_name:
             data = {}
-
-            if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
-
+            if dm.message_create['message_data']['quick_reply_response'].get('metadata') == 'confirm_yes':
                 form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
-
                 api.send_direct_message(screen_name, response_txt)
                 data['conversation_status'] = 11
             else:
                 api.send_direct_message(screen_name, convo_tree_txt)
                 data['conversation_status'] = 13
-
             data['tweet_id'] = tweet_id
             data["reachout_template"] = dm.initiated_via['welcome_message_id'],
             data["tweeter_id"] = dm.message_create['sender_id'],
             data["dm_text"] = dm.message_create['message_data']['text'],
             data["quick_reply_response"] = dm.message_create['message_data']['quick_reply_response']['metadata']
-
             return data
