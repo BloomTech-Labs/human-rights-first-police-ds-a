@@ -72,6 +72,11 @@ class form_in(BaseModel):
 
 class check(BaseModel):
     tweet_id: str
+	
+	
+class check_action(BaseModel):
+	incident_id : int
+	action: int
 
 
 class new_script(BaseModel):
