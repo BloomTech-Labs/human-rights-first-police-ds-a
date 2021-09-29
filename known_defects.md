@@ -24,7 +24,7 @@ For instance:
 - Bot scripts currently aren't being used because they have been created for future use.
 [Image of code for future use](https://drive.google.com/file/d/1LdySLFXbE2QyOP-4DkXD5-CpaT8VuJv0/view?usp=sharing) 
 - a few methods can be replaced with get_table()
-[Image of a couple of methonds](https://drive.google.com/file/d/1RWtHt6j_Yk8w3JMengM54rYl3PuM0R2G/view?usp=sharing). 
+[Image of a couple of methods](https://drive.google.com/file/d/1RWtHt6j_Yk8w3JMengM54rYl3PuM0R2G/view?usp=sharing). 
 - There are other tables that can be combined, but they are using a dictionary format due to sqlaclchemy. 
 
 A good place to start would be

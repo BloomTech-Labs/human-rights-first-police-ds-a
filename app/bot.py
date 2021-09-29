@@ -2,20 +2,24 @@
 
 from dotenv import load_dotenv, find_dotenv
 
-import requests, json, os
+import requests
+import json
+import os
 
 from typing import List, Dict
 
-from app.db import Database
+from app.db import BotScripts, Database
 import app.twitter as twitter
 from app.twitter import create_api
 
 load_dotenv(find_dotenv())
 DB = Database()
 
-MAP_API = os.getenv("MAP_API") # Maps to Google Places API
+# Maps to Google Places API
+MAP_API = os.getenv("MAP_API")
 
-bot_name = os.getenv("BOT_NAME")  # Need bot name
+# Need bot name
+bot_name = os.getenv("BOT_NAME")  
 
 bot_id = 1436057566807674897
 
@@ -24,18 +28,18 @@ welcome_message_id = 1440023048313131014
 
 dm_link = f'https://twitter.com/messages/compose?recipient_id={bot_id}&welcome_message_id={welcome_message_id}'
 
+# Conversation statements the bot executes based on the max step of the conversation
 conversation_tree = {
 	1: "Hey, I'm working on the behalf of Blue Witness, can you give me more information regarding the incident you tweeted?",
 	10: "Click link below to start conversation.",
 	11: "Thank you for your contribution. Please fill out this form.",
 	13: "Thanks anyway!"
-} # These are the conversation statements the bot executes based on the max step of the conversation
-
+	} 
 
 
 def send_form(data: Dict):
 	"""
-	Sends additional information form to user in tweet 
+	Sends additional information form to user in tweet
 	OR starts a conversation with user using bot
 	AND Progresses through conversation based on the
 	step counted by the Postgres Table
@@ -45,8 +49,8 @@ def send_form(data: Dict):
 	form_link = f'https://a.humanrightsfirst.dev/edit/{to_insert.incident_id}'
 	to_insert.checks_made = 1
 	
-
-	if to_insert.form == 0:  # if the form request is 0; send tweet w/ form link and updates conversations table
+	if to_insert.form == 0:
+		# if the form request is 0; send tweet w/ form link and updates conversations table conversation_tree[1]
 		to_insert.tweet_text = '@' + to_insert.in_reply_to_id + ' ' + conversation_tree[1] + '\n' + form_link
 		to_insert.reachout_template = conversation_tree[1]
 		status = twitter.respond_to_tweet(to_insert.tweet_id, to_insert.tweet_text)
@@ -55,7 +59,8 @@ def send_form(data: Dict):
 		to_insert.sent_tweet_id = status.id
 		DB.insert_data_conversations([to_insert])
 
-	else: # If the form is 1; Twitter bot sends dm request to start conversation to gather info. 
+	else:
+		# If the form is 1; Twitter bot sends dm request to start conversation to gather info. 
 		to_insert.tweet_text = '@' + to_insert.in_reply_to_id + ' ' + conversation_tree[10] + '\n' + dm_link
 		to_insert.reachout_template = conversation_tree[10]
 		status = twitter.respond_to_tweet(to_insert.tweet_id, to_insert.tweet_text)
@@ -66,10 +71,10 @@ def send_form(data: Dict):
 
 
 def receive_form(data: Dict):
-	""" 
+	"""
 	Takes input from user/POST
 	AND inputs into conversations table
-	if no root_id with conversation_status 7 
+	if no root_id with conversation_status 7
 	"""
 
 	to_insert = DB.convert_form_conversations(data)

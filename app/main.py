@@ -1,6 +1,6 @@
 """ This Module Holds the Fast API to Launch the DS APP and API Calls"""
 
-from app.db import ForceRanks, ScriptMaster
+from app.db import BotScripts, Database, ForceRanks
 from random import choice
 from typing import Dict, List, Optional
 
@@ -30,8 +30,6 @@ To use these interactive docs:
 - Click the **Execute** button
 - Scroll down to see the Server response Code & Details
 """
-
-script_master = ScriptMaster()  # Scripts for the bot to pick from
 
 
 class InputString(BaseModel):
@@ -82,13 +80,13 @@ class check(BaseModel):
 
 
 class new_script(BaseModel):
-	script_id: int
-	script: str
-	convo_node: int
-	use_count: Optional[int] = 0
-	positive_count: Optional[int] = 0
-	success_rate: Optional[float] = 0.0
-	active: Optional[bool] = True
+    script_id: int
+    script: str
+    convo_node: int
+    use_count: Optional[int] = 0
+    positive_count: Optional[int] = 0
+    success_rate: Optional[float] = 0.0
+    active: Optional[bool] = True
 
 
 @app.post("/form-out/", response_model=form_out)
@@ -161,16 +159,7 @@ async def post_script(data: new_script):
     given by Twitter when authorizing a welcome script for the Blue Witness
     Twitter Account outside of this API
     """
-    script_master.add_script(data)
-
-
-@app.post("/deactivate-script/")
-async def deactivate(script_id):
-    """
-    Endpoint for the front end to utilize in the toggle funtion on the
-    Script Management modal see:
-    """
-    script_master.deactivate_script(script_id)
+    BotScripts.add_script(data)
 
 
 @app.post("/activate-script/")
@@ -179,7 +168,7 @@ async def activate(script_id):
     Endpoint for the front end to utilize in the toggle funtion on the
     Script Management modal see:
     """
-    script_master.activate_script(script_id)
+    BotScripts.activate_script(script_id)
 
 
 # Testing endpoint
@@ -193,7 +182,7 @@ async def add_one_to_use_count(script_id):
     bot.py when the Twitter bot has selected a script for use and sent a
     tweet out.
     """
-    script_master.add_to_use_count(script_id)
+    BotScripts.add_to_use_count(script_id)
 
 
 # Testing endpoint
@@ -207,7 +196,7 @@ async def bump_pos_and_success_rate(script_id):
     bot.py when the Twitter bot has received feedback from a Twitter user and
     use this to bump the positve_count for the last script used.
     """
-    script_master.add_to_positive_count(script_id)
+    BotScripts.add_to_positive_count(script_id)
 
 
 @app.get("/select-all-from-bot-scripts/")

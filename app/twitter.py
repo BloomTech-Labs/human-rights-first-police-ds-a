@@ -11,7 +11,7 @@ from requests_oauthlib import OAuth1Session
 find_dotenv()
 
 quick_reply_option = [
-    {   
+    {
         'label': 'Yes, I can assist further.',
         'description': 'Yes I can provide more information',
         'metadata': 'confirm_yes'
@@ -25,8 +25,8 @@ quick_reply_option = [
 
 
 def create_api():
-    """ 
-    Creates tweepy api 
+    """
+    Creates tweepy api
     Documentation Here:
     https://docs.tweepy.org/en/stable/api.html
     """
