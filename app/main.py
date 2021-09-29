@@ -129,6 +129,13 @@ async def create_check(data: check):
     return out
 
 
+@app.post("/approval_reconciliation/")
+async def create_approval_reconciliation(data: check_action):
+    """ returns values of Conversations in table with the same incident_id"""
+    out = DB.get_root_twelve_majority(data.incident_id, data.action)
+    return out
+
+
 @app.post("/approve/")
 async def approve(data: check):
     """ updates ForceRanks with value of Conversations table row which is a form response """
