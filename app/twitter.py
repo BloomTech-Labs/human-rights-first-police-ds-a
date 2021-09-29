@@ -11,7 +11,7 @@ from requests_oauthlib import OAuth1Session
 find_dotenv()
 
 quick_reply_option = [
-    {
+    {   
         'label': 'Yes, I can assist further.',
         'description': 'Yes I can provide more information',
         'metadata': 'confirm_yes'
@@ -177,12 +177,9 @@ def process_dms(user_id: str, tweet_id: str, incident_id: str, convo_tree_txt: s
     screen_name = str(get_user_id(user_id)[0]['user_id'])
 
     for dm in dms:
-
         if dm.message_create['sender_id'] == screen_name:
             data = {}
-
             if dm.message_create['message_data']['quick_reply_response']['metadata'] == 'confirm_yes':
-
                 form_link = f'https://a.humanrightsfirst.dev/edit/{incident_id}'
                 response_txt = convo_tree_txt + '\n' + form_link
 
