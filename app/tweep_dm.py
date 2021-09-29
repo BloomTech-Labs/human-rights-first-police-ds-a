@@ -24,7 +24,6 @@ manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("ACCESS_KEY"),
                                     os.getenv("ACCESS_SECRET"))
 
-
 # witt_rowen welcome message = 1424836133582774286
 
 
@@ -48,12 +47,12 @@ list_of_welcome_messages = [
                         {
                             "label": "Yes",
                             "metadata": "Yes",
-                            #"description": "Yes"
+                            # "description": "Yes"
                         },
                         {
                             "label": "No",
                             "metadata": "No",
-                            #"description": "Open Handed (Arm Holds & Pushing)"
+                            # "description": "Open Handed (Arm Holds & Pushing)"
                         }
                     ]
                 }
@@ -63,7 +62,7 @@ list_of_welcome_messages = [
         },
         'apps': {
             '21602950': {
-                #'id': '21602950',
+                # 'id': '21602950',
                 'id': '1335727237400694784',
                 'name': 'RowenWitt'
             }
@@ -144,7 +143,6 @@ def form_tweet(tweet_source: str, information_requested: str) -> Dict:
 def create_welcome_message(name: str,
                            msg_txt: str,
                            quick_replies: List[Dict] = None):
-
     url = "https://api.twitter.com/1.1/direct_messages/welcome_messages/new.json"
     if quick_replies:
         payload = json.dumps({
@@ -159,6 +157,7 @@ def create_welcome_message(name: str,
                 }
             }
         })
+
     else:
         payload = json.dumps({
             "welcome_message": {
@@ -225,5 +224,4 @@ def send_clarification_dm(dm_id, A_B_txt, quick_replies: List[Dict] = None, ):
 def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
     """ Function to get DMs after initial response """
     # Need to get a list of dm_ids from database to then check for responses
-
     pass
