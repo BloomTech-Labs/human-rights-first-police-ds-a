@@ -79,6 +79,11 @@ class form_in(BaseModel):
 
 class check(BaseModel):
     tweet_id: str
+	
+	
+class check_action(BaseModel):
+	incident_id : int
+	action: int
 
 
 class new_script(BaseModel):
@@ -128,6 +133,13 @@ async def create_form_in(data: form_in):
 async def create_check(data: check):
     """ returns value of Conversations table row with given tweet_id """
     out = DB.get_root_twelve(data.tweet_id)
+    return out
+
+
+@app.post("/approval_reconciliation/")
+async def create_approval_reconciliation(data: check_action):
+    """ returns values of Conversations in table with the same incident_id"""
+    out = DB.get_root_twelve_majority(data.incident_id, data.action)
     return out
 
 
