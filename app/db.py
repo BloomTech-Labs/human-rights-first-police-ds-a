@@ -481,6 +481,37 @@ class Database(object):
         return check_data.fetchall()
 
 
+    def get_root_twelve_majority(self, root_id, action):
+        """ gets data on differences on incident id for admin review"""
+        with self.Sessionmaker() as session:
+            if action == 0:
+                """Summarizes the all city, state, and date numbers that are associated with an incident_id"""
+                subjects = ['root_tweet_city', 'root_tweet_state', 'incident_date']
+                reconcilation_dict = {}
+                for index, sub in enumerate(subjects):
+                    query = f"""
+                        select count({sub}), {sub} from 
+                        (select * from conversations as c inner join force_ranks as fr on c.incident_id = fr.incident_id where c.incident_id = {root_id}) as subquery
+                        group by {sub}
+                        """
+                    check_data = session.execute(query).fetchall()
+                    reconcilation_dict[f"{index}"] = check_data
+                return reconcilation_dict
+            elif action == 1:
+                """ Brings all the tweet-ids that are associated with the incident_id """
+                query = (select(Conversations.tweet_id).
+                filter(Conversations.incident_id == root_id))
+                data = session.execute(query).fetchall()
+                return data
+            elif action == 2:
+                """ Brings the total number of incident ids in the conversations table """
+                query = select(func.count(Conversations.incident_id).filter(Conversations.incident_id == root_id))
+                data = session.execute(query).fetchall()
+                return data
+            else:
+                return 'Pass 0, 1, 2'
+
+
     def get_twelves(self):
         """ get all conversations with value of 12 and corresponding data from force_ranks """
         with self.Sessionmaker() as session:
