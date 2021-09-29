@@ -15,6 +15,7 @@ load_dotenv(find_dotenv())
 
 DB = Database()
 
+# Make sure you grab the model from the drive
 model = FrankenBert("app/saved_model")
 
 

@@ -2,6 +2,13 @@ import numpy as np
 import torch
 from transformers import BertForSequenceClassification, BertTokenizer
 
+""" This module holds important info for Bert"""
+
+"""
+Transformers Documentation:
+https://huggingface.co/transformers/model_doc/bert.html
+"""
+
 
 class FrankenBert:
     """
