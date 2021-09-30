@@ -26,8 +26,8 @@ quick_reply_option = [
 
 
 def create_api():
-    """ 
-    Creates tweepy api 
+    """
+    Creates tweepy api
     Documentation Here:
     https://docs.tweepy.org/en/stable/api.html
     """

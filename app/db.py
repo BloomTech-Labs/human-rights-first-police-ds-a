@@ -18,6 +18,9 @@ https://docs.python.org/3/library/typing.html
 
 """
 
+from sqlalchemy.orm.session import Session
+from sqlalchemy.sql.expression import table
+# from app.main import activate
 from sqlalchemy.ext.declarative import declarative_base
 
 from sqlalchemy.orm import relationship, sessionmaker, scoped_session
@@ -160,22 +163,143 @@ class BotScripts(Base):
     convo_node = Column(Integer)
     use_count = Column(Integer)
     positive_count = Column(Integer)
-    success_rate = Column(Float)
+    # success_rate = Column(Float)
     active = Column(Boolean)
 
-    def __repr__(self):
-        return (
-            "script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, success_rate{}, active:{}"
-        ).format(
-            self.script_id,
-            self.script,
-            self.convo_node,
-            self.use_count,
-            self.positive_count,
-            self.success_rate,
-            self.active
-        )
 
+    def __repr__(self):
+        # positive_count:{}, success_rate:{}
+        return (
+            "script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, success_rate:{}, active:{}"
+            ).format(
+                self.script_id,
+                self.script,
+                self.convo_node,
+                self.use_count,
+                self.positive_count,
+                #self.success_rate,
+                self.active
+                )
+
+
+    def add_script(self, data):
+            """
+            Updates the bot_scripts table with new row passing the given script
+            and indicated conversation node into their respective columns. Sets the
+            'use_count' and 'positive_count' columns for this row to the default
+            of 0,'success_rate' column defaults to 0.0, and 'active' defaults True.
+            Auto generates a new 'script_ID' incrementally for scripts all
+            conversation nodes except 'welcome' which will need to use a helper
+            function which authenticates the welcome message with
+            Twitter and generates a different ID.
+            """
+
+            if data.script_id != 0:
+                # data['script_id'] =  # Use id from Twitter auth function (to be written or grabbed from Brody O.)
+                pass
+            else:
+                # data['script_id'] = # Auto generate the next incremental id
+                pass
+
+            # Database.insert_script(data)
+
+    def activate_script(script_id):
+        script_id = int(script_id)
+        db = Database()
+        
+        # Data is a BotScripts class obj
+        data = db.get_table(BotScripts, BotScripts.script_id, script_id)[-1][-1]
+        
+        if data.active == True:
+            data.active = False
+        else:
+            data.active = True
+        
+        with db.Sessionmaker() as session:    
+            session.add(data)
+            session.commit()
+
+
+    def add_to_use_count(script_id):
+        """
+        Uses functions from db.py as helper to increment the use_count
+        """
+        old_count = Database.get_table(BotScripts.use_count, BotScripts.script_id, script_id)
+        print(old_count)
+        new_count = old_count[0][0] + 1
+        Database.bump_use_count(script_id, new_count)
+
+    def add_to_positive_count(script_id):
+        """
+        Uses functions from db.py as helper to increment the positive_count
+        """
+        data = Database.get_counts(script_id)
+        use = data[0][0]
+        pos = data[0][1]
+
+        pos += 1
+        rate = pos / use
+        Database.update_pos_and_success(script_id, pos, rate)
+
+    # Functions for selection of scripts
+    """ FUTURE update: add randomized functionality to choose between path-based
+    script selection based on traning from the 'script_training' and path
+    -generating options (the latter exist below). Possibly set this up to occur
+    automatically whence results from traing sessions of path-based data are
+    available.
+
+    Also consider setting up testing to occur automatically whence
+    sufficient training data becomes available. Also consider scheduling
+    automatic training per a given number of data points received thereafter.
+    Reccomend having said training take place on another optional instance
+    (with the bot sentiment analysis) as memory on current instance is running
+    low.
+    """
+
+    def choose_script(self, status):
+        """
+        Used to select a script for use by the twitter bot given a
+        conversation node.
+        Returns a tuple containing the script and its id to be used by the
+        Twitter bot.
+        The script for the conversation and the script_id to be used in
+        another two function calls within the bot to update
+        the use_count in 'bot_scripts' when the bot send the message
+        as well as updating the path in 'script_testing' a
+        fter the bot pairs this script_id with an incident_id.
+
+        -----
+        In a future implementation try switching between
+        choosing a random script and
+        choosing the better of two as originally coded.
+        -----
+
+        """
+
+        # Pull the list of scripts for a convo_node given
+        script_data = Database.get_scripts_per_node(
+            self.convo_node_dict[status])
+
+        # Randomly select two script objects
+        l = len(script_data)
+        x = int(str(rand())[-6:])
+        y = int(str(rand())[-6:])
+        a = x % l
+        b = y % l
+
+        # conditional for selecting the best of two when count is achieved
+        if script_data[a][2] > 100 and script_data[b][2] > 100:
+            if script_data[a][3] >= script_data[b][3]:
+                use = a
+            else:
+                use = b
+        else:
+            if x >= y:
+                use = a
+            else:
+                use = b
+
+        return (script_data[use][0], script_data[use][1])
 
 class ScriptTesting(Base):
     __tablename__ = "script_testing"
@@ -282,7 +406,7 @@ class Database(object):
         """
         Gets a script from 'bot_scripts' table for given script_id(s)
         ONLY KEPT FOR FUTURE USE.
-        This funtion can be replaced with get_table(). 
+        This funtion can be replaced with get_table().
         """
         with self.Sessionmaker() as session:
             query = select(
@@ -666,43 +790,11 @@ class Database(object):
                 return data
 
 
-class ScriptMaster:
-    """Tools for modifying 'bot_scripts' table and script selection"""
-
-    def __init__(self):
-        # needs revision when nodes are reworked
-        self.convo_node_dict = {
-            0: "welcome",
-            10: "DM permission",
-            11: "form invitation"
-        }
-
-    def add_script(self, data):
+    def insert_data(self, data):
         """
-        Updates the bot_scripts table with new row passing the given script
-        and indicated conversation node into their respective columns. Sets the
-        'use_count' and 'positive_count' columns for this row to the default
-        of 0,'success_rate' column defaults to 0.0, and 'active' defaults True.
-        Auto generates a new 'script_ID' incrementally for scripts all
-        conversation nodes except 'welcome' which will need to use a helper
-        function which authenticates the welcome message with
-        Twitter and generates a different ID.
-        """
-
-        if data.script_id != 0:
-            # data['script_id'] =  # Use id from Twitter auth function (to be written or grabbed from Brody O.)
-            pass
-        else:
-            # data['script_id'] = # Auto generate the next incremental id
-            pass
-
-        # Database.insert_script(data)
-
-    def deactivate_script(self, script_ID):
-        """
-        Sets the active column for the given script_ID to False to deter the 
-        script from future use. Originally a "delete_script" function was 
-        conceived, but the potential need for more data on past script 
+        Sets the active column for the given script_ID to False to deter the
+        script from future use. Originally a "delete_script" function was
+        conceived, but the potential need for more data on past script
         testing led to this function being employed instead.
 
         ----Labs 39 ---
@@ -711,93 +803,7 @@ class ScriptMaster:
         Then check endpoints in main.py to test this and set up the FE
         for connecting the modal in Admin dashboard.
         """
-
-        # Update 'active' to False in 'bot_script' table for 'script_id'
-        pass
-
-    def activate_script(self, script_ID):
         # Update 'active' to True in 'bot_script' table for 'script_id'
-        pass
-
-    def add_to_use_count(self, script_id):
-        """
-        Uses functions from db.py as helper to increment the use_count
-        """
-        db = Database()
-        old_count = db.get_table(
-            BotScripts.use_count,
-            BotScripts.script_id,
-            script_id,
-        )
-        new_count = old_count[0][0] + 1
-        db.bump_use_count(script_id, new_count)
-
-    def add_to_positive_count(self, script_id):
-        """
-        Uses functions from db.py as helper to increment the positive_count
-
-        FUTURE update: add randomized functionality to choose between path-based
-        script selection based on training from the 'script_training' and path
-        -generating options (the latter exist below). Possibly set this up to occur
-        automatically whence results from training sessions of path-based data are
-        available.
-
-        Also consider setting up testing to occur automatically whence
-        sufficient training data becomes available. Also consider scheduling
-        automatic training per a given number of data points received thereafter.
-        Recommend having said training take place on another optional instance
-        (with the bot sentiment analysis) as memory on current instance is running
-        low.
-        """
-        db = Database()
-        data = db.get_counts(script_id)
-        use = data[0][0]
-        pos = data[0][1]
-        pos += 1
-        rate = pos / use
-        db.update_pos_and_success(script_id, pos, rate)
-
-    # def choose_script(self, status):
-    #     """
-    #     Used to select a script for use by the twitter bot given a
-    #     conversation node.
-    #     Returns a tuple containing the script and its id to be used by the
-    #     Twitter bot.
-    #     The script for the conversation and the script_id to be used in
-    #     another two function calls within the bot to update
-    #     the use_count in 'bot_scripts' when the bot send the message
-    #     as well as updating the path in 'script_testing' a
-    #     after the bot pairs this script_id with an incident_id.
-    #
-    #     -----
-    #     In a future implementation try switching between
-    #     choosing a random script and
-    #     choosing the better of two as originally coded.
-    #     -----
-    #
-    #     """
-    #
-    #     # Pull the list of scripts for a convo_node given
-    #     db = Database()
-    #     script_data = db.get_scripts_per_node(self.convo_node_dict[status])
-    #
-    #     # Randomly select two script objects
-    #     l = len(script_data)
-    #     x = int(str(rand())[-6:])
-    #     y = int(str(rand())[-6:])
-    #     a = x % l
-    #     b = y % l
-    #
-    #     # conditional for selecting the best of two when count is achieved
-    #     if script_data[a][2] > 100 and script_data[b][2] > 100:
-    #         if script_data[a][3] >= script_data[b][3]:
-    #             use = a
-    #         else:
-    #             use = b
-    #     else:
-    #         if x >= y:
-    #             use = a
-    #         else:
-    #             use = b
-    #
-    #     return script_data[use][0], script_data[use][1]
+        with self.Sessionmaker() as session: 
+            session.add(data)
+            session.commit()
