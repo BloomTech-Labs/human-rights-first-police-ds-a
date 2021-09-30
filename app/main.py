@@ -79,6 +79,11 @@ class check(BaseModel):
     tweet_id: str
 
 
+class check_action(BaseModel):
+    incident_id: int
+    action: int
+
+
 class new_script(BaseModel):
     script_id: int
     script: str
@@ -96,7 +101,7 @@ async def create_form_out(data: form_out):
     prompting a Twitter user to send a dm to our bot
     """
     DB.update_tables(
-        {"status":"awaiting response"}, data.tweet_id, "ForceRanks")
+        {"status": "awaiting response"}, data.tweet_id, "ForceRanks")
     bot.send_form(data)
 
 
@@ -129,23 +134,30 @@ async def create_check(data: check):
     return out
 
 
+@app.post("/approval_reconciliation/")
+async def create_approval_reconciliation(data: check_action):
+    """ returns values of Conversations in table with the same incident_id"""
+    out = DB.get_root_twelve_majority(data.incident_id, data.action)
+    return out
+
+
 @app.post("/approve/")
 async def approve(data: check):
     """ updates ForceRanks with value of Conversations table row which is a form response """
     for_update = DB.get_root_twelve(data.tweet_id)
-    data = {}
-    data['city'] = for_update[0]['Conversations'].root_tweet_city
-    data['state'] = for_update[0]['Conversations'].root_tweet_state
-    data['force_rank'] = for_update[0]['Conversations'].root_tweet_force_rank
-    data['incident_date'] = for_update[0]['Conversations'].root_tweet_date
-    data['status'] = 'approved'
-    data['lat'] = for_update[0]['Conversations'].root_tweet_lat
-    data['long'] = for_update[0]['Conversations'].root_tweet_long
+    data = {'city': for_update[0]['Conversations'].root_tweet_city,
+            'state': for_update[0]['Conversations'].root_tweet_state,
+            'force_rank': for_update[0]['Conversations'].root_tweet_force_rank,
+            'incident_date': for_update[0]['Conversations'].root_tweet_date,
+            'status': 'approved',
+            'lat': for_update[0]['Conversations'].root_tweet_lat,
+            'long': for_update[0]['Conversations'].root_tweet_long}
 
-    DB.update_tables(data, for_update[0]['Conversations'].tweet_id, "ForceRanks")
-    data2 = {}
-    data2['conversation_status'] = 13
-    DB.update_tables(data2, for_update[0]['Conversations'].tweet_id, "Conversations")
+    DB.update_tables(data, for_update[0]['Conversations'].tweet_id,
+                     "ForceRanks")
+    data2 = {'conversation_status': 13}
+    DB.update_tables(data2, for_update[0]['Conversations'].tweet_id,
+                     "Conversations")
     return data
 
 
@@ -165,7 +177,7 @@ async def post_script(data: new_script):
 @app.post("/activate-script/")
 async def activate(script_id):
     """
-    Endpoint for the front end to utilize in the toggle funtion on the
+    Endpoint for the front end to utilize in the toggle function on the
     Script Management modal see:
     """
     BotScripts.activate_script(script_id)
@@ -194,7 +206,7 @@ async def bump_pos_and_success_rate(script_id):
     one will need to grab these endpoints for anything else. The scriptmaster
     function called below will actually be called as a helper function within
     bot.py when the Twitter bot has received feedback from a Twitter user and
-    use this to bump the positve_count for the last script used.
+    use this to bump the positive_count for the last script used.
     """
     BotScripts.add_to_positive_count(script_id)
 
@@ -251,15 +263,15 @@ async def update():
         'police brutality',
         'police violence',
         'police abuse',
-        'beaten', 'killed by police', 
+        'beaten', 'killed by police',
         'taser', 'baton', 'use of force',
-        'shot', 'lethal', 'non-lethal', 
-        'pepper spray', 'oc', 'tear gas', 
-        'rubber bullets', 'push', 
+        'shot', 'lethal', 'non-lethal',
+        'pepper spray', 'oc', 'tear gas',
+        'rubber bullets', 'push',
         'non-violent', 'tased', 'clashed with police',
-        '#policebrutality', '#pig', '#pigs', 
-        '#5-0', '#policeofficer', '#ACAB', 
-        '#1312', '#fuckthepolice', 
+        '#policebrutality', '#pig', '#pigs',
+        '#5-0', '#policeofficer', '#ACAB',
+        '#1312', '#fuckthepolice',
         '#BlackLivesMatter', '#policeaccountability'
     ))
     data: List[Dict] = scrape_twitter(search)

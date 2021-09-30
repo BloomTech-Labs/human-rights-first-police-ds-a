@@ -34,7 +34,6 @@ from sqlalchemy import Column, Integer, String, Date, Float, Boolean, ForeignKey
 
 from typing import List, Dict
 
-
 load_dotenv(find_dotenv())
 
 db_url = os.getenv("DB_URL")
@@ -91,11 +90,10 @@ class ForceRanks(Base):
             self.confidence,
             self.tags,
             self.src
-            )
+        )
 
 
 class Conversations(Base):
-
     __tablename__ = "conversations"
 
     id = Column(Integer, primary_key=True)
@@ -120,7 +118,7 @@ class Conversations(Base):
     parent = relationship("ForceRanks", back_populates="children")
 
     def __repr__(self):
-        return(
+        return (
             "id:{}, tweet_id:{}, form:{}, root_tweet_city:{}, root_tweet_state:{}, root_tweet_lat:{}, root_tweet_long:{}, root_tweet_date:{}, root_tweet_force_rank:{}, sent_tweet_id:{}, received_tweet_id:{}, in_reply_to_id:{}, tweeter_id:{}, conversation_state:{}, tweet_text:{}, checks_made:{}, reachout_template:{}, isChecked:{}").format(
             self.id,
             self.tweet_id,
@@ -144,7 +142,6 @@ class Conversations(Base):
 
 
 class Training(Base):
-
     __tablename__ = "training"
 
     id = Column(Integer, primary_key=True)
@@ -152,13 +149,12 @@ class Training(Base):
     labels = Column(Integer)
 
     def __repr__(self):
-        return(
+        return (
             "id:{}, tweets:{}, labels:{}"
-            ).format(self.id, self.tweets, self.labels)
+        ).format(self.id, self.tweets, self.labels)
 
 
 class BotScripts(Base):
-
     __tablename__ = "bot_scripts"
 
     script_id = Column(
@@ -306,7 +302,6 @@ class BotScripts(Base):
         return (script_data[use][0], script_data[use][1])
 
 class ScriptTesting(Base):
-
     __tablename__ = "script_testing"
 
     incident_id = Column(
@@ -318,15 +313,14 @@ class ScriptTesting(Base):
     def __repr__(self):
         return (
             "incident_id:{}, script_path:{}, success:{}"
-            ).format(
-                self.incident_id,
-                self.script_path,
-                self.success
-                )
+        ).format(
+            self.incident_id,
+            self.script_path,
+            self.success
+        )
 
 
 class Sources(Base):
-
     __tablename__ = "sources"
 
     source_id = Column(Integer, primary_key=True, nullable=False, unique=True)
@@ -336,15 +330,14 @@ class Sources(Base):
     def __repr__(self):
         return (
             "source_id:{}, incident_id:{}, sources:{}"
-            ).format(
-                self.source_id,
-                self.incident_id,
-                self.source
-                )
+        ).format(
+            self.source_id,
+            self.incident_id,
+            self.source
+        )
 
 
 class Tags(Base):
-
     __tablename__ = "tags"
 
     tags_id = Column(Integer, primary_key=True, nullable=False, unique=True)
@@ -354,11 +347,11 @@ class Tags(Base):
     def __repr__(self):
         return (
             "tags_id:{}, incident_id:{}, sources:{}"
-            ).format(
-                self.tags_id,
-                self.incident_id,
-                self.tag
-                )
+        ).format(
+            self.tags_id,
+            self.incident_id,
+            self.tag
+        )
 
 
 class Database(object):
@@ -403,9 +396,9 @@ class Database(object):
         This funtion can be replaced with get_table().
         """
         with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.script_id).
-                where(BotScripts.convo_node == convo_node))
+            query = select(BotScripts.script_id).where(
+                BotScripts.convo_node == convo_node
+            )
             script_ids_data = session.execute(query).fetchall()
         return script_ids_data
 
@@ -416,10 +409,9 @@ class Database(object):
         This funtion can be replaced with get_table().
         """
         with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.script).
-                where(BotScripts.script_id == script_id)
-                )
+            query = select(
+                BotScripts.script
+            ).where(BotScripts.script_id == script_id)
 
             script_data = session.execute(query).fetchall()
         return script_data
@@ -466,10 +458,9 @@ class Database(object):
         This funtion can be replaced with get_table().
         """
         with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.use_count).
-                where(BotScripts.script_id == script_id)
-            )
+            query = select(
+                BotScripts.use_count
+            ).where(BotScripts.script_id == script_id)
 
             use_count = session.execute(query).fetchall()
 
@@ -480,10 +471,10 @@ class Database(object):
         Gets use_count and positive_count from 'bot_scripts' given script_id
         """
         with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.use_count, BotScripts.positive_count).
-                where(BotScripts.script_id == script_id)
-            )
+            query = select(
+                BotScripts.use_count,
+                BotScripts.positive_count,
+            ).where(BotScripts.script_id == script_id)
 
             counts = session.execute(query).fetchall()
 
@@ -500,8 +491,7 @@ class Database(object):
                        BotScripts.script,
                        BotScripts.use_count,
                        BotScripts.success_rate
-                       ).
-                where(BotScripts.convo_node == convo_node)
+                       ).where(BotScripts.convo_node == convo_node)
             )
 
             scripts = session.execute(query).fetchall()
@@ -526,11 +516,9 @@ class Database(object):
             data = {"positive_count": positive_count,
                     "success_rate": success_rate
                     }
-            query = (
-                    update(BotScripts).
-                    where(BotScripts.script_id == script_id).
-                    values(**data)
-                )
+            query = update(BotScripts).where(
+                BotScripts.script_id == script_id
+            ).values(**data)
 
             session.execute(query)
             session.commit()
@@ -545,7 +533,8 @@ class Database(object):
                     last_value = 0
                 last_value += 1
                 data[i]['incident_id'] = last_value
-                if type(data[i]['confidence']) != float and data[i]['confidence'] != None:
+                if type(data[i]['confidence']) != float \
+                        and data[i]['confidence'] is not None:
                     data[i]['confidence'] = data[i]['confidence'].item()
                 obj = ForceRanks(**data[i])
                 session.add(obj)
@@ -570,11 +559,12 @@ class Database(object):
             table = ForceRanks
         elif tablename == 'Conversations':
             table = Conversations
-        query = (
-            update(table).
-            where(table.tweet_id == str(tweet_id)).
-            values(**data)
-        )
+        else:
+            return
+
+        query = update(table).where(
+            table.tweet_id == str(tweet_id)
+        ).values(**data)
 
         with self.Sessionmaker() as session:
             session.execute(query)
@@ -584,10 +574,46 @@ class Database(object):
         """ gets root_ids with value of 12 """
         with self.Sessionmaker() as session:
             query = (select(Conversations).
-            filter(and_(Conversations.tweet_id == str(root_id), Conversations.conversation_status == 12)))
+                     filter(and_(Conversations.tweet_id == str(root_id),
+                                 Conversations.conversation_status == 12)))
             check_data = session.execute(query)
 
         return check_data.fetchall()
+
+    def get_root_twelve_majority(self, root_id, action):
+        """ gets data on differences on incident id for admin review"""
+        with self.Sessionmaker() as session:
+            if action == 0:
+                """Summarizes the all city, state, and date numbers that are associated with an incident_id"""
+                subjects = ['root_tweet_city', 'root_tweet_state',
+                            'incident_date']
+                reconcilation_dict = {}
+                for index, sub in enumerate(subjects):
+                    query = f"""
+                        select count({sub}), {sub} from 
+                        (select * from conversations 
+                        as c inner join force_ranks 
+                        as fr on c.incident_id = fr.incident_id 
+                        where c.incident_id = {root_id}) as subquery
+                        group by {sub}
+                        """
+                    check_data = session.execute(query).fetchall()
+                    reconcilation_dict[f"{index}"] = check_data
+                return reconcilation_dict
+            elif action == 1:
+                """ Brings all the tweet-ids that are associated with the incident_id """
+                query = (select(Conversations.tweet_id).
+                         filter(Conversations.incident_id == root_id))
+                data = session.execute(query).fetchall()
+                return data
+            elif action == 2:
+                """ Brings the total number of incident ids in the conversations table """
+                query = select(func.count(Conversations.incident_id).filter(
+                    Conversations.incident_id == root_id))
+                data = session.execute(query).fetchall()
+                return data
+            else:
+                return 'Pass 0, 1, 2'
 
     def get_twelves(self):
         """
@@ -596,30 +622,36 @@ class Database(object):
         """
         with self.Sessionmaker() as session:
             query = (select(Conversations, ForceRanks).
-            join(ForceRanks,
-                and_(Conversations.tweet_id == ForceRanks.tweet_id, Conversations.conversation_status == 12)))
+                     join(ForceRanks,
+                          and_(Conversations.tweet_id == ForceRanks.tweet_id,
+                               Conversations.conversation_status == 12)))
             data = session.execute(query).fetchall()
 
         out = []
         for i in data:
-            record = {}
-            record['tweet_id'] = i['Conversations'].tweet_id
-            record['city'] = i['Conversations'].root_tweet_city
-            record['confidence'] = None
-            record['description'] = i['ForceRanks'].description
-            record['force_rank'] = i['Conversations'].root_tweet_force_rank
-            record['incident_date'] = i['Conversations'].root_tweet_date
-            record['incident_id'] = i['ForceRanks'].incident_id
-            record['lat'] = i['Conversations'].root_tweet_lat
-            record['long'] = i['Conversations'].root_tweet_long
+            record = {'tweet_id': i['Conversations'].tweet_id,
+                      'city': i['Conversations'].root_tweet_city,
+                      'confidence': None,
+                      'description': i['ForceRanks'].description,
+                      'force_rank': i['Conversations'].root_tweet_force_rank,
+                      'incident_date': i['Conversations'].root_tweet_date,
+                      'incident_id': i['ForceRanks'].incident_id,
+                      'lat': i['Conversations'].root_tweet_lat,
+                      'long': i['Conversations'].root_tweet_long}
             try:
-                record['src'] = {e:i for (e,i) in enumerate(i['ForceRanks'].src.replace('"', '',).replace('[','').replace(']','').split(','))}
+                record['src'] = {e: i for (e, i) in enumerate(
+                    i['ForceRanks'].src.replace('"', '', ).replace('[',
+                                                                   '').replace(
+                        ']', '').split(','))}
             except (KeyError, AttributeError):
                 pass
             record['state'] = i['Conversations'].root_tweet_state
             record['status'] = i['ForceRanks'].status
             try:
-                record['tags'] = {e:i for (e,i) in enumerate(i['ForceRanks'].tags.replace('"', '',).replace('[','').replace(']','').split(','))}
+                record['tags'] = {e: i for (e, i) in enumerate(
+                    i['ForceRanks'].tags.replace('"', '', ).replace('[',
+                                                                    '').replace(
+                        ']', '').split(','))}
             except (KeyError, AttributeError):
                 pass
             print(i['ForceRanks'].tags)
@@ -654,11 +686,9 @@ class Database(object):
 
     def update_conversation_checks(self, root_id):
         """ iterates conversation_checks column of matching tweet_id """
-        query = (
-            update(Conversations).
-            where(Conversations.tweet_id == str(root_id)).
-            values(checks_made=Conversations.checks_made + 1)
-        )
+        query = update(Conversations).where(
+            Conversations.tweet_id == str(root_id)
+        ).values(checks_made=Conversations.checks_made + 1)
 
         with self.Sessionmaker() as session:
             session.execute(query)
@@ -701,7 +731,7 @@ class Database(object):
             return "Table model not found"
 
         insp = inspect(self.engine)
-        if insp.has_table(tablename) == False:
+        if not insp.has_table(tablename):
             table.__table__.create(self.engine)
 
     def reset_table(self, tablename):
@@ -715,7 +745,7 @@ class Database(object):
         check = input('Are you sure? This will delete all table data (Y/N):')
         if check == 'Y':
             insp = inspect(self.engine)
-            if insp.has_table(tablename) == True:
+            if insp.has_table(tablename):
                 table.__table__.drop(self.engine)
             self.initialize_table(tablename)
         elif check == 'N':
@@ -734,7 +764,7 @@ class Database(object):
         check = input('Are you sure? This will delete all table data (Y/N):')
         if check == 'Y':
             insp = inspect(self.engine)
-            if insp.has_table(tablename) == True:
+            if insp.has_table(tablename):
                 table.__table__.drop(self.engine)
         elif check == 'N':
             pass
@@ -755,7 +785,7 @@ class Database(object):
                 return data
 
             else:
-                query = (select(table_name))
+                query = select(table_name)
                 data = session.execute(query).fetchall()
                 return data
 

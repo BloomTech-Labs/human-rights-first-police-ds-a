@@ -5,25 +5,21 @@ import os
 import re
 from typing import Dict, List
 
-import requests
 import tweepy
 from dotenv import load_dotenv
 from requests_oauthlib import OAuth1Session
 
 load_dotenv()
 
-
 auth = tweepy.OAuthHandler(os.getenv("CONSUMER_KEY"),
                            os.getenv("CONSUMER_SECRET"))
 auth.set_access_token(os.getenv("ACCESS_KEY"), os.getenv("ACCESS_SECRET"))
 api = tweepy.API(auth, wait_on_rate_limit=True)
 
-
 manual_twitter_auth = OAuth1Session(os.getenv("CONSUMER_KEY"),
                                     os.getenv("CONSUMER_SECRET"),
                                     os.getenv("ACCESS_KEY"),
                                     os.getenv("ACCESS_SECRET"))
-
 
 # witt_rowen welcome message = 1424836133582774286
 
@@ -48,12 +44,12 @@ list_of_welcome_messages = [
                         {
                             "label": "Yes",
                             "metadata": "Yes",
-                            #"description": "Yes"
+                            # "description": "Yes"
                         },
                         {
                             "label": "No",
                             "metadata": "No",
-                            #"description": "Open Handed (Arm Holds & Pushing)"
+                            # "description": "Open Handed (Arm Holds & Pushing)"
                         }
                     ]
                 }
@@ -63,7 +59,7 @@ list_of_welcome_messages = [
         },
         'apps': {
             '21602950': {
-                #'id': '21602950',
+                # 'id': '21602950',
                 'id': '1335727237400694784',
                 'name': 'RowenWitt'
             }
@@ -132,19 +128,23 @@ def form_tweet(tweet_source: str, information_requested: str) -> Dict:
     tweet_id = get_tweet_id(tweet_source)
     if information_requested == 'date':
         tweet_txt = list_of_A_B_txts[0]
-    if information_requested == 'location':
+    elif information_requested == 'location':
         tweet_txt = list_of_A_B_txts[1]
+    else:
+        return {}
     link = os.getenv("FORM_URL")
     reply_message = f"{tweet_txt} \n {link}"
-    tweet = api.update_status(reply_message, in_reply_to_status_id=tweet_id,
-                              auto_populate_reply_metadata=True)
+    tweet = api.update_status(
+        reply_message,
+        in_reply_to_status_id=tweet_id,
+        auto_populate_reply_metadata=True,
+    )
     return tweet
 
 
 def create_welcome_message(name: str,
                            msg_txt: str,
                            quick_replies: List[Dict] = None):
-
     url = "https://api.twitter.com/1.1/direct_messages/welcome_messages/new.json"
     if quick_replies:
         payload = json.dumps({
@@ -159,6 +159,7 @@ def create_welcome_message(name: str,
                 }
             }
         })
+
     else:
         payload = json.dumps({
             "welcome_message": {
@@ -179,24 +180,6 @@ def create_welcome_message(name: str,
     return list_of_welcome_messages
 
 
-# Can take out for loop for welcome_message by just using welcome_message_id
-# Have the welcome_message_name be displayed to admin but have it pass welcome_message_id
-
-
-def reply_to_tweet(tweet_id,
-                   reply_text,
-                   welcome_message_name,
-                   blue_witness_recipient_id):
-    """Build the inital response tweet that will be used to reply to the user's incident tweet"""
-    for welcome_message in list_of_welcome_messages:
-        if welcome_message['name'] == welcome_message_name:
-            welcome_message_id = welcome_message['welcome_message']['id']
-    dm_link = f'https://twitter.com/messages/compose?recipient_id={blue_witness_recipient_id}&welcome_message_id={welcome_message_id}'
-    reply_message = f"{reply_text} \n {dm_link}"
-    api.update_status(reply_message, in_reply_to_status_id=tweet_id,
-                      auto_populate_reply_metadata=True)
-
-
 def get_initial_dms(user_id: List[str]) -> List[Dict]:
     """Function to get DMs sent from button in tweet"""
     dms = api.list_direct_messages()
@@ -209,7 +192,9 @@ def get_initial_dms(user_id: List[str]) -> List[Dict]:
                 "welcome_message": dm.initiated_via['welcome_message_id'],
                 "sender_id": dm.message_create['sender_id'],
                 "text": dm.message_create['message_data']['text'],
-                "quick_reply_response": dm.message_create['message_data']['quick_reply_response']['metadata']
+                "quick_reply_response":
+                    dm.message_create['message_data']['quick_reply_response'][
+                        'metadata']
             })
     # have this just commit to db
     return dm_list
@@ -225,5 +210,4 @@ def send_clarification_dm(dm_id, A_B_txt, quick_replies: List[Dict] = None, ):
 def get_response_dms(dm_id_list: List[Dict]) -> List[Dict]:
     """ Function to get DMs after initial response """
     # Need to get a list of dm_ids from database to then check for responses
-
     pass
