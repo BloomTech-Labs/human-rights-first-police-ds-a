@@ -170,7 +170,7 @@ class BotScripts(Base):
     def __repr__(self):
         # positive_count:{}, success_rate:{}
         return (
-            "script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, active:{}"
+            "script_id:{}, script:{}, convo_node:{}, use_count:{}, positive_count:{}, success_rate:{}, active:{}"
             ).format(
                 self.script_id,
                 self.script,
