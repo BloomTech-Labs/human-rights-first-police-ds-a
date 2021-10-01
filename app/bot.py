@@ -52,12 +52,14 @@ def send_form(data: Dict):
         to_insert.reachout_template = conversation_tree[1]
         status = twitter.respond_to_tweet(to_insert.tweet_id,
                                           to_insert.tweet_text)
-        to_insert.conversation_status = 0
+        # set to 9 to avoid triggering a conversational path in advance_conversation function
+        to_insert.conversation_status = 9
         to_insert.tweeter_id = bot_name
         to_insert.sent_tweet_id = status.id
         DB.insert_data_conversations(to_insert)
 
-    else:  # If the form is 1; Twitter bot sends dm request to start conversation to gather info.
+    # If the form is 1; Twitter bot sends dm request to start conversation to gather info
+    else: 
         to_insert.tweet_text = '@' + to_insert.in_reply_to_id + ' ' + \
                                conversation_tree[10] + '\n' + dm_link
         to_insert.reachout_template = conversation_tree[10]
@@ -125,13 +127,17 @@ def end_conversation(root_id: int, max_step, received_tweet_id=None):
         pass
 
 
-def advance_conversation(root_id: int, form_link: str = None) -> str:
+def advance_conversation(root_id: int, form_link: str = None):
     """ Advances conversation by root_id """
     api = create_api()
     root_conversation = DB.get_conversation_root(root_id)
     # TODO Consider refactoring so it is not a list. 
     # (Depends on how many users can contribute to incident)
+
     max_step = root_conversation[-1]
+    
+    # The if-else statement below essentially takes over the send-form function
+    # which is an API call 
 
     if max_step.conversation_status == 0 and max_step.form == 0:
         # Currently send_form handles this function
@@ -195,6 +201,7 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
 
     # This is where current quick reply conversation Flow Begins
     elif max_step.conversation_status == 10:
+        # add and develop this condition: if max_step.checks_made == 10: 
         processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id,
                                             tweet_id=str(max_step.tweet_id),
                                             incident_id=max_step.incident_id,
@@ -215,14 +222,14 @@ def advance_conversation(root_id: int, form_link: str = None) -> str:
         DB.update_conversation_checks(root_id)
 
 
-def clean_query_string(string: str) -> str:
+def clean_query_string(string: str):
     """ Cleans string of ' 's and 's """
     string.replace(' ', '%20')
     string.replace(',', '')
     return string
 
 
-def find_location(query_string: str) -> Dict:
+def find_location(query_string: str):
     """ Makes call to google places api """
     query_string = clean_query_string(query_string)
     base_url = "https://maps.googleapis.com/maps/api/place/findplacefromtext/"
