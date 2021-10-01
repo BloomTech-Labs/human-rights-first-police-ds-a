@@ -84,16 +84,6 @@ class check_action(BaseModel):
     action: int
 
 
-class new_script(BaseModel):
-    script_id: int
-    script: str
-    convo_node: int
-    use_count: Optional[int] = 0
-    positive_count: Optional[int] = 0
-    success_rate: Optional[float] = 0.0
-    active: Optional[bool] = True
-
-
 @app.post("/form-out/", response_model=form_out)
 async def create_form_out(data: form_out):
     """
@@ -159,51 +149,6 @@ async def approve(data: check):
     DB.update_tables(data2, for_update[0]['Conversations'].tweet_id,
                      "Conversations")
     return data
-
-
-@app.post("/activate-script/")
-async def activate(script_id):
-    """
-    Endpoint for the front end to utilize in the toggle function on the
-    Script Management modal see:
-    """
-    BotScripts.activate_script(script_id)
-
-
-# Testing endpoint
-@app.post("/bump-use-count/")
-async def add_one_to_use_count(script_id):
-    """
-    This is a testing endpoint used to ensure that the functions for
-    incrementing use counts in the 'bot_scripts' table work properly. No one
-    will need to grab these endpoints for anything else. The scriptmaster
-    function called below will actually be called as a helper function within
-    bot.py when the Twitter bot has selected a script for use and sent a
-    tweet out.
-    """
-    BotScripts.add_to_use_count(script_id)
-
-
-# Testing endpoint
-@app.post("/update-pos-count/")
-async def bump_pos_and_success_rate(script_id):
-    """
-    This is a testing endpoint used to ensure that the functions for
-    incrementing positive counts in the 'bot_scripts' table work properly. No
-    one will need to grab these endpoints for anything else. The scriptmaster
-    function called below will actually be called as a helper function within
-    bot.py when the Twitter bot has received feedback from a Twitter user and
-    use this to bump the positive_count for the last script used.
-    """
-    BotScripts.add_to_positive_count(script_id)
-
-
-@app.get("/select-all-from-bot-scripts/")
-async def get_all_from_bot_scripts():
-    """
-    Selects all from 'bot_scripts' table to populate Script Management modal.
-    """
-    return DB.get_all_script_data()
 
 
 @app.get("/frankenbert/{user_input}")
