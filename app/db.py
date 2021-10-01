@@ -182,27 +182,6 @@ class BotScripts(Base):
                 )
 
 
-    def add_script(self, data):
-            """
-            Updates the bot_scripts table with new row passing the given script
-            and indicated conversation node into their respective columns. Sets the
-            'use_count' and 'positive_count' columns for this row to the default
-            of 0,'success_rate' column defaults to 0.0, and 'active' defaults True.
-            Auto generates a new 'script_ID' incrementally for scripts all
-            conversation nodes except 'welcome' which will need to use a helper
-            function which authenticates the welcome message with
-            Twitter and generates a different ID.
-            """
-
-            if data.script_id != 0:
-                # data['script_id'] =  # Use id from Twitter auth function (to be written or grabbed from Brody O.)
-                pass
-            else:
-                # data['script_id'] = # Auto generate the next incremental id
-                pass
-
-            # Database.insert_script(data)
-
     def activate_script(script_id):
         script_id = int(script_id)
         db = Database()

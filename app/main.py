@@ -161,19 +161,6 @@ async def approve(data: check):
     return data
 
 
-@app.post("/add-script/", response_model=new_script)
-async def post_script(data: new_script):
-    """
-    This endpoint allows the Admin to put a new script into the bot_scripts
-    table. If the conversation node for this script is "welcome" then either
-    the capability to authorize a welcome message with twitter needs to be
-    implemented or the Administrator needs to have the option to input the ID
-    given by Twitter when authorizing a welcome script for the Blue Witness
-    Twitter Account outside of this API
-    """
-    BotScripts.add_script(data)
-
-
 @app.post("/activate-script/")
 async def activate(script_id):
     """
