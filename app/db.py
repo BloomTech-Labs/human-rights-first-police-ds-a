@@ -185,50 +185,6 @@ class Database(object):
             conversations_data = session.execute(query)
         return [i[0] for i in conversations_data.fetchall()]
 
-
-    def get_sripts_per_node(self, convo_node):
-        """
-        Gets scripts and their ids, use counts and success rates for a given
-        conversation node all for the use of the script selection process.
-        """
-        with self.Sessionmaker() as session:
-            query = (
-                select(BotScripts.script_id,
-                       BotScripts.script,
-                       BotScripts.use_count,
-                       BotScripts.success_rate
-                       ).where(BotScripts.convo_node == convo_node)
-            )
-
-            scripts = session.execute(query).fetchall()
-
-        return scripts
-
-    def bump_use_count(self, script_id, new_count):
-        """ Updates the use_count for a script as identified by script_id """
-        with self.Sessionmaker() as session:
-            count_dict = {"use_count": new_count}
-            query = (
-                update(BotScripts).where(
-                    BotScripts.script_id == script_id).values(**count_dict)
-            )
-
-            session.execute(query)
-            session.commit()
-
-    def update_pos_and_success(self, script_id, positive_count, success_rate):
-        """ Updates the positive_count and success_rate for a given script_id """
-        with self.Sessionmaker() as session:
-            data = {"positive_count": positive_count,
-                    "success_rate": success_rate
-                    }
-            query = update(BotScripts).where(
-                BotScripts.script_id == script_id
-            ).values(**data)
-
-            session.execute(query)
-            session.commit()
-
     def insert_data_force_ranks(self, data: List[Dict]):
         """ inserts data into force_ranks """
         with self.Sessionmaker() as session:
