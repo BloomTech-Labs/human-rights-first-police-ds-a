@@ -83,6 +83,11 @@ Old and currently undeployed code is stored in the `archive` folder of the repo.
 
 </br>
 
+## FastAPI Test Client
+In the test folder there is a FastApi Test-Client script to test all api endpoints.  FastApi testclient allows developers to check that application endpoints are working as expected, ensures junk data does not enter your database, and allows the dev to easily debug with custom pytest reports.  In order to run our FAST-API client test, one must previously have pytest installed [https://www.guru99.com/pytest-tutorial.html].  In the root directory, command line run $ pytest.
+
+</br>
+
 # Next Steps
 For those interested in improving upon the data science codebase, here are some recommendations: 
 - Explore the efficacy of separating the AWS 'postgres' database into two different databases. The first database would be the primary database for the Twitter scraper outputs and DS would redesign the schema to fit their needs. The second database would be the primary database for backend and they could extract data from the DS database and fit the schema to their needs. Currently, the primary AWS data table 'force_ranks' is accessible in both the data science and backend codebases.
