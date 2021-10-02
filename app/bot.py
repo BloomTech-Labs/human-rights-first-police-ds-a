@@ -96,8 +96,9 @@ def advance_all():
     conversations status per tweet_id in Conversations Table
     """
     to_advance = DB.get_to_advance()
-    for threads in to_advance:
-        advance_conversation(threads.tweet_id)
+    advance_conversation(to_advance)
+    # for threads in to_advance:
+    #     advance_conversation(threads.tweet_id)
 
 
 def end_conversation(root_id: int, max_step, received_tweet_id=None):
@@ -127,99 +128,105 @@ def end_conversation(root_id: int, max_step, received_tweet_id=None):
         pass
 
 
-def advance_conversation(root_id: int, form_link: str = None):
+def advance_conversation(list_tweet_id: int, form_link: str = None):
     """ Advances conversation by root_id """
     api = create_api()
-    root_conversation = DB.get_conversation_root(root_id)
-    # TODO Consider refactoring so it is not a list. 
-    # (Depends on how many users can contribute to incident)
+    dir_msg = api.list_direct_messages()
 
-    max_step = root_conversation[-1]
-    
-    # The if-else statement below essentially takes over the send-form function
-    # which is an API call 
+    for root_id in list_tweet_id:
 
-    if max_step.conversation_status == 0 and max_step.form == 0:
-        # Currently send_form handles this function
-        # This is really for conversation processing
-        status = json.loads(twitter.respond_to_tweet(max_step.tweet_id,
-                                                     conversation_tree[1]))
-        max_step.tweet_id = root_id
-        max_step.sent_tweet_id = status.id_str
-        max_step.in_reply_to_id = status.in_reply_to_status_id
-        max_step.conversation_status = (max_step.conversation_status + 1)
-        max_step.checks_made = (max_step.checks_made + 1)
-        max_step.reachout_template = conversation_tree[1]
-        DB.insert_data_conversations(max_step)
+        
+        root_conversation = DB.get_conversation_root(root_id.tweet_id)
+        # TODO Consider refactoring so it is not a list. 
+        # (Depends on how many users can contribute to incident)
+        
 
-    elif max_step.conversation_status == 0 and max_step.form == 1:
-        status = json.loads(
-            twitter.respond_to_tweet(max_step.tweet_id, max_step.form_link))
-        max_step.tweet_id = root_id
-        max_step.sent_tweet_id = status.id_str
-        max_step.in_reply_to_id = status.in_reply_to_status_id
-        max_step.conversation_status = 4
-        max_step.checks_made = (max_step.checks_made + 1)
-        max_step.reachout_template = form_link
-        DB.insert_data_conversations(max_step)
+        max_step = root_conversation[-1]
+        
+        # The if-else statement below essentially takes over the send-form function
+        # which is an API call 
 
-    # Possible TODO Classification or NLP Model can be implemented here for tweet responses
-    elif max_step.conversation_status == 1 and max_step.form == 0:
-
-        test = json.loads(twitter.get_replies(bot_name, max_step.sent_tweet_id,
-                                              max_step.tweeter_id))
-        if test:
-            if test.full_text == '@' + bot_name + 'Yes':
-                status = json.loads(twitter.respond_to_tweet(
-                    test.id_str,
-                    conversation_tree[2]))
-                max_step.tweet_id = root_id
-                max_step.received_tweet_id = test.id_str
-                max_step.in_reply_to_id = status.in_reply_to_status_id
-                max_step.tweeter_id = test.in_reply_to_screen_name
-                max_step.conversation_status = max_step.conversation_status + 1
-                max_step.tweet_text = test.full_text
-                max_step.checks_made = (max_step.checks_made + 1)
-                max_step.reachout_template = conversation_tree[2]
-                DB.insert_data_conversations(max_step)
-                return test
-
-            elif test.full_text == "@" + bot_name + 'No':
-                # INSERT CLASSIFICATION MODEL CALL HERE
-                end_conversation(root_id, max_step,
-                                 received_tweet_id=test.id_str)
-
-            else:
-                # INSERT CLASSIFICATION MODEL HERE (MAYBE CASE)
-                end_conversation(root_id, max_step,
-                                 received_tweet_id=test.id_str)
-        else:
-            pass
-
-    elif max_step.conversation_status == 5:
-        DB.update_conversation_checks(root_id)
-
-    # This is where current quick reply conversation Flow Begins
-    elif max_step.conversation_status == 10:
-        # add and develop this condition: if max_step.checks_made == 10: 
-        processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id,
-                                            tweet_id=str(max_step.tweet_id),
-                                            incident_id=max_step.incident_id,
-                                            convo_tree_txt=conversation_tree[
-                                                11])
-        if processed_dms is not None:
-            max_step.tweet_text = processed_dms['quick_reply_response']
-            max_step.reachout_template = conversation_tree[11]
+        if max_step.conversation_status == 0 and max_step.form == 0:
+            # Currently send_form handles this function
+            # This is really for conversation processing
+            status = json.loads(twitter.respond_to_tweet(max_step.tweet_id,
+                                                        conversation_tree[1]))
+            max_step.tweet_id = root_id
+            max_step.sent_tweet_id = status.id_str
+            max_step.in_reply_to_id = status.in_reply_to_status_id
+            max_step.conversation_status = (max_step.conversation_status + 1)
             max_step.checks_made = (max_step.checks_made + 1)
-            max_step.conversation_status = processed_dms['conversation_status']
-        DB.insert_data_conversations(max_step)
+            max_step.reachout_template = conversation_tree[1]
+            DB.insert_data_conversations(max_step)
 
-    elif max_step.conversation_status == 12:
-        # This is a holder for approvals on the admin end
-        DB.update_conversation_checks(root_id)
+        elif max_step.conversation_status == 0 and max_step.form == 1:
+            status = json.loads(
+                twitter.respond_to_tweet(max_step.tweet_id, max_step.form_link))
+            max_step.tweet_id = root_id
+            max_step.sent_tweet_id = status.id_str
+            max_step.in_reply_to_id = status.in_reply_to_status_id
+            max_step.conversation_status = 4
+            max_step.checks_made = (max_step.checks_made + 1)
+            max_step.reachout_template = form_link
+            DB.insert_data_conversations(max_step)
 
-    elif max_step.conversation_status == 13:
-        DB.update_conversation_checks(root_id)
+        # Possible TODO Classification or NLP Model can be implemented here for tweet responses
+        elif max_step.conversation_status == 1 and max_step.form == 0:
+
+            test = json.loads(twitter.get_replies(bot_name, max_step.sent_tweet_id,
+                                                max_step.tweeter_id))
+            if test:
+                if test.full_text == '@' + bot_name + 'Yes':
+                    status = json.loads(twitter.respond_to_tweet(
+                        test.id_str,
+                        conversation_tree[2]))
+                    max_step.tweet_id = root_id
+                    max_step.received_tweet_id = test.id_str
+                    max_step.in_reply_to_id = status.in_reply_to_status_id
+                    max_step.tweeter_id = test.in_reply_to_screen_name
+                    max_step.conversation_status = max_step.conversation_status + 1
+                    max_step.tweet_text = test.full_text
+                    max_step.checks_made = (max_step.checks_made + 1)
+                    max_step.reachout_template = conversation_tree[2]
+                    DB.insert_data_conversations(max_step)
+                    return test
+
+                elif test.full_text == "@" + bot_name + 'No':
+                    # INSERT CLASSIFICATION MODEL CALL HERE
+                    end_conversation(root_id, max_step,
+                                    received_tweet_id=test.id_str)
+
+                else:
+                    # INSERT CLASSIFICATION MODEL HERE (MAYBE CASE)
+                    end_conversation(root_id, max_step,
+                                    received_tweet_id=test.id_str)
+            else:
+                pass
+
+        elif max_step.conversation_status == 5:
+            DB.update_conversation_checks(root_id)
+
+        # This is where current quick reply conversation Flow Begins
+        elif max_step.conversation_status == 10:
+            # add and develop this condition: if max_step.checks_made == 10: 
+            processed_dms = twitter.process_dms(user_id=max_step.in_reply_to_id,
+                                                tweet_id=str(max_step.tweet_id),
+                                                incident_id=max_step.incident_id,
+                                                convo_tree_txt=conversation_tree[
+                                                    11], dms = dir_msg)
+            if processed_dms is not None:
+                max_step.tweet_text = processed_dms['quick_reply_response']
+                max_step.reachout_template = conversation_tree[11]
+                max_step.checks_made = (max_step.checks_made + 1)
+                max_step.conversation_status = processed_dms['conversation_status']
+            DB.insert_data_conversations(max_step)
+
+        elif max_step.conversation_status == 12:
+            # This is a holder for approvals on the admin end
+            DB.update_conversation_checks(root_id)
+
+        elif max_step.conversation_status == 13:
+            DB.update_conversation_checks(root_id)
 
 
 def clean_query_string(string: str):
