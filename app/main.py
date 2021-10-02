@@ -1,6 +1,6 @@
 """ This Module Holds the Fast API to Launch the DS APP and API Calls"""
 
-from app.db import BotScripts, Database, ForceRanks
+from app.db import Database, ForceRanks
 from random import choice
 from typing import Dict, List, Optional
 
