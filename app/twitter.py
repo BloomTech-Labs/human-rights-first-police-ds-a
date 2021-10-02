@@ -96,7 +96,7 @@ def get_user_id(screen_name: str) -> List[Dict]:
 
 
 # Tweets
-def get_replies(user_id: str, tweet_id: int, replier_id: str) -> str:
+def get_replies(user_id: str, tweet_id: int, replier_id: str):
     """ Gets replies to a tweet (tweet_id) originally posted by a user (user_id) replies from replier """
     api = create_api()
     replies = tweepy.Cursor(
@@ -168,7 +168,7 @@ def create_welcome_message(name: str,
     print(welcome_response)
 
 
-def send_dm(user_id: str, dm_body: str) -> str:
+def send_dm(user_id: str, dm_body: str):
     """ Function to send dm to a given user_id """
     api = create_api()
     dm = api.send_direct_message(user_id, dm_body)
@@ -176,10 +176,10 @@ def send_dm(user_id: str, dm_body: str) -> str:
 
 
 def process_dms(user_id: str, tweet_id: str, incident_id: str,
-                convo_tree_txt: str) -> Dict:
+                convo_tree_txt: str, dms):
     """Function to get response DMs sent from button in tweet"""
     api = create_api()
-    dms = api.list_direct_messages()
+    # dms = api.list_direct_messages()
     screen_name = str(get_user_id(user_id)[0]['user_id'])
 
     for dm in dms:
