@@ -57,3 +57,25 @@
 > The advance_all end point would refresh the etnry of the status of each conversation in the conversations table. As is, advance_all call is not automated, because @app.on_event("startup") command was never placed above line 177 in main.py. 
 ##### Possible Solutions Include:
 > @app.on_event("startup") needs to be added one line above the top of the advance_all function; namely, above the current line 177 in main.py. 
+</br>
+</br>
+</br>
+
+## Input for Testing the API to Send Forms Out
+### Input
+End point form-out would send the forms out. **Form 0 is a tweet, from 1 is a direct message**. Below is a sample of input for the form-out end-point input
+
+{
+  "form": 1,
+  "incident_id": 0000 (number of your choice),
+  "link": "https://twitter.com/(twitter user name)/status/(the id of the very tweet: 0000000000000000000)",
+  "tweet_id": "(the id of the very tweet: 0000000000000000000 in one string)",
+  "user_name": "(twitter user name in one string)"
+}
+
+### Ohter Testing Caveat
+#### In HRF Twitter Account
+Please make sure that you, on behalf of HRF, have left all conversation in DM and deleted all response tweets to the designated person or test object (in this case, most likely the personal account of the data science person conducting the test).
+#### In Amazon Web Services
+Please make sure that you have deleted all previous test entries of the same incident_id.  
+ 
