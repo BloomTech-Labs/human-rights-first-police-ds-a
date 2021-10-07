@@ -288,7 +288,7 @@ class Database(object):
                           and_(Conversations.tweet_id == ForceRanks.tweet_id,
                                Conversations.conversation_status == 12)))
             data = session.execute(query).fetchall()
-
+        
         out = []
         for i in data:
             record = {'tweet_id': i['Conversations'].tweet_id,
