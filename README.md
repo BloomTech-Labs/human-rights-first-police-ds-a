@@ -117,6 +117,29 @@ For those interested in improving upon the data science codebase, here are some 
 | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ryan-fikejs/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/imanifaith/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/joshua-elamin-2b2ba9209/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/rowenwitt/) |
 
 </br>
+
+| [Brody Osterbuhr](https://github.com/BOsterbuhr) | [Rhia George](https://github.com/rhiag) | [Andrew Haney](https://github.com/Andrew-Haney) | [Murat Benbanaste](https://github.com/mbenbanaste)
+| :---: | :---: | :---: |:---: | 
+| [<img src="https://avatars.githubusercontent.com/u/34581663?v=4" width = "200" />](https://github.com/BOsterbuhr) | [<img src="https://avatars.githubusercontent.com/u/64170131?v=4" width = "200" />](https://github.com/rhiag) | [<img src="https://avatars.githubusercontent.com/u/77994575?v=4" width = "200" />](https://github.com/Andrew-Haney) | [<img src="https://avatars.githubusercontent.com/u/77026689?v=4" width = "200" />](https://github.com/mbenbanaste) |
+| Data Scientist: ML Ops | Machine Learning Engineer | Data Scientist: ML Ops | Machine Learning Engineer |
+|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/BOsterbuhr) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/rhiag) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/Andrew-Haney) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/mbenbanaste) |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/bosterbuhr/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/rhia-george/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/andrew-haney1/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/murat-benbanaste/) |
+
+</br>
+</br>
+</br>
+
+# Labs 36 Contributors
+
+| [Hillary Khan](https://github.com/hillarykhan) | [Marcos Morales](https://github.com/MarcosMorales2011) | [Eric Park](https://github.com/ericyeonpark)
+| :---: | :---: | :---: |
+| [<img src="https://avatars.githubusercontent.com/u/35015753?v=4" width = "200" />](https://github.com/hillarykhan) | [<img src="https://avatars.githubusercontent.com/u/40769305?v=4" width = "200" />](https://github.com/MarcosMorales2011) | [<img src="https://avatars.githubusercontent.com/u/77295658?v=4" width = "200" />](https://github.com/ericyeonpark) |
+| Data Scientist | Data Scientist | Data Scientist |
+|[<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/hillarykhan) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/MarcosMorales2011) | [<img src="https://github.com/favicon.ico" width="15"> ](https://github.com/ericyeonpark) |
+| [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/hillary-khan/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/marcos-morales-bb7307181/) | [ <img src="https://static.licdn.com/sc/h/al2o9zrvru7aqj8e1x2rzsrca" width="15"> ](https://www.linkedin.com/in/ericyjpark/) |
+
+
+</br>
 </br>
 </br>
 </br>
