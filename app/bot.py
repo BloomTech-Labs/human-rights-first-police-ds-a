@@ -134,13 +134,11 @@ def advance_conversation(list_tweet_id: int, form_link: str = None):
     dir_msg = api.list_direct_messages()
 
     for root_id in list_tweet_id:
-
         
         root_conversation = DB.get_conversation_root(root_id.tweet_id)
         # TODO Consider refactoring so it is not a list. 
         # (Depends on how many users can contribute to incident)
         
-
         max_step = root_conversation[-1]
         
         # The if-else statement below essentially takes over the send-form function

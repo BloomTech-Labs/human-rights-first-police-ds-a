@@ -50,3 +50,10 @@
 > Currently, Lambda School’s lab twitter account was opened by a student. Should HRF not want to continue with the current account, HRF may need to consider opening a business/enterprise account on twitter. 
 ##### Possible Solutions Include: 
 > a. In conjunction with the new account, HRF may have to use its new credential to create new environmental variables to activate the welcome message function in twitter.py. The function would return a welcome message id and place that id, which is tied to the account, in bot.py, as it is in the codebase. 
+</br>
+</br>
+
+4. ### HRF will need to determine the frequency of database refreshing 
+> The advance_all end point would refresh the etnry of the status of each conversation in the conversations table. As is, advance_all call is not automated, because @app.on_event("startup") command was never placed above line 177 in main.py. 
+##### Possible Solutions Include:
+> @app.on_event("startup") needs to be added one line above the top of the advance_all function; namely, above the current line 177 in main.py. 
