@@ -55,7 +55,7 @@ def manual_twitter_api():
     return manual_twitter_auth
 
 
-def user_tweets(user_id: str) -> List[Dict]:
+def user_tweets(user_id: str):
     """ 
     Returns the 20 most recent statuses posted from the 
     authenticating user or the user specified. 
@@ -82,7 +82,7 @@ def get_user_id_from_tweet(tweet_id):
     return user_id
 
 
-def get_user_id(screen_name: str) -> List[Dict]:
+def get_user_id(screen_name: str):
     """ Get user id from screenname """
     name_id_pairs = []
     api = create_api()
@@ -119,7 +119,7 @@ def get_replies(user_id: str, tweet_id: int, replier_id: str):
             break
 
 
-def respond_to_tweet(tweet_id: int, tweet_body: str) -> str:
+def respond_to_tweet(tweet_id: int, tweet_body: str):
     """ Function to reply to a certain tweet_id """
     api = create_api()
     return api.update_status(
@@ -179,7 +179,6 @@ def process_dms(user_id: str, tweet_id: str, incident_id: str,
                 convo_tree_txt: str, dms):
     """Function to get response DMs sent from button in tweet"""
     api = create_api()
-    # dms = api.list_direct_messages()
     screen_name = str(get_user_id(user_id)[0]['user_id'])
 
     for dm in dms:
