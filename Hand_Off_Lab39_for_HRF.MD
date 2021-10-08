@@ -20,7 +20,7 @@
 
 ## Issues with the Current Version of the Codebase:
 1. ### Multiple tweets entries in the database may have the same incident ID
-> The current codebase may allow the option to send the tweet with the form so that many may provide the missing information regarding the incident. This means that we may have multiple input for the same incident ID, which would in turn present to the admin. dashboard as stand-alone entries. 
+> This means that we may have multiple input for the same incident ID, which would in turn be presented to the admin via the dashboard as stand-alone entries.
 
 #### Ideal Goals: 
 > a.	One entry per incident ID presented to the admin. dashboard. A
