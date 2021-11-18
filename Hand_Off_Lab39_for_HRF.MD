@@ -47,7 +47,7 @@
 > a. Change the environmental variable when it is necessary. 
 
 #### New Twitter Account and Welcome Function: 
-> Currently, Lambda School’s lab twitter account was opened by a student. Should HRF not want to continue with the current account, HRF may need to consider opening a business/enterprise account on twitter. 
+> Currently, BloomTech's Twitter account was opened by a student. Should HRF not want to continue with the current account, HRF may need to consider opening a business/enterprise account on twitter. 
 ##### Possible Solutions Include: 
 > a. In conjunction with the new account, HRF may have to use its new credential to create new environmental variables to activate the welcome message function in twitter.py. The function would return a welcome message id and place that id, which is tied to the account, in bot.py, as it is in the codebase. 
 </br>
@@ -78,4 +78,3 @@ End point form-out would send the forms out. **Form 0 is a tweet, from 1 is a di
 Please make sure that you, on behalf of HRF, have left all conversation in DM and deleted all response tweets to the designated person or test object (in this case, most likely the personal account of the data science person conducting the test).
 #### In Amazon Web Services
 Please make sure that you have deleted all previous test entries of the same incident_id.  
- 

@@ -4,7 +4,7 @@
 Currently, tweets are scraped and ran through the BERT model; incidents ranked from 2-5 are added to the force_ranks data table for review. 
 [Image of Scraped Incidents](https://drive.google.com/file/d/18XAXRBIwAKrYuOG2tVd39OIiaHCcAnok/view?usp=sharing) 
 This task will most likely fall to the (Machine Learning Engineer) because it's going to involve some tweaking with the model
-[Image of Product Flow](https://raw.githubusercontent.com/Lambda-School-Labs/human-rights-first-police-ds-a/main/DS_Flowchart.png) 
+[Image of Product Flow](https://raw.githubusercontent.com/BloomTech-Labs/human-rights-first-police-ds-a/main/DS_Flowchart.png) 
 A good place to start will be the following modules:
 - scraper.py, which holds the scraper
 - frankenbert.py, which holds important functionality for the BERT Model
